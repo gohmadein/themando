@@ -1,0 +1,258 @@
+{
+  "excluded_directory": "博一上",
+  "source_file_count": 28,
+  "total_bytes": 11866456334,
+  "files": [
+    {
+      "path": "2022级2022-2023学年优秀奖学金评审大礼包.rar",
+      "size": 662332,
+      "sha256": "afcb494da261786f97ed0ad806bf6e8622d4249dbbf8e4a723f96d87faaca04b",
+      "assets": []
+    },
+    {
+      "path": "deep_learning.zip",
+      "size": 180891655,
+      "sha256": "e715ed474115053d4cbc4bb3d071148777f27b90565afb87f671f331555149a5",
+      "assets": [
+        {
+          "name": "file-002.zip",
+          "size": 180891655,
+          "sha256": "e715ed474115053d4cbc4bb3d071148777f27b90565afb87f671f331555149a5"
+        }
+      ]
+    },
+    {
+      "path": "machine_learning.zip",
+      "size": 734777,
+      "sha256": "496fadef6ecab785fa2114d421a37e2e48c5328c3a9ed2d3c43122d32b7fdd2a",
+      "assets": []
+    },
+    {
+      "path": "speexx期末测试复习参考.pdf",
+      "size": 4695943,
+      "sha256": "63c37902f7e6ed5e017441fdf1936db9118e1cdf2238c019128b8938e2c51d9b",
+      "assets": []
+    },
+    {
+      "path": "入党积极分子.zip",
+      "size": 25096,
+      "sha256": "33f7ab21fc49e53affd6fdf3b0d50e0d0f2ab6fca3d396571b54adadecb1062b",
+      "assets": []
+    },
+    {
+      "path": "六级.zip",
+      "size": 8672177,
+      "sha256": "71bc676eb1fbe25680d9c7981feab1414bb6b92a8ae45bb6a5e718e7553290b2",
+      "assets": []
+    },
+    {
+      "path": "大一上.zip",
+      "size": 1012262771,
+      "sha256": "15ff980357e2d729123164421f9a2fd2b70bbb0ff588b0ca6ba995863d342303",
+      "assets": [
+        {
+          "name": "file-007.zip",
+          "size": 1012262771,
+          "sha256": "15ff980357e2d729123164421f9a2fd2b70bbb0ff588b0ca6ba995863d342303"
+        }
+      ]
+    },
+    {
+      "path": "大一下.zip",
+      "size": 728438024,
+      "sha256": "6f1adf7aedee2377f433b2f473130e81282fca6a6295e87b89eac65aa88db4c8",
+      "assets": [
+        {
+          "name": "file-008.zip",
+          "size": 728438024,
+          "sha256": "6f1adf7aedee2377f433b2f473130e81282fca6a6295e87b89eac65aa88db4c8"
+        }
+      ]
+    },
+    {
+      "path": "大三上.zip",
+      "size": 1293121539,
+      "sha256": "17b808e705e0440ed9d11b0bf095749b16db07b36360a7bfe5f60e43e545fef6",
+      "assets": [
+        {
+          "name": "file-009.zip",
+          "size": 1293121539,
+          "sha256": "17b808e705e0440ed9d11b0bf095749b16db07b36360a7bfe5f60e43e545fef6"
+        }
+      ]
+    },
+    {
+      "path": "大三下.zip",
+      "size": 599414831,
+      "sha256": "649eeed0a59895763e727f3090ddf1eea5b8913a8a751ae64d070d5480b862ea",
+      "assets": [
+        {
+          "name": "file-010.zip",
+          "size": 599414831,
+          "sha256": "649eeed0a59895763e727f3090ddf1eea5b8913a8a751ae64d070d5480b862ea"
+        }
+      ]
+    },
+    {
+      "path": "大二上.zip",
+      "size": 1087069559,
+      "sha256": "71c30732084f3c0f4d3a3fdd271793c720eafc2c51173b95af789132d5c8da01",
+      "assets": [
+        {
+          "name": "file-011.zip",
+          "size": 1087069559,
+          "sha256": "71c30732084f3c0f4d3a3fdd271793c720eafc2c51173b95af789132d5c8da01"
+        }
+      ]
+    },
+    {
+      "path": "大二下.zip",
+      "size": 1273394759,
+      "sha256": "8bc6adc74ff411c4d5bc0d62a557e70253c7a5b1c7c5894fbde8f2ff018759e2",
+      "assets": [
+        {
+          "name": "file-012.zip",
+          "size": 1273394759,
+          "sha256": "8bc6adc74ff411c4d5bc0d62a557e70253c7a5b1c7c5894fbde8f2ff018759e2"
+        }
+      ]
+    },
+    {
+      "path": "数学建模.zip",
+      "size": 284199346,
+      "sha256": "21d4f2d5079cbfef7d69852b79827540d3f2c788fbd000b82700995449112575",
+      "assets": [
+        {
+          "name": "file-013.zip",
+          "size": 284199346,
+          "sha256": "21d4f2d5079cbfef7d69852b79827540d3f2c788fbd000b82700995449112575"
+        }
+      ]
+    },
+    {
+      "path": "毕设.zip",
+      "size": 10272380,
+      "sha256": "bdc266b11ebd489d7e7f6a62793a0aa1a4252e3fadd282721c112ae3f228c53b",
+      "assets": []
+    },
+    {
+      "path": "生产实习.zip",
+      "size": 1554534798,
+      "sha256": "210eb376d407f7961843f0cb14523c4e3f340b43f0aaeb1b4bf4abf9cd733a0a",
+      "assets": [
+        {
+          "name": "file-015.zip",
+          "size": 1554534798,
+          "sha256": "210eb376d407f7961843f0cb14523c4e3f340b43f0aaeb1b4bf4abf9cd733a0a"
+        }
+      ]
+    },
+    {
+      "path": "科目一/01最新2026科目一知识点.pdf",
+      "size": 12890120,
+      "sha256": "77d88bf5264a764d725e345b3415318b551e9e3374df22e01f2751c5980087bb",
+      "assets": []
+    },
+    {
+      "path": "科目一/02近期新增知识点.pdf",
+      "size": 1200601,
+      "sha256": "7a7383289065965c4969602b557c678d2ec5af078c1ddd91a1417d215a253497",
+      "assets": []
+    },
+    {
+      "path": "科目一/03完全总汇（有手写标注）.pdf",
+      "size": 13855481,
+      "sha256": "64994538c51f9b9962e993a2dbdd5640ff8566d29eeecd7a54cd8c523c6445c7",
+      "assets": []
+    },
+    {
+      "path": "科目一/04完全总汇（完全无手写标注）.pdf",
+      "size": 15216823,
+      "sha256": "91facf33d1aa3b4171f5db086f73179934e5a94bdfb6073736d0463bad81b4bf",
+      "assets": []
+    },
+    {
+      "path": "科目一/perfectworldarena_win32_v1.0.26072311.exe",
+      "size": 302195128,
+      "sha256": "b59ca58020cfa014cf3abd688b5ab3bc4c2926ffb6a942c23e6f98f78321cf23",
+      "assets": [
+        {
+          "name": "file-020.exe",
+          "size": 302195128,
+          "sha256": "b59ca58020cfa014cf3abd688b5ab3bc4c2926ffb6a942c23e6f98f78321cf23"
+        }
+      ]
+    },
+    {
+      "path": "科目一/save.json",
+      "size": 27912,
+      "sha256": "be251e57dbab126a18eef88a61948a66f9c563447c12214668c3f23e52555d56",
+      "assets": []
+    },
+    {
+      "path": "科目一/WXWorkLocal_3.4.0.3486_x64.exe",
+      "size": 587292672,
+      "sha256": "123f526247420199091c0197a6ecb514c68fe40180b4a5c705f16290423669a1",
+      "assets": [
+        {
+          "name": "file-022.exe",
+          "size": 587292672,
+          "sha256": "123f526247420199091c0197a6ecb514c68fe40180b4a5c705f16290423669a1"
+        }
+      ]
+    },
+    {
+      "path": "科目一/使用方法.txt",
+      "size": 576,
+      "sha256": "5bad60d3a8bf3fe2a353b32f81fa1342e508ed8436693eec452cd9229f4d866c",
+      "assets": []
+    },
+    {
+      "path": "科目四/纯原笔记(无标注）.pdf",
+      "size": 8151649,
+      "sha256": "b737466489ebf2e051c2b914200c0f4dc0e4f5aa83d759cbd53245aae456de64",
+      "assets": []
+    },
+    {
+      "path": "科目四/课件笔记（含课上手写建议看这个）.pdf",
+      "size": 17981869,
+      "sha256": "850e3d362b51da82e03e3e76e743074aa9a96edb68a8b520d37be988c0742699",
+      "assets": []
+    },
+    {
+      "path": "编程.zip",
+      "size": 1349030,
+      "sha256": "8458d9b207285421c87dd4e188faf9ffeefc1442fab5d1e7f85dc4e5593f2085",
+      "assets": []
+    },
+    {
+      "path": "软综大数据.rar",
+      "size": 2541113732,
+      "sha256": "8634636753637babf35770f642567bfa32e93e77f25cdf5154ac58cb0dfd36cf",
+      "assets": [
+        {
+          "name": "file-027.rar.part001",
+          "size": 1610612736,
+          "sha256": "208ccc904b02c0e0df57dfba4c72b2eb37565a9117db4e97079f1067e9e4b3c5"
+        },
+        {
+          "name": "file-027.rar.part002",
+          "size": 930500996,
+          "sha256": "cd9df5cfbb4d95483446f959c2af7476872fdc66ea4f90e9b8eb3dbe839fd09c"
+        }
+      ]
+    },
+    {
+      "path": "高中.zip",
+      "size": 326790754,
+      "sha256": "4e6cc86b379b15d37e5dd6e72091ab4a0036387de06fd9a231e9877f1c559546",
+      "assets": [
+        {
+          "name": "file-028.zip",
+          "size": 326790754,
+          "sha256": "4e6cc86b379b15d37e5dd6e72091ab4a0036387de06fd9a231e9877f1c559546"
+        }
+      ]
+    }
+  ]
+}
