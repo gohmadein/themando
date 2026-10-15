@@ -1,7 +1,7 @@
 {
   "excluded_directory": "博一上",
-  "source_file_count": 28,
-  "total_bytes": 11866456334,
+  "source_file_count": 23,
+  "total_bytes": 10976914950,
   "files": [
     {
       "path": "2022级2022-2023学年优秀奖学金评审大礼包.rar",
@@ -31,12 +31,6 @@
       "path": "speexx期末测试复习参考.pdf",
       "size": 4695943,
       "sha256": "63c37902f7e6ed5e017441fdf1936db9118e1cdf2238c019128b8938e2c51d9b",
-      "assets": []
-    },
-    {
-      "path": "入党积极分子.zip",
-      "size": 25096,
-      "sha256": "33f7ab21fc49e53affd6fdf3b0d50e0d0f2ab6fca3d396571b54adadecb1062b",
       "assets": []
     },
     {
@@ -444,72 +438,6 @@
       "path": "科目一/04完全总汇（完全无手写标注）.pdf",
       "size": 15216823,
       "sha256": "91facf33d1aa3b4171f5db086f73179934e5a94bdfb6073736d0463bad81b4bf",
-      "assets": []
-    },
-    {
-      "path": "科目一/perfectworldarena_win32_v1.0.26072311.exe",
-      "size": 302195128,
-      "sha256": "b59ca58020cfa014cf3abd688b5ab3bc4c2926ffb6a942c23e6f98f78321cf23",
-      "assets": [
-        {
-          "name": "file-020.exe.part001",
-          "size": 134217728,
-          "sha256": "efc6580f6a81ce04f675abdac5837e92427ecb4c6262869bc86af5c0feba7b1b"
-        },
-        {
-          "name": "file-020.exe.part002",
-          "size": 134217728,
-          "sha256": "608232ff0c61b14d80d76f750660240383d0ee6cac39a7b739a8c09aa6426f59"
-        },
-        {
-          "name": "file-020.exe.part003",
-          "size": 33759672,
-          "sha256": "b4901528784df5d230c734edbb6959a1b21b488f0a6ce7c88acb7f5c71680f79"
-        }
-      ]
-    },
-    {
-      "path": "科目一/save.json",
-      "size": 27912,
-      "sha256": "be251e57dbab126a18eef88a61948a66f9c563447c12214668c3f23e52555d56",
-      "assets": []
-    },
-    {
-      "path": "科目一/WXWorkLocal_3.4.0.3486_x64.exe",
-      "size": 587292672,
-      "sha256": "123f526247420199091c0197a6ecb514c68fe40180b4a5c705f16290423669a1",
-      "assets": [
-        {
-          "name": "file-022.exe.part001",
-          "size": 134217728,
-          "sha256": "36fb567b168a6998975e862e0335a8781fde8cd46a0d292c5333f0148c1d6e4f"
-        },
-        {
-          "name": "file-022.exe.part002",
-          "size": 134217728,
-          "sha256": "927c130ae0e1380f415cc222dce4b00c178d3a5f4323a6a389c73f45e5b6d60a"
-        },
-        {
-          "name": "file-022.exe.part003",
-          "size": 134217728,
-          "sha256": "f25303363ef5d7a1238b9f595620e0bba17f33d32f6a8ddcdb204e0cb550fd08"
-        },
-        {
-          "name": "file-022.exe.part004",
-          "size": 134217728,
-          "sha256": "1f9780ad806f4e1fcc1f6470aa66b301991e54a2e83774c5b94786310d3367a4"
-        },
-        {
-          "name": "file-022.exe.part005",
-          "size": 50421760,
-          "sha256": "af3753a41ec1f35dd153a9c2bc4c062d5efc7655172053200c663cdeab585406"
-        }
-      ]
-    },
-    {
-      "path": "科目一/使用方法.txt",
-      "size": 576,
-      "sha256": "5bad60d3a8bf3fe2a353b32f81fa1342e508ed8436693eec452cd9229f4d866c",
       "assets": []
     },
     {
