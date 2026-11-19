@@ -3,168 +3,179 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="TheMando · 3D 全息学习与科研资源门户 — 探索本科课程归档、AI 智能体研发工具、LaTeX 组会模板与英文学术写作技能。" />
-  <title>TheMando · 学习与科研全息资源门户</title>
+  <meta name="description" content="TheMando · 3D 太阳系知识门户 — 每个知识板块对应一颗环日运行的行星，点击星球跃迁至对应资源推送舱。" />
+  <title>TheMando · 太阳系知识引力门户</title>
   <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <script>
-    // Forward legacy deep-links (#post=... or #mdfile=...) directly to the Resource Push Hub
     if (location.hash.startsWith('#post=') || location.hash.startsWith('#mdfile=')) {
       location.replace('./hub.html' + location.hash);
     }
   </script>
   <style>
-    /* ==========================================================================
-       TheMando 3D Holographic Portal — UI/UX Pro Max Futuristic System
-       Brand Core: Deep Space Navy (#030712) + Research Blue (#1D4ED8) + Plasma Cyan (#38BDF8 / #22D3EE)
-       ========================================================================== */
     :root {
-      --bg: #030712;
-      --bg-deep: #02050D;
-      --surface-glass: rgba(11, 19, 38, 0.58);
-      --surface-glass-strong: rgba(15, 25, 48, 0.78);
+      --bg: #02050E;
+      --glass: rgba(8, 15, 32, 0.56);
+      --glass-strong: rgba(11, 21, 44, 0.82);
       --fg: #F8FAFC;
-      --fg-secondary: #E2E8F0;
       --fg-muted: #94A3B8;
       --border: rgba(56, 189, 248, 0.18);
-      --border-strong: rgba(56, 189, 248, 0.44);
-      --primary: #1D4ED8;
+      --border-strong: rgba(56, 189, 248, 0.48);
       --accent: #38BDF8;
       --cyan: #22D3EE;
+      --amber: #F59E0B;
       --emerald: #22C55E;
-      --ring: #38BDF8;
-      --vignette: radial-gradient(circle at 50% 42%, transparent 22%, rgba(2, 6, 18, 0.74) 88%, #02050D 100%);
-    }
-
-    [data-theme="light"] {
-      --bg: #EFF5FC;
-      --bg-deep: #E2ECF8;
-      --surface-glass: rgba(255, 255, 255, 0.76);
-      --surface-glass-strong: rgba(255, 255, 255, 0.92);
-      --fg: #0F172A;
-      --fg-secondary: #1E293B;
-      --fg-muted: #475569;
-      --border: rgba(2, 132, 199, 0.22);
-      --border-strong: rgba(29, 78, 216, 0.48);
-      --primary: #1D4ED8;
-      --accent: #0284C7;
-      --cyan: #0369A1;
-      --emerald: #16A34A;
-      --ring: #0284C7;
-      --vignette: radial-gradient(circle at 50% 42%, transparent 35%, rgba(226, 236, 248, 0.78) 95%);
     }
 
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     html, body {
-      min-height: 100%;
-      background-color: var(--bg);
+      height: 100%;
+      background: var(--bg);
       color: var(--fg);
-      font-family: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+      font-family: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
       overflow-x: hidden;
-      transition: background-color 300ms ease, color 300ms ease;
     }
 
     a, button, input { font: inherit; }
     a, button { cursor: pointer; }
+    :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
 
-    :focus-visible {
-      outline: 2px solid var(--ring);
-      outline-offset: 3px;
-    }
-
-    /* ==========================================================================
-       3D WebGL Nebula Stage & Hyperspace Warp Transition Layer
-       ========================================================================== */
-    .webgl-stage {
+    /* Interactive 3D Solar System Stage */
+    .solar-stage {
       position: fixed;
       inset: 0;
       z-index: 0;
+      overflow: hidden;
+    }
+
+    #solarCanvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+      cursor: grab;
+    }
+    #solarCanvas:active { cursor: grabbing; }
+    #solarCanvas.hovering-planet { cursor: pointer; }
+
+    .space-vignette {
+      position: fixed;
+      inset: 0;
+      z-index: 1;
+      pointer-events: none;
+      background: radial-gradient(circle at 50% 48%, transparent 32%, rgba(2, 5, 14, 0.72) 92%);
+    }
+
+    /* Floating 3D Planet Anchor Labels */
+    .planet-labels-layer {
+      position: fixed;
+      inset: 0;
+      z-index: 2;
       pointer-events: none;
       overflow: hidden;
     }
 
-    #nebulaCanvas {
-      width: 100%;
-      height: 100%;
-      display: block;
+    .planet-tag {
+      position: absolute;
+      left: 0;
+      top: 0;
+      transform: translate(-50%, -100%);
+      pointer-events: auto;
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 5px 11px;
+      border-radius: 999px;
+      background: rgba(7, 14, 30, 0.78);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid var(--border-strong);
+      color: var(--fg);
+      font-size: 0.78rem;
+      font-weight: 600;
+      text-decoration: none;
+      white-space: nowrap;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.55);
+      transition: border-color 180ms ease, background-color 180ms ease, box-shadow 180ms ease;
+      will-change: transform, opacity;
     }
 
-    .stage-vignette {
-      position: absolute;
-      inset: 0;
-      background: var(--vignette);
+    .planet-tag:hover {
+      background: rgba(14, 30, 62, 0.95);
+      border-color: var(--cyan);
+      box-shadow: 0 0 22px rgba(56, 189, 248, 0.55);
+    }
+
+    .planet-tag.dormant {
       pointer-events: none;
+      padding: 3px 8px;
+      font-size: 0.68rem;
+      font-weight: 500;
+      color: rgba(148, 163, 184, 0.65);
+      border-color: rgba(148, 163, 184, 0.16);
+      background: rgba(6, 11, 24, 0.52);
+      box-shadow: none;
     }
 
-    /* Subtle Sci-Fi Horizon Grid at Bottom */
-    .horizon-grid {
-      position: absolute;
-      left: -25%;
-      right: -25%;
-      bottom: -18%;
-      height: 56%;
-      background-image:
-        linear-gradient(to right, rgba(56, 189, 248, 0.09) 1px, transparent 1px),
-        linear-gradient(to bottom, rgba(56, 189, 248, 0.09) 1px, transparent 1px);
-      background-size: 56px 56px;
-      transform: perspective(520px) rotateX(68deg);
-      mask-image: radial-gradient(ellipse 65% 65% at 50% 35%, #000 10%, transparent 72%);
-      -webkit-mask-image: radial-gradient(ellipse 65% 65% at 50% 35%, #000 10%, transparent 72%);
-      animation: gridAdvance 12s linear infinite;
+    .planet-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      box-shadow: 0 0 8px currentColor;
     }
 
-    @keyframes gridAdvance {
-      from { background-position: 0 0; }
-      to { background-position: 0 56px; }
+    .planet-count {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.7rem;
+      color: var(--accent);
     }
 
-    /* Hyperspace Warp Curtain on Navigation */
+    /* Hyperspace Warp Curtain */
     .warp-curtain {
       position: fixed;
       inset: 0;
       z-index: 200;
       pointer-events: none;
       opacity: 0;
-      background: radial-gradient(circle at 50% 45%, rgba(56, 189, 248, 0.36), #030712 72%);
-      transition: opacity 340ms cubic-bezier(0.22, 1, 0.36, 1);
+      background: radial-gradient(circle at 50% 48%, rgba(251, 191, 36, 0.22), rgba(56, 189, 248, 0.25) 35%, #02050E 78%);
+      transition: opacity 340ms ease;
     }
-    .warp-curtain.active {
-      opacity: 1;
-    }
+    .warp-curtain.active { opacity: 1; }
 
-    /* ==========================================================================
-       Portal Foreground Layout
-       ========================================================================== */
-    .portal-wrapper {
+    /* Foreground UI Layout (Pass-through clicks to 3D planets in open space!) */
+    .portal-shell {
       position: relative;
-      z-index: 2;
+      z-index: 5;
       min-height: 100vh;
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 18px 18px 24px;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      max-width: 1380px;
-      margin: 0 auto;
-      padding: 18px 18px 26px;
+      pointer-events: none;
     }
 
     @media (min-width: 768px) {
-      .portal-wrapper { padding: 24px 36px 32px; }
+      .portal-shell { padding: 24px 36px 28px; }
     }
 
-    /* Top HUD Navigation Bar */
+    .ui-interactive { pointer-events: auto; }
+
+    /* Top HUD Header */
     .portal-nav {
       display: flex;
       align-items: center;
       justify-content: space-between;
       gap: 14px;
-      padding: 10px 16px;
+      padding: 10px 18px;
       border-radius: 16px;
-      background: var(--surface-glass);
-      backdrop-filter: blur(16px) saturate(140%);
-      -webkit-backdrop-filter: blur(16px) saturate(140%);
+      background: var(--glass);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
       border: 1px solid var(--border);
     }
 
@@ -174,49 +185,43 @@
       gap: 12px;
       text-decoration: none;
       color: var(--fg);
-      min-height: 40px;
     }
 
     .nav-logo-mini {
-      width: 52px;
-      height: 29px;
-      filter: drop-shadow(0 0 10px rgba(56, 189, 248, 0.35));
+      width: 50px;
+      height: 28px;
+      filter: drop-shadow(0 0 10px rgba(56, 189, 248, 0.4));
     }
 
     .nav-brand-text {
       font-family: 'JetBrains Mono', monospace;
       font-weight: 700;
-      font-size: 0.98rem;
-      letter-spacing: 0.04em;
+      font-size: 0.96rem;
+      letter-spacing: 0.05em;
     }
 
-    .nav-coords {
+    .nav-telemetry {
       display: none;
       font-family: 'JetBrains Mono', monospace;
       font-size: 0.74rem;
       color: var(--fg-muted);
-      letter-spacing: 0.06em;
+      letter-spacing: 0.04em;
+    }
+    @media (min-width: 920px) {
+      .nav-telemetry { display: inline-flex; align-items: center; gap: 12px; }
     }
 
-    @media (min-width: 900px) {
-      .nav-coords { display: inline-flex; align-items: center; gap: 14px; }
-    }
-
-    .nav-actions {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
+    .nav-actions { display: flex; align-items: center; gap: 8px; }
 
     .hud-btn {
       min-height: 40px;
-      padding: 0 13px;
+      padding: 0 14px;
       border-radius: 10px;
       border: 1px solid var(--border);
-      background: rgba(56, 189, 248, 0.06);
+      background: rgba(56, 189, 248, 0.08);
       color: var(--fg);
       font-size: 0.83rem;
-      font-weight: 500;
+      font-weight: 600;
       text-decoration: none;
       display: inline-flex;
       align-items: center;
@@ -226,576 +231,274 @@
 
     .hud-btn:hover {
       border-color: var(--border-strong);
-      background: rgba(56, 189, 248, 0.14);
-      box-shadow: 0 0 18px -4px rgba(56, 189, 248, 0.4);
+      background: rgba(56, 189, 248, 0.16);
+      box-shadow: 0 0 18px -4px rgba(56, 189, 248, 0.45);
     }
 
-    /* ==========================================================================
-       Centerpiece Stage: 3D Holographic LMX Energy Core + Kinetic Hero
-       ========================================================================== */
-    .hero-centerpiece {
+    /* Frameless Pure Floating LMX Hero Centerpiece */
+    .hero-top-overlay {
       display: flex;
       flex-direction: column;
       align-items: center;
       text-align: center;
-      padding: 32px 0 26px;
+      margin-top: 10px;
     }
 
-    /* 3D Interactive Holographic LMX Emblem Core */
-    .holo-core-wrap {
-      perspective: 900px;
-      margin-bottom: 22px;
-    }
-
-    .holo-core {
-      width: 248px;
-      height: 158px;
-      border-radius: 28px;
-      position: relative;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: radial-gradient(circle at 50% 50%, rgba(29, 78, 216, 0.24), rgba(11, 19, 38, 0.55) 72%);
-      border: 1px solid var(--border-strong);
-      box-shadow:
-        0 0 48px -8px rgba(56, 189, 248, 0.38),
-        inset 0 0 28px rgba(56, 189, 248, 0.14);
-      transform-style: preserve-3d;
-      transition: transform 140ms ease-out, box-shadow 260ms ease;
-      will-change: transform;
-    }
-
-    @media (min-width: 768px) {
-      .holo-core {
-        width: 292px;
-        height: 176px;
-      }
-    }
-
-    /* Specular Hologram Glare Layer */
-    .holo-core::after {
-      content: "";
-      position: absolute;
-      inset: 0;
-      border-radius: inherit;
-      background: radial-gradient(240px circle at var(--gx, 50%) var(--gy, 30%), rgba(255, 255, 255, 0.20), transparent 60%);
+    .frameless-lmx-wrap {
+      margin-bottom: 8px;
       pointer-events: none;
     }
 
-    /* Rotating Concentric Telemetry Rings Behind LMX */
-    .orbital-hud-svg {
-      position: absolute;
-      width: 340px;
-      height: 340px;
-      pointer-events: none;
-      opacity: 0.52;
-    }
-
-    .ring-cw {
-      transform-origin: 50% 50%;
-      animation: orbitCW 28s linear infinite;
-    }
-
-    .ring-ccw {
-      transform-origin: 50% 50%;
-      animation: orbitCCW 20s linear infinite;
-    }
-
-    @keyframes orbitCW { to { transform: rotate(360deg); } }
-    @keyframes orbitCCW { to { transform: rotate(-360deg); } }
-
-    .core-lmx-svg {
-      width: 82%;
+    .frameless-lmx-svg {
+      width: clamp(168px, 20vw, 232px);
       height: auto;
-      position: relative;
-      z-index: 2;
-      transform: translateZ(26px);
       overflow: visible;
+      filter: drop-shadow(0 0 22px rgba(56, 189, 248, 0.45));
     }
 
-    .lmx-bloom-layer {
-      filter: blur(8px);
-      opacity: 0.65;
+    .lmx-glow-under {
+      filter: blur(9px);
+      opacity: 0.58;
     }
 
-    .lmx-main-stroke {
+    .lmx-stroke-draw {
       stroke-dasharray: 820;
       stroke-dashoffset: 820;
-      animation: drawCoreLmx 1.6s cubic-bezier(0.22, 1, 0.36, 1) 0.1s forwards;
+      animation: drawLmx 1.5s cubic-bezier(0.22, 1, 0.36, 1) 0.1s forwards;
     }
 
-    .lmx-plasma-beam {
-      stroke-dasharray: 110 730;
+    .lmx-plasma-pulse {
+      stroke-dasharray: 105 735;
       stroke-dashoffset: 840;
-      animation: plasmaRace 3.8s cubic-bezier(0.4, 0, 0.2, 1) 1.5s infinite;
+      animation: pulseLmx 4s cubic-bezier(0.4, 0, 0.2, 1) 1.5s infinite;
     }
 
-    @keyframes drawCoreLmx {
-      to { stroke-dashoffset: 0; }
-    }
-
-    @keyframes plasmaRace {
+    @keyframes drawLmx { to { stroke-dashoffset: 0; } }
+    @keyframes pulseLmx {
       0% { stroke-dashoffset: 840; opacity: 0; }
-      15% { opacity: 1; }
-      85% { opacity: 1; }
-      100% { stroke-dashoffset: -110; opacity: 0; }
+      15%, 85% { opacity: 1; }
+      100% { stroke-dashoffset: -105; opacity: 0; }
     }
 
-    /* Telemetry Status Pill */
-    .telemetry-pill {
-      display: inline-flex;
-      align-items: center;
-      gap: 9px;
-      padding: 5px 14px;
-      border-radius: 999px;
-      background: rgba(56, 189, 248, 0.10);
-      border: 1px solid var(--border-strong);
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.76rem;
-      font-weight: 600;
-      color: var(--accent);
-      letter-spacing: 0.05em;
-      margin-bottom: 14px;
-    }
-
-    .radar-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: var(--emerald);
-      position: relative;
-    }
-
-    .radar-dot::after {
-      content: "";
-      position: absolute;
-      inset: -5px;
-      border-radius: 50%;
-      border: 2px solid var(--emerald);
-      animation: pingWave 2s cubic-bezier(0, 0, 0.2, 1) infinite;
-    }
-
-    @keyframes pingWave {
-      0% { transform: scale(0.5); opacity: 0.95; }
-      100% { transform: scale(1.9); opacity: 0; }
-    }
-
-    /* Giant Holographic Shimmer Title */
     .portal-title {
-      font-size: clamp(2.1rem, 5vw, 3.85rem);
+      font-size: clamp(1.75rem, 3.6vw, 2.85rem);
       font-weight: 700;
-      line-height: 1.14;
-      letter-spacing: -0.035em;
-      margin-bottom: 12px;
-      max-width: 920px;
+      line-height: 1.18;
+      letter-spacing: -0.03em;
+      margin-bottom: 8px;
+      text-shadow: 0 4px 28px rgba(0, 0, 0, 0.85);
     }
 
-    .holo-text {
-      background: linear-gradient(120deg, #FFFFFF 10%, #93C5FD 35%, #38BDF8 58%, #22D3EE 78%, #FFFFFF 95%);
-      background-size: 220% auto;
+    .holo-span {
+      background: linear-gradient(120deg, #FDE68A 5%, #F8FAFC 32%, #38BDF8 68%, #22D3EE 95%);
+      background-size: 200% auto;
       -webkit-background-clip: text;
       background-clip: text;
       color: transparent;
-      animation: holoFlow 6s linear infinite;
+      animation: textFlow 6s linear infinite;
     }
+    @keyframes textFlow { to { background-position: 200% center; } }
 
-    [data-theme="light"] .holo-text {
-      background: linear-gradient(120deg, #0F172A 10%, #1D4ED8 42%, #0284C7 72%, #0F172A 95%);
-      background-size: 220% auto;
-      -webkit-background-clip: text;
-      background-clip: text;
-      color: transparent;
-    }
-
-    @keyframes holoFlow {
-      to { background-position: 220% center; }
-    }
-
-    /* Cyber Scramble Decoder Subtitle */
-    .decode-line {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: clamp(0.86rem, 1.5vw, 1.05rem);
-      color: var(--cyan);
-      min-height: 1.7em;
-      margin-bottom: 10px;
-      letter-spacing: 0.02em;
-    }
-
-    .portal-lead {
+    .solar-hint {
+      font-size: 0.88rem;
       color: var(--fg-muted);
-      font-size: clamp(0.92rem, 1.3vw, 1.04rem);
-      max-width: 650px;
-      margin-bottom: 26px;
-      line-height: 1.65;
+      max-width: 580px;
+      margin-bottom: 16px;
+      text-shadow: 0 2px 14px rgba(0, 0, 0, 0.9);
     }
 
-    /* Primary Magnetic CTA + Quick Search Bar */
-    .cta-command-row {
+    .cta-bar {
       display: flex;
       flex-wrap: wrap;
       align-items: center;
       justify-content: center;
-      gap: 14px;
-      width: 100%;
-      max-width: 720px;
+      gap: 12px;
     }
 
-    /* Rotating Plasma Conic Border CTA Button */
     .plasma-cta {
       position: relative;
       display: inline-flex;
       align-items: center;
-      justify-content: center;
-      gap: 10px;
-      min-height: 52px;
-      padding: 0 28px;
+      gap: 9px;
+      min-height: 46px;
+      padding: 0 24px;
       border-radius: 999px;
       font-weight: 700;
-      font-size: 0.98rem;
+      font-size: 0.92rem;
       color: #FFFFFF;
       text-decoration: none;
-      background: linear-gradient(135deg, #1D4ED8 0%, #0284C7 55%, #0891B2 100%);
-      box-shadow:
-        0 0 0 1px rgba(56, 189, 248, 0.55),
-        0 12px 34px -6px rgba(2, 132, 199, 0.65);
+      background: linear-gradient(135deg, #1D4ED8 0%, #0284C7 58%, #0891B2 100%);
+      box-shadow: 0 0 0 1px rgba(56, 189, 248, 0.55), 0 10px 30px -6px rgba(2, 132, 199, 0.7);
       overflow: hidden;
-      will-change: transform;
-      transition: box-shadow 220ms ease, transform 200ms cubic-bezier(0.22, 1, 0.36, 1);
+      transition: transform 180ms ease, box-shadow 200ms ease;
     }
-
-    .plasma-cta::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(110deg, transparent 25%, rgba(255, 255, 255, 0.32) 50%, transparent 75%);
-      transform: translateX(-120%);
-      animation: ctaSweep 3.4s ease-in-out infinite;
-    }
-
-    @keyframes ctaSweep {
-      0%, 35% { transform: translateX(-120%); }
-      80%, 100% { transform: translateX(120%); }
-    }
-
     .plasma-cta:hover {
-      box-shadow:
-        0 0 0 2px #38BDF8,
-        0 16px 42px -4px rgba(56, 189, 248, 0.78);
+      transform: translateY(-2px);
+      box-shadow: 0 0 0 2px #38BDF8, 0 14px 36px -4px rgba(56, 189, 248, 0.8);
     }
 
-    .plasma-cta svg {
-      transition: transform 200ms ease;
-    }
-    .plasma-cta:hover svg {
-      transform: translateX(4px);
-    }
-
-    /* Quick Portal Search Command Input */
-    .portal-search-form {
-      flex: 1;
-      min-width: 260px;
-      max-width: 380px;
+    .portal-search {
       position: relative;
+      width: 275px;
       display: flex;
       align-items: center;
     }
 
-    .portal-search-input {
+    .portal-search input {
       width: 100%;
-      height: 52px;
-      padding: 0 52px 0 44px;
+      height: 46px;
+      padding: 0 38px 0 38px;
       border-radius: 999px;
       border: 1px solid var(--border);
-      background: var(--surface-glass-strong);
-      backdrop-filter: blur(16px);
+      background: var(--glass-strong);
+      backdrop-filter: blur(14px);
       color: var(--fg);
-      font-size: 0.9rem;
-      transition: border-color 200ms ease, box-shadow 200ms ease;
+      font-size: 0.85rem;
     }
-
-    .portal-search-input::placeholder { color: var(--fg-muted); }
-
-    .portal-search-input:focus {
+    .portal-search input::placeholder { color: var(--fg-muted); }
+    .portal-search input:focus {
       outline: none;
       border-color: var(--accent);
-      box-shadow: 0 0 0 4px rgba(56, 189, 248, 0.16), 0 0 28px -6px rgba(56, 189, 248, 0.4);
+      box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.2);
     }
-
-    .portal-search-icon {
+    .portal-search svg {
       position: absolute;
-      left: 16px;
-      width: 18px;
-      height: 18px;
+      left: 13px;
+      width: 16px;
+      height: 16px;
       color: var(--accent);
       pointer-events: none;
     }
-
-    .portal-search-kbd {
+    .portal-search kbd {
       position: absolute;
-      right: 16px;
+      right: 13px;
       font-family: 'JetBrains Mono', monospace;
-      font-size: 0.72rem;
-      padding: 2px 8px;
-      border-radius: 6px;
-      border: 1px solid var(--border);
+      font-size: 0.7rem;
       color: var(--fg-muted);
       pointer-events: none;
     }
 
-    /* ==========================================================================
-       4 Interactive 3D Tilt Holographic Gateway Cards
-       ========================================================================== */
-    .gateways-section {
-      margin: 14px 0 22px;
-    }
-
-    .gateways-grid {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 16px;
-    }
-
-    @media (min-width: 640px) {
-      .gateways-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-    }
-
-    @media (min-width: 1120px) {
-      .gateways-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
-    }
-
-    .tilt-gateway {
-      --rx: 0deg;
-      --ry: 0deg;
-      --gx: 50%;
-      --gy: 50%;
-      position: relative;
+    /* Bottom Planetary Roster Dock (Auto-scales as new categories are uploaded!) */
+    .planetary-dock {
       display: flex;
       flex-direction: column;
-      justify-content: space-between;
-      gap: 16px;
-      padding: 22px 20px;
-      border-radius: 20px;
-      background: var(--surface-glass);
-      backdrop-filter: blur(18px) saturate(150%);
-      -webkit-backdrop-filter: blur(18px) saturate(150%);
+      gap: 10px;
+      padding: 14px 18px;
+      border-radius: 18px;
+      background: var(--glass);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
       border: 1px solid var(--border);
-      text-decoration: none;
-      color: var(--fg);
-      transform: perspective(900px) rotateX(var(--rx)) rotateY(var(--ry));
-      transition: transform 160ms ease-out, border-color 220ms ease, box-shadow 240ms ease;
-      overflow: hidden;
-      will-change: transform;
     }
 
-    .tilt-gateway:hover {
-      border-color: var(--border-strong);
-      box-shadow: 0 20px 44px -12px rgba(2, 132, 199, 0.34);
-    }
-
-    /* Holographic Specular Glare Overlay */
-    .tilt-gateway::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background: radial-gradient(340px circle at var(--gx) var(--gy), rgba(56, 189, 248, 0.16), transparent 55%);
-      opacity: 0;
-      transition: opacity 240ms ease;
-      pointer-events: none;
-    }
-
-    .tilt-gateway:hover::before {
-      opacity: 1;
-    }
-
-    /* Sci-Fi HUD Corner Bracket Accent */
-    .hud-corner {
-      position: absolute;
-      top: 10px;
-      right: 10px;
-      width: 14px;
-      height: 14px;
-      border-top: 2px solid var(--accent);
-      border-right: 2px solid var(--accent);
-      border-top-right-radius: 5px;
-      opacity: 0.45;
-      transition: opacity 200ms ease, transform 200ms ease;
-    }
-
-    .tilt-gateway:hover .hud-corner {
-      opacity: 1;
-      transform: translate(2px, -2px);
-    }
-
-    .gw-top {
+    .dock-header {
       display: flex;
+      flex-wrap: wrap;
       align-items: center;
       justify-content: space-between;
       gap: 10px;
+      font-size: 0.78rem;
+      color: var(--fg-muted);
     }
 
-    .gw-icon-box {
-      width: 42px;
-      height: 42px;
-      border-radius: 12px;
-      background: rgba(56, 189, 248, 0.12);
-      border: 1px solid var(--border-strong);
-      color: var(--accent);
+    .dock-title {
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 600;
+      color: var(--fg);
       display: inline-flex;
       align-items: center;
-      justify-content: center;
+      gap: 8px;
     }
 
-    .gw-code {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.72rem;
-      color: var(--fg-muted);
-      letter-spacing: 0.05em;
-    }
-
-    .gw-title {
-      font-size: 1.12rem;
-      font-weight: 700;
-      margin: 12px 0 6px;
-      letter-spacing: -0.015em;
-    }
-
-    .gw-desc {
-      font-size: 0.84rem;
-      color: var(--fg-muted);
-      line-height: 1.58;
-    }
-
-    .gw-footer {
+    .orbit-roster {
       display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding-top: 12px;
-      border-top: 1px solid var(--border);
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.76rem;
-      color: var(--accent);
-      font-weight: 600;
-    }
-
-    .gw-arrow {
-      transition: transform 200ms ease;
-    }
-
-    .tilt-gateway:hover .gw-arrow {
-      transform: translateX(4px);
-    }
-
-    /* ==========================================================================
-       Bottom Live Telemetry & Latest Push Dock
-       ========================================================================== */
-    .telemetry-dock {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      justify-content: space-between;
-      gap: 16px;
-      padding: 14px 20px;
-      border-radius: 18px;
-      background: var(--surface-glass);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      border: 1px solid var(--border);
-    }
-
-    .dock-metrics {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      gap: 20px;
-    }
-
-    .dock-stat {
-      display: flex;
-      align-items: baseline;
-      gap: 6px;
-      font-size: 0.82rem;
-      color: var(--fg-muted);
-    }
-
-    .dock-stat strong {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 1.05rem;
-      color: var(--fg);
-      font-weight: 700;
-    }
-
-    .dock-latest {
-      display: flex;
-      align-items: center;
+      flex-wrap: nowrap;
+      overflow-x: auto;
       gap: 10px;
-      min-width: 0;
-      max-width: 100%;
+      padding-bottom: 2px;
+      scrollbar-width: thin;
     }
 
-    .dock-tag {
-      padding: 3px 9px;
-      border-radius: 6px;
-      background: rgba(34, 197, 94, 0.16);
-      color: var(--emerald);
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.72rem;
-      font-weight: 700;
+    .orbit-chip {
+      flex: 0 0 auto;
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      padding: 8px 14px;
+      border-radius: 12px;
+      background: rgba(15, 25, 48, 0.72);
+      border: 1px solid var(--border);
+      color: var(--fg);
+      text-decoration: none;
+      font-size: 0.83rem;
+      transition: border-color 180ms ease, transform 180ms ease, background-color 180ms ease;
+    }
+
+    .orbit-chip.active:hover,
+    .orbit-chip.active.focused {
+      border-color: var(--cyan);
+      background: rgba(29, 78, 216, 0.28);
+      transform: translateY(-2px);
+    }
+
+    .orbit-chip.unclaimed {
+      opacity: 0.52;
+      border-style: dashed;
+      cursor: default;
+    }
+
+    .orbit-sphere-icon {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
       flex-shrink: 0;
     }
 
-    .dock-commit-link {
+    .orbit-meta {
+      display: flex;
+      flex-direction: column;
+      line-height: 1.25;
+    }
+
+    .orbit-planet-name {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.68rem;
+      color: var(--fg-muted);
+    }
+
+    .orbit-cat-name {
+      font-weight: 700;
       font-size: 0.84rem;
-      color: var(--fg-secondary);
-      text-decoration: none;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      max-width: 440px;
-      transition: color 160ms ease;
     }
 
-    .dock-commit-link:hover {
-      color: var(--accent);
-    }
-
-    /* Accessibility: Reduced Motion */
     @media (prefers-reduced-motion: reduce) {
       *, *::before, *::after {
         animation-duration: 0.01ms !important;
         animation-iteration-count: 1 !important;
         transition-duration: 0.01ms !important;
       }
-      .lmx-main-stroke { stroke-dashoffset: 0 !important; }
-      .lmx-plasma-beam { display: none !important; }
-      .tilt-gateway, .holo-core { transform: none !important; }
+      .lmx-stroke-draw { stroke-dashoffset: 0 !important; }
+      .lmx-plasma-pulse { display: none !important; }
     }
   </style>
 </head>
 <body>
-  <!-- 3D WebGL Interactive Galaxy & Orbital Gravity Stage -->
-  <div class="webgl-stage" aria-hidden="true">
-    <canvas id="nebulaCanvas"></canvas>
-    <div class="horizon-grid"></div>
-    <div class="stage-vignette"></div>
+  <div class="solar-stage">
+    <canvas id="solarCanvas"></canvas>
   </div>
-
-  <!-- Hyperspace Warp Overlay -->
+  <div class="space-vignette" aria-hidden="true"></div>
+  <div class="planet-labels-layer" id="planetLabelsLayer"></div>
   <div class="warp-curtain" id="warpCurtain" aria-hidden="true"></div>
 
-  <!-- Shared SVG Gradient Defs for LMX Brand Mark -->
+  <!-- SVG Gradients for Frameless LMX Mark -->
   <svg width="0" height="0" style="position:absolute" aria-hidden="true">
     <defs>
-      <linearGradient id="lmxPortalDark" x1="0%" y1="0%" x2="100%" y2="0%">
+      <linearGradient id="lmxBrandGrad" x1="0%" y1="0%" x2="100%" y2="0%">
         <stop offset="0%" stop-color="#60A5FA" />
-        <stop offset="50%" stop-color="#38BDF8" />
+        <stop offset="52%" stop-color="#38BDF8" />
         <stop offset="100%" stop-color="#22D3EE" />
       </linearGradient>
-      <linearGradient id="lmxPortalLight" x1="0%" y1="0%" x2="100%" y2="0%">
-        <stop offset="0%" stop-color="#172554" />
-        <stop offset="52%" stop-color="#1D4ED8" />
-        <stop offset="100%" stop-color="#0284C7" />
-      </linearGradient>
-      <linearGradient id="lmxPlasmaWhite" x1="0%" y1="0%" x2="100%" y2="0%">
+      <linearGradient id="lmxPlasmaGrad" x1="0%" y1="0%" x2="100%" y2="0%">
         <stop offset="0%" stop-color="#38BDF8" stop-opacity="0" />
         <stop offset="50%" stop-color="#FFFFFF" stop-opacity="1" />
         <stop offset="100%" stop-color="#22D3EE" stop-opacity="0" />
@@ -803,37 +506,28 @@
     </defs>
   </svg>
 
-  <div class="portal-wrapper">
-    <!-- Top HUD Glass Bar -->
-    <header class="portal-nav">
-      <a href="./index.html" class="nav-brand" aria-label="TheMando 全息主页">
-        <svg class="nav-logo-mini" id="navMiniLogo" viewBox="0 0 310 172" fill="none" stroke="url(#lmxPortalDark)" stroke-width="17" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <div class="portal-shell">
+    <!-- Top Glass Bar (No Light Mode Toggle) -->
+    <header class="portal-nav ui-interactive">
+      <a href="./index.html" class="nav-brand" aria-label="TheMando 太阳系门户">
+        <svg class="nav-logo-mini" viewBox="0 0 310 172" fill="none" stroke="url(#lmxBrandGrad)" stroke-width="17" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
           <path d="M 88 22 L 30 114 Q 24 123 35 123 L 96 123 Q 105 123 108 114 L 119 62 Q 123 47 132 60 L 160 112 Q 167 124 171 110 L 182 62 Q 186 46 198 58 L 268 122 Q 280 132 280 116 L 280 62 Q 280 45 268 57 L 168 154" />
         </svg>
-        <span class="nav-brand-text">THEMANDO</span>
+        <span class="nav-brand-text">THEMANDO SOLAR</span>
       </a>
 
-      <div class="nav-coords" aria-hidden="true">
-        <span>NODE // GOHMADEIN-THEMANDO</span>
+      <div class="nav-telemetry" id="solarTelemetry">
+        <span>SOLAR KNOWLEDGE SYSTEM</span>
         <span>·</span>
-        <span id="cursorTelemetry">ORBIT: 0.00° / 0.00°</span>
+        <span id="activePlanetsStat">已点亮 2 / 8 颗知识行星</span>
       </div>
 
       <div class="nav-actions">
-        <button type="button" class="hud-btn" id="themeBtn" aria-label="切换星云深浅主题">
-          <svg id="themeSvg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <circle cx="12" cy="12" r="4"></circle>
-            <path d="M12 2v2M12 20v2m-7.07-14.07 1.41 1.41m11.32 11.32 1.41 1.41M2 12h2m16 0h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"></path>
-          </svg>
-          <span id="themeText">浅色</span>
-        </button>
-
-        <a href="./hub.html" class="hud-btn warp-link" style="border-color:var(--border-strong);color:var(--accent);font-weight:600;">
-          <span>推送大厅</span>
+        <a href="./hub.html" class="hud-btn warp-link" style="border-color:var(--border-strong);color:var(--accent);">
+          <span>全部资源推送舱</span>
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
         </a>
-
-        <a href="https://github.com/gohmadein/themando" target="_blank" rel="noopener noreferrer" class="hud-btn" aria-label="访问 GitHub 仓库">
+        <a href="https://github.com/gohmadein/themando" target="_blank" rel="noopener noreferrer" class="hud-btn" aria-label="访问 GitHub 源仓库">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
             <path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0 1 12 6.844a9.59 9.59 0 0 1 2.504.337c1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.02 10.02 0 0 0 22 12.017C22 6.484 17.522 2 12 2Z"></path>
           </svg>
@@ -841,509 +535,115 @@
       </div>
     </header>
 
-    <!-- Centerpiece: 3D Holographic LMX Core + Kinetic Decode Hero -->
-    <main class="hero-centerpiece">
-      <div class="holo-core-wrap">
-        <div class="holo-core" id="holoCore">
-          <!-- Counter-rotating Orbital Telemetry Rings -->
-          <svg class="orbital-hud-svg" viewBox="0 0 340 340" fill="none" aria-hidden="true">
-            <g class="ring-cw">
-              <circle cx="170" cy="170" r="154" stroke="currentColor" stroke-opacity="0.22" stroke-width="1" stroke-dasharray="6 10" />
-              <path d="M 170 16 A 154 154 0 0 1 312 110" stroke="#38BDF8" stroke-width="2" stroke-linecap="round" />
-              <circle cx="312" cy="110" r="3.5" fill="#22D3EE" />
-            </g>
-            <g class="ring-ccw">
-              <circle cx="170" cy="170" r="128" stroke="currentColor" stroke-opacity="0.16" stroke-width="1" stroke-dasharray="2 8" />
-              <path d="M 48 215 A 128 128 0 0 0 170 298" stroke="#60A5FA" stroke-width="1.8" stroke-linecap="round" />
-            </g>
-          </svg>
-
-          <!-- Finalized Connected LMX Mark with Bloom + Laser Plasma -->
-          <svg class="core-lmx-svg" viewBox="0 0 310 172" fill="none" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="LMX 全息能量标志">
-            <path
-              class="lmx-bloom-layer"
-              id="coreBloomPath"
-              stroke="url(#lmxPortalDark)"
-              stroke-width="19"
-              d="M 88 22 L 30 114 Q 24 123 35 123 L 96 123 Q 105 123 108 114 L 119 62 Q 123 47 132 60 L 160 112 Q 167 124 171 110 L 182 62 Q 186 46 198 58 L 268 122 Q 280 132 280 116 L 280 62 Q 280 45 268 57 L 168 154"
-            />
-            <path
-              class="lmx-main-stroke"
-              id="coreMainPath"
-              stroke="url(#lmxPortalDark)"
-              stroke-width="15.5"
-              d="M 88 22 L 30 114 Q 24 123 35 123 L 96 123 Q 105 123 108 114 L 119 62 Q 123 47 132 60 L 160 112 Q 167 124 171 110 L 182 62 Q 186 46 198 58 L 268 122 Q 280 132 280 116 L 280 62 Q 280 45 268 57 L 168 154"
-            />
-            <path
-              class="lmx-plasma-beam"
-              stroke="url(#lmxPlasmaWhite)"
-              stroke-width="6.5"
-              d="M 88 22 L 30 114 Q 24 123 35 123 L 96 123 Q 105 123 108 114 L 119 62 Q 123 47 132 60 L 160 112 Q 167 124 171 110 L 182 62 Q 186 46 198 58 L 268 122 Q 280 132 280 116 L 280 62 Q 280 45 268 57 L 168 154"
-            />
-          </svg>
-        </div>
-      </div>
-
-      <div class="telemetry-pill">
-        <span class="radar-dot" aria-hidden="true"></span>
-        <span id="liveTelemetryLabel">NEBULA ENGINE ACTIVE · 实时联动 GitHub 资源星系</span>
+    <!-- Frameless Floating LMX Mark + Title -->
+    <main class="hero-top-overlay">
+      <div class="frameless-lmx-wrap">
+        <svg class="frameless-lmx-svg" viewBox="0 0 310 172" fill="none" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="LMX 标志">
+          <path class="lmx-glow-under" stroke="url(#lmxBrandGrad)" stroke-width="19" d="M 88 22 L 30 114 Q 24 123 35 123 L 96 123 Q 105 123 108 114 L 119 62 Q 123 47 132 60 L 160 112 Q 167 124 171 110 L 182 62 Q 186 46 198 58 L 268 122 Q 280 132 280 116 L 280 62 Q 280 45 268 57 L 168 154" />
+          <path class="lmx-stroke-draw" stroke="url(#lmxBrandGrad)" stroke-width="15.5" d="M 88 22 L 30 114 Q 24 123 35 123 L 96 123 Q 105 123 108 114 L 119 62 Q 123 47 132 60 L 160 112 Q 167 124 171 110 L 182 62 Q 186 46 198 58 L 268 122 Q 280 132 280 116 L 280 62 Q 280 45 268 57 L 168 154" />
+          <path class="lmx-plasma-pulse" stroke="url(#lmxPlasmaGrad)" stroke-width="6" d="M 88 22 L 30 114 Q 24 123 35 123 L 96 123 Q 105 123 108 114 L 119 62 Q 123 47 132 60 L 160 112 Q 167 124 171 110 L 182 62 Q 186 46 198 58 L 268 122 Q 280 132 280 116 L 280 62 Q 280 45 268 57 L 168 154" />
+        </svg>
       </div>
 
       <h1 class="portal-title">
-        探索学习与科研的<br />
-        <span class="holo-text">全息知识与工具引力场</span>
+        每一类知识 · <span class="holo-span">点亮一颗专属行星</span>
       </h1>
-
-      <div class="decode-line" id="decodeSubtitle" aria-live="polite">
-        // 01 · 本科全学期核心课程与备考归档
-      </div>
-
-      <p class="portal-lead">
-        集结计算机与 AI 课程复习大包、智能体编程舰队、LaTeX 组会幻灯片模板与英文学术论文强叙事写作技能。每次向仓库推送新目录，资源星系即刻自动扩张。
+      <p class="solar-hint">
+        直接点击轨道上运行的行星（或下方星轨导航）即可跃迁至对应知识板块；未来向仓库新建更多顶层类别文件夹，外围待命行星将自动点亮归属。
       </p>
 
-      <!-- Magnetic CTA + Instant Portal Search -->
-      <div class="cta-command-row">
-        <a href="./hub.html" class="plasma-cta warp-link" id="magneticCta">
-          <span>进入资源推送舱</span>
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+      <div class="cta-bar ui-interactive">
+        <a href="./hub.html" class="plasma-cta warp-link">
+          <span>进入太阳系资源总舱</span>
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
         </a>
 
-        <form class="portal-search-form" id="portalSearchForm" role="search">
-          <svg class="portal-search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <circle cx="11" cy="11" r="8"></circle>
-            <path d="m21 21-4.3-4.3"></path>
+        <form class="portal-search" id="portalSearchForm" role="search">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path>
           </svg>
-          <input
-            type="search"
-            id="portalSearchInput"
-            class="portal-search-input"
-            placeholder="输入关键词直达资源舱 (如 Beamer, uv, 六级)..."
-            aria-label="全局检索并跃迁至资源推送舱"
-            autocomplete="off"
-          />
-          <kbd class="portal-search-kbd" aria-hidden="true">/</kbd>
+          <input type="search" id="portalSearchInput" placeholder="搜索资源直达 (Beamer, uv, 六级)..." aria-label="搜索全部资源" autocomplete="off" />
+          <kbd aria-hidden="true">/</kbd>
         </form>
       </div>
     </main>
 
-    <!-- 4 Interactive 3D Tilt Holographic Gateways -->
-    <section class="gateways-section" aria-label="核心板块跃迁入口">
-      <div class="gateways-grid">
-        <a href="./hub.html?channel=CAT:%E5%AD%A6%E4%B9%A0" class="tilt-gateway warp-link">
-          <span class="hud-corner" aria-hidden="true"></span>
-          <div>
-            <div class="gw-top">
-              <span class="gw-icon-box">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/></svg>
-              </span>
-              <span class="gw-code">SECTOR // 01</span>
-            </div>
-            <h2 class="gw-title">学习资源星系</h2>
-            <p class="gw-desc">大一至大三全套课程归档、机器学习与深度学习实验、数学建模、六级备考与驾考手写重点笔记。</p>
-          </div>
-          <div class="gw-footer">
-            <span id="gwStudyCount">含 23 项 Release 大包</span>
-            <span class="gw-arrow">跃迁进入 →</span>
-          </div>
-        </a>
+    <!-- Spacer so central Solar System shines unobstructed in the middle -->
+    <div style="flex:1;min-height:180px;pointer-events:none;"></div>
 
-        <a href="./hub.html?channel=CAT:%E7%A7%91%E7%A0%94" class="tilt-gateway warp-link">
-          <span class="hud-corner" aria-hidden="true"></span>
-          <div>
-            <div class="gw-top">
-              <span class="gw-icon-box">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 2v7.31"/><path d="M14 9.3V1.99"/><path d="M8.5 2h7"/><path d="M14 9.3a6.5 6.5 0 1 1-4 0"/><path d="M5.52 16h12.96"/></svg>
-              </span>
-              <span class="gw-code">SECTOR // 02</span>
-            </div>
-            <h2 class="gw-title">科研效率矩阵</h2>
-            <p class="gw-desc">AI 智能体编排（Orca）、LaTeX Beamer 16:9 模板、`uv` 极速环境管理、Optuna 调参与国际期刊审稿范例。</p>
-          </div>
-          <div class="gw-footer">
-            <span id="gwResearchCount">8 大科研实战专栏</span>
-            <span class="gw-arrow">跃迁进入 →</span>
-          </div>
-        </a>
-
-        <a href="./hub.html?channel=TAG:AI%20Skill" class="tilt-gateway warp-link">
-          <span class="hud-corner" aria-hidden="true"></span>
-          <div>
-            <div class="gw-top">
-              <span class="gw-icon-box">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="16" height="16" x="4" y="4" rx="2"/><rect width="6" height="6" x="9" y="9" rx="1"/><path d="M15 2v2M15 20v2M2 15h2M2 9h2M20 15h2M20 9h2M9 2v2M9 20v2"/></svg>
-              </span>
-              <span class="gw-code">SECTOR // 03</span>
-            </div>
-            <h2 class="gw-title">AI Skills 武器库</h2>
-            <p class="gw-desc">收录英文论文反防御性写作（发布会原则重构主线）与自动化幻灯片构建技能，支持在线抽屉阅读源码。</p>
-          </div>
-          <div class="gw-footer">
-            <span id="gwSkillCount">精选 Agent 技能</span>
-            <span class="gw-arrow">跃迁进入 →</span>
-          </div>
-        </a>
-
-        <a href="./hub.html?view=timeline" class="tilt-gateway warp-link">
-          <span class="hud-corner" aria-hidden="true"></span>
-          <div>
-            <div class="gw-top">
-              <span class="gw-icon-box">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-              </span>
-              <span class="gw-code">SECTOR // 04</span>
-            </div>
-            <h2 class="gw-title">实时推送时间线</h2>
-            <p class="gw-desc">按 Git 提交时序追踪仓库每一次新增文件夹与文档迭代，零构建自动捕获最新鲜的科研与学习动态。</p>
-          </div>
-          <div class="gw-footer">
-            <span>LIVE COMMITS</span>
-            <span class="gw-arrow">时间线视图 →</span>
-          </div>
-        </a>
+    <!-- Bottom Planetary Orbit Roster -->
+    <footer class="planetary-dock ui-interactive" aria-label="太阳系八大行星知识轨道">
+      <div class="dock-header">
+        <span class="dock-title">
+          <span style="width:8px;height:8px;border-radius:50%;background:#F59E0B;box-shadow:0 0 10px #F59E0B;"></span>
+          <span>行星轨道映射表 (PLANETARY KNOWLEDGE ORBITS)</span>
+        </span>
+        <span id="latestPushHint">正在同步 GitHub 仓库轨道数据...</span>
       </div>
-    </section>
-
-    <!-- Bottom Live Telemetry & Pre-Warmed Cache Dock -->
-    <footer class="telemetry-dock" aria-label="实时仓库遥测数据">
-      <div class="dock-metrics">
-        <div class="dock-stat">推送专栏 <strong id="dockTopics">12</strong></div>
-        <div class="dock-stat">直链文件 <strong id="dockFiles">46</strong></div>
-        <div class="dock-stat">分卷归档 <strong>86 卷</strong></div>
-      </div>
-
-      <div class="dock-latest">
-        <span class="dock-tag">LATEST PUSH</span>
-        <a href="./hub.html" class="dock-commit-link warp-link" id="dockLatestCommit">
-          正在连接 gohmadein/themando 获取最新推送信号...
-        </a>
-      </div>
+      <div class="orbit-roster" id="orbitRoster"></div>
     </footer>
   </div>
 
-  <!-- Three.js WebGL Engine (with automatic pure-Canvas 3D fallback if offline) -->
   <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
   <script>
     const REPO_OWNER = 'gohmadein';
     const REPO_NAME = 'themando';
     const BRANCH = 'main';
     const CACHE_KEY = 'themando_feed_cache_v3';
-    const COMMIT_CACHE_KEY = 'themando_commit_map_v1';
     const CACHE_TTL_MS = 5 * 60 * 1000;
     const IGNORED_ROOT_FILES = new Set([
       '.gitignore', '.nojekyll', 'index.html', 'hub.html', 'logo.svg', 'favicon.svg', 'CNAME', 'LICENSE'
     ]);
 
+    localStorage.removeItem('themando_theme');
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
-    let warpSpeedMultiplier = 1;
-    let currentTheme = localStorage.getItem('themando_theme') || 'dark';
+    let warpMultiplier = 1;
 
-    /* ========================================================================
-       1. Theme Switcher (Synchronized with hub.html via localStorage)
-       ======================================================================== */
-    function applyPortalTheme(theme) {
-      currentTheme = theme;
-      document.documentElement.setAttribute('data-theme', theme);
-      localStorage.setItem('themando_theme', theme);
+    // 8 Solar System Planets — Categories map dynamically in order (Earth & Jupiter prioritized first for visual beauty, or sequential!)
+    // Ordered inner-to-outer orbits; active categories claim planets starting from rich inner/mid worlds!
+    const PLANET_DEFS = [
+      { id: 'mercury', cnName: '水星轨道 · Mercury', radius: 7.5,  size: 0.52, speed: 0.42, angle: 0.8,  color: '#38BDF8', emissive: '#0284C7', bands: ['#7DD3FC', '#0284C7', '#1E3A8A'] },
+      { id: 'venus',   cnName: '金星轨道 · Venus',   radius: 10.6, size: 0.68, speed: 0.31, angle: 2.4,  color: '#F59E0B', emissive: '#B45309', bands: ['#FDE68A', '#F59E0B', '#92400E'] },
+      { id: 'earth',   cnName: '地球轨道 · Earth',   radius: 14.0, size: 0.76, speed: 0.24, angle: 4.1,  color: '#22C55E', emissive: '#0EA5E9', bands: ['#38BDF8', '#10B981', '#1D4ED8'], hasMoon: true },
+      { id: 'mars',    cnName: '火星轨道 · Mars',    radius: 17.5, size: 0.60, speed: 0.19, angle: 5.5,  color: '#F97316', emissive: '#C2410C', bands: ['#FDBA74', '#EA580C', '#7C2D12'] },
+      { id: 'jupiter', cnName: '木星轨道 · Jupiter', radius: 22.2, size: 1.18, speed: 0.13, angle: 1.6,  color: '#EAB308', emissive: '#A16207', bands: ['#FEF3C7', '#D97706', '#92400E', '#FDE68A'] },
+      { id: 'saturn',  cnName: '土星轨道 · Saturn',  radius: 27.5, size: 0.98, speed: 0.095, angle: 3.6, color: '#FACC15', emissive: '#CA8A04', bands: ['#FEF08A', '#CA8A04', '#713F12'], hasRing: true },
+      { id: 'uranus',  cnName: '天王星 · Uranus',    radius: 32.6, size: 0.78, speed: 0.07, angle: 0.3,  color: '#22D3EE', emissive: '#0891B2', bands: ['#A5F3FC', '#06B6D4', '#164E63'] },
+      { id: 'neptune', cnName: '海王星 · Neptune',   radius: 37.4, size: 0.76, speed: 0.052, angle: 4.9, color: '#60A5FA', emissive: '#1D4ED8', bands: ['#93C5FD', '#2563EB', '#172554'] }
+    ];
 
-      const grad = theme === 'dark' ? 'url(#lmxPortalDark)' : 'url(#lmxPortalLight)';
-      document.getElementById('navMiniLogo').setAttribute('stroke', grad);
-      document.getElementById('coreBloomPath').setAttribute('stroke', grad);
-      document.getElementById('coreMainPath').setAttribute('stroke', grad);
+    // Default initial categories before GitHub sync completes (instant zero-flicker render)
+    let planetAssignments = [
+      { category: '学习', count: 3, url: './hub.html?channel=CAT:%E5%AD%A6%E4%B9%A0' },
+      { category: '科研', count: 9, url: './hub.html?channel=CAT:%E7%A7%91%E7%A0%94' }
+    ];
 
-      const tText = document.getElementById('themeText');
-      const tSvg = document.getElementById('themeSvg');
-      if (theme === 'dark') {
-        tText.textContent = '浅色';
-        tSvg.innerHTML = '<circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2m-7.07-14.07 1.41 1.41m11.32 11.32 1.41 1.41M2 12h2m16 0h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"></path>';
-      } else {
-        tText.textContent = '深色';
-        tSvg.innerHTML = '<path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"></path>';
-      }
-      if (window._updateThreeTheme) window._updateThreeTheme(theme);
-    }
-    applyPortalTheme(currentTheme);
+    let hoveredPlanetIndex = -1;
+    const planetRuntime = [];
 
-    document.getElementById('themeBtn').addEventListener('click', () => {
-      applyPortalTheme(currentTheme === 'dark' ? 'light' : 'dark');
-    });
-
-    /* ========================================================================
-       2. 3D WebGL Spiral Nebula & Orbital Gyroscope Engine (Three.js + Fallback)
-       ======================================================================== */
-    function init3DNebulaStage() {
-      const canvas = document.getElementById('nebulaCanvas');
-      if (!canvas) return;
-
-      const pointer = { nx: 0, ny: 0 };
-      const telemetryEl = document.getElementById('cursorTelemetry');
-
-      window.addEventListener('pointermove', (e) => {
-        pointer.nx = (e.clientX / window.innerWidth) * 2 - 1;
-        pointer.ny = -(e.clientY / window.innerHeight) * 2 + 1;
-        if (telemetryEl) {
-          telemetryEl.textContent = `ORBIT: ${(pointer.ny * 18).toFixed(2)}° / ${(pointer.nx * 24).toFixed(2)}°`;
-        }
-      }, { passive: true });
-
-      if (window.THREE) {
-        try {
-          const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true, powerPreference: 'high-performance' });
-          renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
-          renderer.setSize(window.innerWidth, window.innerHeight);
-
-          const scene = new THREE.Scene();
-          const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
-          camera.position.set(0, 5.5, 22);
-
-          // Procedural soft glowing star sprite
-          const spriteCanvas = document.createElement('canvas');
-          spriteCanvas.width = 64;
-          spriteCanvas.height = 64;
-          const sCtx = spriteCanvas.getContext('2d');
-          const radGrad = sCtx.createRadialGradient(32, 32, 0, 32, 32, 32);
-          radGrad.addColorStop(0, 'rgba(255,255,255,1)');
-          radGrad.addColorStop(0.32, 'rgba(125,211,252,0.85)');
-          radGrad.addColorStop(0.7, 'rgba(29,78,216,0.22)');
-          radGrad.addColorStop(1, 'rgba(0,0,0,0)');
-          sCtx.fillStyle = radGrad;
-          sCtx.fillRect(0, 0, 64, 64);
-          const starTexture = new THREE.CanvasTexture(spriteCanvas);
-
-          // 3,400-particle 3-arm Spiral Galaxy + Deep Space Halo
-          const count = 3400;
-          const positions = new Float32Array(count * 3);
-          const colors = new Float32Array(count * 3);
-
-          const cCore = new THREE.Color('#E0F2FE');
-          const cMid = new THREE.Color('#38BDF8');
-          const cOuter = new THREE.Color('#1D4ED8');
-          const cDeep = new THREE.Color('#172554');
-
-          for (let i = 0; i < count; i++) {
-            const i3 = i * 3;
-            if (i < 2500) {
-              const radius = Math.pow(Math.random(), 1.35) * 24 + 1.2;
-              const branchAngle = ((i % 3) / 3) * Math.PI * 2;
-              const spinAngle = radius * 0.36;
-              const scatter = (Math.random() - 0.5) * 2.6 * (1 - radius / 30 + 0.25);
-
-              positions[i3] = Math.cos(branchAngle + spinAngle) * radius + scatter;
-              positions[i3 + 1] = (Math.random() - 0.5) * (3.4 - Math.min(2.6, radius * 0.1));
-              positions[i3 + 2] = Math.sin(branchAngle + spinAngle) * radius + scatter;
-
-              const t = Math.min(1, radius / 22);
-              const mixed = cCore.clone().lerp(t < 0.45 ? cMid : cOuter, t);
-              if (t > 0.78) mixed.lerp(cDeep, (t - 0.78) / 0.22);
-              colors[i3] = mixed.r;
-              colors[i3 + 1] = mixed.g;
-              colors[i3 + 2] = mixed.b;
-            } else {
-              // Ambient 3D floating starfield shell
-              positions[i3] = (Math.random() - 0.5) * 70;
-              positions[i3 + 1] = (Math.random() - 0.5) * 45;
-              positions[i3 + 2] = (Math.random() - 0.5) * 60;
-              colors[i3] = 0.22;
-              colors[i3 + 1] = 0.74;
-              colors[i3 + 2] = 0.97;
-            }
-          }
-
-          const geo = new THREE.BufferGeometry();
-          geo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-          geo.setAttribute('color', new THREE.BufferAttribute(colors, 3));
-
-          const mat = new THREE.PointsMaterial({
-            size: 0.34,
-            map: starTexture,
-            vertexColors: true,
-            transparent: true,
-            opacity: currentTheme === 'dark' ? 0.92 : 0.55,
-            depthWrite: false,
-            blending: currentTheme === 'dark' ? THREE.AdditiveBlending : THREE.NormalBlending
-          });
-
-          const galaxy = new THREE.Points(geo, mat);
-          galaxy.rotation.x = 0.32;
-          scene.add(galaxy);
-
-          // 3D Concentric Gyroscope Energy Rings
-          const gyroGroup = new THREE.Group();
-          const ringMat1 = new THREE.MeshBasicMaterial({ color: 0x38bdf8, transparent: true, opacity: 0.22, wireframe: true });
-          const ringMat2 = new THREE.MeshBasicMaterial({ color: 0x1d4ed8, transparent: true, opacity: 0.18, wireframe: true });
-
-          const ringA = new THREE.Mesh(new THREE.TorusGeometry(6.5, 0.035, 8, 96), ringMat1);
-          const ringB = new THREE.Mesh(new THREE.TorusGeometry(9.2, 0.03, 8, 110), ringMat2);
-          ringA.rotation.x = Math.PI * 0.42;
-          ringB.rotation.y = Math.PI * 0.28;
-          ringB.rotation.x = Math.PI * 0.62;
-          gyroGroup.add(ringA, ringB);
-          scene.add(gyroGroup);
-
-          window._updateThreeTheme = (th) => {
-            mat.opacity = th === 'dark' ? 0.92 : 0.48;
-            mat.blending = th === 'dark' ? THREE.AdditiveBlending : THREE.NormalBlending;
-            mat.needsUpdate = true;
-          };
-
-          window.addEventListener('resize', () => {
-            camera.aspect = window.innerWidth / window.innerHeight;
-            camera.updateProjectionMatrix();
-            renderer.setSize(window.innerWidth, window.innerHeight);
-          }, { passive: true });
-
-          let lastTime = performance.now();
-          function animateThree(now) {
-            requestAnimationFrame(animateThree);
-            if (document.hidden) return;
-            const dt = Math.min(0.05, (now - lastTime) / 1000);
-            lastTime = now;
-
-            if (!reducedMotion.matches) {
-              galaxy.rotation.y += dt * 0.085 * warpSpeedMultiplier;
-              ringA.rotation.z += dt * 0.22 * warpSpeedMultiplier;
-              ringB.rotation.x -= dt * 0.16 * warpSpeedMultiplier;
-
-              // Smooth 3D camera parallax toward pointer + hyperspace zoom on warp
-              const targetX = pointer.nx * 3.8;
-              const targetY = 5.2 + pointer.ny * 2.4;
-              const targetZ = warpSpeedMultiplier > 1 ? 6.5 : 22;
-
-              camera.position.x += (targetX - camera.position.x) * 0.05;
-              camera.position.y += (targetY - camera.position.y) * 0.05;
-              camera.position.z += (targetZ - camera.position.z) * (warpSpeedMultiplier > 1 ? 0.12 : 0.05);
-            }
-            camera.lookAt(0, 0.6, 0);
-            renderer.render(scene, camera);
-          }
-
-          renderer.render(scene, camera);
-          requestAnimationFrame(animateThree);
-          return;
-        } catch (e) {
-          console.warn('WebGL fallback activated:', e);
-        }
-      }
-
-      // Pure 2D Canvas 3D-Projection Starfield Fallback if WebGL/CDN unavailable
-      const ctx = canvas.getContext('2d');
-      let w = canvas.width = window.innerWidth;
-      let h = canvas.height = window.innerHeight;
-      const stars = Array.from({ length: 380 }, () => ({
-        x: (Math.random() - 0.5) * 1600,
-        y: (Math.random() - 0.5) * 1000,
-        z: Math.random() * 1200 + 80
-      }));
-      window.addEventListener('resize', () => {
-        w = canvas.width = window.innerWidth;
-        h = canvas.height = window.innerHeight;
-      }, { passive: true });
-
-      function drawFallback() {
-        requestAnimationFrame(drawFallback);
-        if (document.hidden) return;
-        ctx.clearRect(0, 0, w, h);
-        const cx = w / 2 + pointer.nx * 45;
-        const cy = h / 2 - pointer.ny * 35;
-        for (const s of stars) {
-          if (!reducedMotion.matches) s.z -= 2.2 * warpSpeedMultiplier;
-          if (s.z <= 20) s.z = 1200;
-          const k = 320 / s.z;
-          const px = cx + s.x * k;
-          const py = cy + s.y * k;
-          if (px < 0 || px > w || py < 0 || py > h) continue;
-          const size = Math.max(0.6, (1 - s.z / 1200) * 2.8);
-          ctx.fillStyle = `rgba(56, 189, 248, ${(1 - s.z / 1200) * 0.85})`;
-          ctx.beginPath();
-          ctx.arc(px, py, size, 0, Math.PI * 2);
-          ctx.fill();
-        }
-      }
-      drawFallback();
-    }
-
-    /* ========================================================================
-       3. 3D Holographic Core Tilt + Gateway Card Tilt + Magnetic CTA + Warp
-       ======================================================================== */
-    function initInteractivePhysics() {
-      if (reducedMotion.matches) return;
-
-      // 3D Holographic LMX Core Tilt
-      const holoCore = document.getElementById('holoCore');
-      if (holoCore) {
-        window.addEventListener('pointermove', (e) => {
-          const rx = ((e.clientY / window.innerHeight) - 0.4) * -14;
-          const ry = ((e.clientX / window.innerWidth) - 0.5) * 18;
-          holoCore.style.transform = `rotateX(${rx.toFixed(2)}deg) rotateY(${ry.toFixed(2)}deg)`;
-          holoCore.style.setProperty('--gx', `${(e.clientX / window.innerWidth) * 100}%`);
-          holoCore.style.setProperty('--gy', `${(e.clientY / window.innerHeight) * 100}%`);
-        }, { passive: true });
-      }
-
-      // 3D Tilt + Specular Glare on the 4 Gateway Cards
-      document.querySelectorAll('.tilt-gateway').forEach(card => {
-        card.addEventListener('pointermove', (e) => {
-          const r = card.getBoundingClientRect();
-          const x = e.clientX - r.left;
-          const y = e.clientY - r.top;
-          const rx = ((y / r.height) - 0.5) * -11;
-          const ry = ((x / r.width) - 0.5) * 11;
-          card.style.setProperty('--rx', `${rx.toFixed(2)}deg`);
-          card.style.setProperty('--ry', `${ry.toFixed(2)}deg`);
-          card.style.setProperty('--gx', `${x}px`);
-          card.style.setProperty('--gy', `${y}px`);
-        }, { passive: true });
-
-        card.addEventListener('pointerleave', () => {
-          card.style.setProperty('--rx', '0deg');
-          card.style.setProperty('--ry', '0deg');
-        });
-      });
-
-      // Clamped Magnetic Pull on Primary CTA (per UI/UX Pro Max GSAP spec)
-      const cta = document.getElementById('magneticCta');
-      if (cta) {
-        cta.addEventListener('pointermove', (e) => {
-          const r = cta.getBoundingClientRect();
-          const dx = (e.clientX - r.left - r.width / 2) * 0.24;
-          const dy = (e.clientY - r.top - r.height / 2) * 0.24;
-          cta.style.transform = `translate3d(${dx.toFixed(1)}px, ${dy.toFixed(1)}px, 0)`;
-        }, { passive: true });
-        cta.addEventListener('pointerleave', () => {
-          cta.style.transform = 'translate3d(0, 0, 0)';
-        });
-      }
-    }
-
-    // Hyperspace Warp Navigation into hub.html
-    function triggerWarpNavigation(targetUrl) {
+    function triggerWarp(url) {
+      if (!url) return;
       if (reducedMotion.matches) {
-        window.location.href = targetUrl;
+        window.location.href = url;
         return;
       }
-      warpSpeedMultiplier = 14;
+      warpMultiplier = 14;
       document.getElementById('warpCurtain').classList.add('active');
-      setTimeout(() => {
-        window.location.href = targetUrl;
-      }, 310);
+      setTimeout(() => { window.location.href = url; }, 310);
     }
 
-    document.querySelectorAll('.warp-link').forEach(link => {
-      link.addEventListener('click', (e) => {
+    document.querySelectorAll('.warp-link').forEach(el => {
+      el.addEventListener('click', (e) => {
         if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
-        const href = link.getAttribute('href');
-        if (!href) return;
         e.preventDefault();
-        triggerWarpNavigation(href);
+        triggerWarp(el.getAttribute('href'));
       });
     });
 
-    // Quick Search Launcher -> Warps to hub.html?q=...
     document.getElementById('portalSearchForm').addEventListener('submit', (e) => {
       e.preventDefault();
-      const val = document.getElementById('portalSearchInput').value.trim();
-      const url = val ? `./hub.html?q=${encodeURIComponent(val)}` : './hub.html';
-      triggerWarpNavigation(url);
+      const q = document.getElementById('portalSearchInput').value.trim();
+      triggerWarp(q ? `./hub.html?q=${encodeURIComponent(q)}` : './hub.html');
     });
 
     window.addEventListener('keydown', (e) => {
@@ -1353,72 +653,396 @@
       }
     });
 
-    /* ========================================================================
-       4. Cyber Character Scramble Decoder Tagline
-       ======================================================================== */
-    function initCyberDecoder() {
-      const el = document.getElementById('decodeSubtitle');
-      if (!el || reducedMotion.matches) return;
-
-      const phrases = [
-        '// 01 · 本科全学期核心课程与备考归档',
-        '// 02 · AI 智能体研发舰队与 Vibe Coding',
-        '// 03 · 英文学术论文反防御性叙事 Skill',
-        '// 04 · LaTeX Beamer 组会模板与科研提效',
-        '// 05 · GitHub 零构建实时动态资源推送流'
-      ];
-      const glyphs = '01ABCDEF<>/_#ΔΣΩ*+=';
-      let idx = 0;
-
-      function scrambleTo(target) {
-        let frame = 0;
-        const totalFrames = 22;
-        const timer = setInterval(() => {
-          frame++;
-          const revealed = Math.floor((frame / totalFrames) * target.length);
-          let out = target.slice(0, revealed);
-          for (let i = revealed; i < target.length; i++) {
-            out += target[i] === ' ' ? ' ' : glyphs[Math.floor(Math.random() * glyphs.length)];
-          }
-          el.textContent = out;
-          if (frame >= totalFrames) {
-            clearInterval(timer);
-            el.textContent = target;
-          }
-        }, 28);
+    /* Build procedural banded planet texture */
+    function makePlanetTexture(bands) {
+      const c = document.createElement('canvas');
+      c.width = 256;
+      c.height = 128;
+      const ctx = c.getContext('2d');
+      const g = ctx.createLinearGradient(0, 0, 0, 128);
+      bands.forEach((col, i) => g.addColorStop(i / (bands.length - 1), col));
+      ctx.fillStyle = g;
+      ctx.fillRect(0, 0, 256, 128);
+      for (let i = 0; i < 26; i++) {
+        ctx.fillStyle = `rgba(255,255,255,${Math.random() * 0.08})`;
+        ctx.fillRect(0, Math.random() * 128, 256, Math.random() * 6 + 1);
       }
-
-      setInterval(() => {
-        if (document.hidden) return;
-        idx = (idx + 1) % phrases.length;
-        scrambleTo(phrases[idx]);
-      }, 3600);
+      return new THREE.CanvasTexture(c);
     }
 
-    /* ========================================================================
-       5. Live Telemetry Sync & Zero-Latency Cache Pre-Warming for hub.html
-       ======================================================================== */
-    function animateNumber(el, target) {
-      if (!el || reducedMotion.matches) {
-        if (el) el.textContent = String(target);
+    function makeGlowSpriteTexture(innerCol, outerCol) {
+      const c = document.createElement('canvas');
+      c.width = 128;
+      c.height = 128;
+      const ctx = c.getContext('2d');
+      const g = ctx.createRadialGradient(64, 64, 4, 64, 64, 64);
+      g.addColorStop(0, innerCol);
+      g.addColorStop(0.35, outerCol);
+      g.addColorStop(1, 'rgba(0,0,0,0)');
+      ctx.fillStyle = g;
+      ctx.fillRect(0, 0, 128, 128);
+      return new THREE.CanvasTexture(c);
+    }
+
+    /* Render floating HTML planet tags + bottom roster */
+    function rebuildPlanetDomOverlays() {
+      const layer = document.getElementById('planetLabelsLayer');
+      const roster = document.getElementById('orbitRoster');
+      layer.innerHTML = '';
+      roster.innerHTML = '';
+
+      const activeTotal = Math.min(planetAssignments.length, PLANET_DEFS.length);
+      document.getElementById('activePlanetsStat').textContent =
+        `已点亮 ${activeTotal} / ${PLANET_DEFS.length} 颗知识行星`;
+
+      PLANET_DEFS.forEach((def, idx) => {
+        const assigned = planetAssignments[idx] || null;
+
+        // 1. Floating 3D-tracked anchor label
+        const tag = document.createElement(assigned ? 'a' : 'div');
+        tag.className = `planet-tag ${assigned ? 'active' : 'dormant'}`;
+        if (assigned) {
+          tag.href = assigned.url;
+          tag.innerHTML = `
+            <span class="planet-dot" style="background:${def.color};color:${def.color}"></span>
+            <span>${assigned.category}星球</span>
+            <span class="planet-count">${assigned.count} 专栏</span>
+          `;
+          tag.addEventListener('click', (e) => {
+            if (e.metaKey || e.ctrlKey) return;
+            e.preventDefault();
+            triggerWarp(assigned.url);
+          });
+          tag.addEventListener('pointerenter', () => { hoveredPlanetIndex = idx; });
+          tag.addEventListener('pointerleave', () => { hoveredPlanetIndex = -1; });
+        } else {
+          tag.innerHTML = `<span>${def.cnName.split(' ')[0]} · 待开拓</span>`;
+        }
+        layer.appendChild(tag);
+
+        if (planetRuntime[idx]) {
+          planetRuntime[idx].labelEl = tag;
+          planetRuntime[idx].assigned = assigned;
+          if (planetRuntime[idx].mesh && planetRuntime[idx].mesh.material) {
+            planetRuntime[idx].mesh.material.opacity = assigned ? 1.0 : 0.36;
+            planetRuntime[idx].mesh.material.emissiveIntensity = assigned ? 0.55 : 0.08;
+          }
+          if (planetRuntime[idx].orbitLine) {
+            planetRuntime[idx].orbitLine.material.opacity = assigned ? 0.34 : 0.11;
+            planetRuntime[idx].orbitLine.material.color.set(assigned ? def.color : '#475569');
+          }
+          if (planetRuntime[idx].halo) {
+            planetRuntime[idx].halo.visible = Boolean(assigned);
+          }
+        }
+
+        // 2. Bottom Planetary Roster Card
+        const chip = document.createElement(assigned ? 'a' : 'div');
+        chip.className = `orbit-chip ${assigned ? 'active' : 'unclaimed'}`;
+        if (assigned) {
+          chip.href = assigned.url;
+          chip.addEventListener('click', (e) => {
+            if (e.metaKey || e.ctrlKey) return;
+            e.preventDefault();
+            triggerWarp(assigned.url);
+          });
+          chip.addEventListener('pointerenter', () => { hoveredPlanetIndex = idx; });
+          chip.addEventListener('pointerleave', () => { hoveredPlanetIndex = -1; });
+        }
+        chip.innerHTML = `
+          <span class="orbit-sphere-icon" style="background:${def.color};box-shadow:${assigned ? '0 0 10px ' + def.color : 'none'}"></span>
+          <span class="orbit-meta">
+            <span class="orbit-planet-name">0${idx + 1} · ${def.cnName}</span>
+            <span class="orbit-cat-name">${assigned ? `${assigned.category}频道 (${assigned.count})` : '待接入新类别'}</span>
+          </span>
+        `;
+        roster.appendChild(chip);
+      });
+    }
+
+    /* Boot 3D Three.js Interactive Solar System */
+    function initSolarSystem3D() {
+      const canvas = document.getElementById('solarCanvas');
+      if (!canvas || !window.THREE) {
+        rebuildPlanetDomOverlays();
         return;
       }
-      const start = 0;
-      const t0 = performance.now();
-      function step(now) {
-        const p = Math.min(1, (now - t0) / 750);
-        const eased = 1 - Math.pow(1 - p, 3);
-        el.textContent = String(Math.round(start + (target - start) * eased));
-        if (p < 1) requestAnimationFrame(step);
+
+      const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true, powerPreference: 'high-performance' });
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+      renderer.setSize(window.innerWidth, window.innerHeight);
+
+      const scene = new THREE.Scene();
+      const camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 1000);
+      camera.position.set(0, 21, 44);
+
+      const solarGroup = new THREE.Group();
+      solarGroup.rotation.x = 0.12;
+      scene.add(solarGroup);
+
+      // Lighting: Blazing Central Sun PointLight + Soft Ambient Space Fill
+      const ambient = new THREE.AmbientLight(0x93c5fd, 0.45);
+      scene.add(ambient);
+      const sunLight = new THREE.PointLight(0xffedd5, 2.8, 160, 0.45);
+      solarGroup.add(sunLight);
+
+      // Background Starfield
+      const starGeo = new THREE.BufferGeometry();
+      const starPos = new Float32Array(2200 * 3);
+      for (let i = 0; i < 2200 * 3; i += 3) {
+        starPos[i] = (Math.random() - 0.5) * 260;
+        starPos[i + 1] = (Math.random() - 0.5) * 180;
+        starPos[i + 2] = (Math.random() - 0.5) * 220 - 30;
       }
-      requestAnimationFrame(step);
+      starGeo.setAttribute('position', new THREE.BufferAttribute(starPos, 3));
+      const stars = new THREE.Points(starGeo, new THREE.PointsMaterial({ color: 0xbae6fd, size: 0.35, transparent: true, opacity: 0.78 }));
+      scene.add(stars);
+
+      // Blazing Central Sun + Multi-layer Corona Glow
+      const sunTex = makePlanetTexture(['#FFFBEB', '#FDE047', '#F59E0B', '#EA580C', '#F59E0B']);
+      const sunMesh = new THREE.Mesh(
+        new THREE.SphereGeometry(3.25, 40, 40),
+        new THREE.MeshBasicMaterial({ map: sunTex })
+      );
+      solarGroup.add(sunMesh);
+
+      const sunCorona = new THREE.Sprite(new THREE.SpriteMaterial({
+        map: makeGlowSpriteTexture('rgba(254,240,138,0.95)', 'rgba(245,158,11,0.34)'),
+        blending: THREE.AdditiveBlending,
+        transparent: true,
+        depthWrite: false
+      }));
+      sunCorona.scale.set(14.5, 14.5, 1);
+      solarGroup.add(sunCorona);
+
+      // Asteroid Belt between Mars (17.5) and Jupiter (22.2)
+      const beltCount = 420;
+      const beltPos = new Float32Array(beltCount * 3);
+      for (let i = 0; i < beltCount; i++) {
+        const r = 19.3 + Math.random() * 1.4;
+        const a = Math.random() * Math.PI * 2;
+        beltPos[i * 3] = Math.cos(a) * r;
+        beltPos[i * 3 + 1] = (Math.random() - 0.5) * 0.45;
+        beltPos[i * 3 + 2] = Math.sin(a) * r;
+      }
+      const beltGeo = new THREE.BufferGeometry();
+      beltGeo.setAttribute('position', new THREE.BufferAttribute(beltPos, 3));
+      const asteroidBelt = new THREE.Points(beltGeo, new THREE.PointsMaterial({ color: 0x94a3b8, size: 0.16, transparent: true, opacity: 0.45 }));
+      solarGroup.add(asteroidBelt);
+
+      // Create the 8 Planets & Orbit Rings
+      const clickableMeshes = [];
+
+      PLANET_DEFS.forEach((def, idx) => {
+        // Orbit path circle
+        const pts = [];
+        for (let s = 0; s <= 128; s++) {
+          const theta = (s / 128) * Math.PI * 2;
+          pts.push(new THREE.Vector3(Math.cos(theta) * def.radius, 0, Math.sin(theta) * def.radius));
+        }
+        const orbitGeo = new THREE.BufferGeometry().setFromPoints(pts);
+        const orbitMat = new THREE.LineBasicMaterial({ color: def.color, transparent: true, opacity: 0.25 });
+        const orbitLine = new THREE.Line(orbitGeo, orbitMat);
+        solarGroup.add(orbitLine);
+
+        // Planet pivot & sphere
+        const holder = new THREE.Group();
+        solarGroup.add(holder);
+
+        const pMat = new THREE.MeshStandardMaterial({
+          map: makePlanetTexture(def.bands),
+          emissive: new THREE.Color(def.emissive),
+          emissiveIntensity: 0.4,
+          roughness: 0.55,
+          metalness: 0.1,
+          transparent: true,
+          opacity: 1
+        });
+        const mesh = new THREE.Mesh(new THREE.SphereGeometry(def.size, 32, 32), pMat);
+        mesh.userData = { planetIndex: idx };
+        holder.add(mesh);
+        clickableMeshes.push(mesh);
+
+        // Active beacon halo sprite
+        const halo = new THREE.Sprite(new THREE.SpriteMaterial({
+          map: makeGlowSpriteTexture('#FFFFFF', def.color),
+          blending: THREE.AdditiveBlending,
+          transparent: true,
+          opacity: 0.68,
+          depthWrite: false
+        }));
+        halo.scale.set(def.size * 4.2, def.size * 4.2, 1);
+        holder.add(halo);
+
+        // Saturn's iconic rings
+        if (def.hasRing) {
+          const ringGeo = new THREE.RingGeometry(def.size * 1.45, def.size * 2.35, 64);
+          const ringMat = new THREE.MeshBasicMaterial({ color: 0xfde047, side: THREE.DoubleSide, transparent: true, opacity: 0.48 });
+          const saturnRing = new THREE.Mesh(ringGeo, ringMat);
+          saturnRing.rotation.x = Math.PI * 0.42;
+          holder.add(saturnRing);
+        }
+
+        // Earth's orbiting moon
+        let moonPivot = null;
+        if (def.hasMoon) {
+          moonPivot = new THREE.Group();
+          const moon = new THREE.Mesh(
+            new THREE.SphereGeometry(0.18, 16, 16),
+            new THREE.MeshStandardMaterial({ color: 0xe2e8f0, roughness: 0.8 })
+          );
+          moon.position.set(def.size * 1.9, 0.15, 0);
+          moonPivot.add(moon);
+          holder.add(moonPivot);
+        }
+
+        planetRuntime.push({
+          def,
+          holder,
+          mesh,
+          halo,
+          orbitLine,
+          moonPivot,
+          angle: def.angle,
+          assigned: null,
+          labelEl: null
+        });
+      });
+
+      rebuildPlanetDomOverlays();
+
+      // Pointer Parallax, Drag Rotation & Planet Raycasting
+      const pointer = { nx: 0, ny: 0 };
+      const raycaster = new THREE.Raycaster();
+      const ndc = new THREE.Vector2();
+      let isDragging = false, dragMoved = false, prevX = 0, manualAzimuth = 0;
+
+      canvas.addEventListener('pointerdown', (e) => {
+        isDragging = true;
+        dragMoved = false;
+        prevX = e.clientX;
+      });
+
+      window.addEventListener('pointerup', () => { isDragging = false; });
+
+      window.addEventListener('pointermove', (e) => {
+        pointer.nx = (e.clientX / window.innerWidth) * 2 - 1;
+        pointer.ny = -(e.clientY / window.innerHeight) * 2 + 1;
+
+        if (isDragging) {
+          const dx = e.clientX - prevX;
+          if (Math.abs(dx) > 3) dragMoved = true;
+          manualAzimuth += dx * 0.005;
+          prevX = e.clientX;
+        }
+
+        ndc.set(pointer.nx, pointer.ny);
+        raycaster.setFromCamera(ndc, camera);
+        const hits = raycaster.intersectObjects(clickableMeshes, false);
+        if (hits.length > 0) {
+          const pIdx = hits[0].object.userData.planetIndex;
+          if (planetRuntime[pIdx] && planetRuntime[pIdx].assigned) {
+            hoveredPlanetIndex = pIdx;
+            canvas.classList.add('hovering-planet');
+            return;
+          }
+        }
+        if (e.target === canvas) {
+          hoveredPlanetIndex = -1;
+          canvas.classList.remove('hovering-planet');
+        }
+      }, { passive: true });
+
+      canvas.addEventListener('click', () => {
+        if (dragMoved) return;
+        if (hoveredPlanetIndex >= 0 && planetRuntime[hoveredPlanetIndex]?.assigned) {
+          triggerWarp(planetRuntime[hoveredPlanetIndex].assigned.url);
+        }
+      });
+
+      window.addEventListener('resize', () => {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+      }, { passive: true });
+
+      const projVec = new THREE.Vector3();
+      let prevTime = performance.now();
+
+      function animate(now) {
+        requestAnimationFrame(animate);
+        if (document.hidden) return;
+        const dt = Math.min(0.05, (now - prevTime) / 1000);
+        prevTime = now;
+
+        if (!reducedMotion.matches) {
+          sunMesh.rotation.y += dt * 0.25;
+          asteroidBelt.rotation.y += dt * 0.04 * warpMultiplier;
+          const pulse = 14.3 + Math.sin(now * 0.0025) * 0.6;
+          sunCorona.scale.set(pulse, pulse, 1);
+
+          solarGroup.rotation.y = manualAzimuth + pointer.nx * 0.22;
+          const targetCamY = 20.5 - pointer.ny * 4.2;
+          const targetCamZ = warpMultiplier > 1 ? 14 : 44;
+          camera.position.y += (targetCamY - camera.position.y) * 0.05;
+          camera.position.z += (targetCamZ - camera.position.z) * (warpMultiplier > 1 ? 0.1 : 0.05);
+        }
+
+        camera.lookAt(0, -1.5, 0);
+        solarGroup.updateMatrixWorld();
+
+        const halfW = window.innerWidth / 2;
+        const halfH = window.innerHeight / 2;
+
+        planetRuntime.forEach((rt, idx) => {
+          const isHovered = hoveredPlanetIndex === idx;
+          if (!reducedMotion.matches) {
+            const speedFactor = isHovered ? 0.12 : 1;
+            rt.angle += dt * rt.def.speed * speedFactor * warpMultiplier;
+            rt.mesh.rotation.y += dt * 0.9;
+            if (rt.moonPivot) rt.moonPivot.rotation.y += dt * 1.8;
+          }
+
+          rt.holder.position.set(
+            Math.cos(rt.angle) * rt.def.radius,
+            0,
+            Math.sin(rt.angle) * rt.def.radius
+          );
+
+          const targetScale = isHovered ? 1.38 : (rt.assigned ? 1.08 : 0.85);
+          rt.mesh.scale.lerp(new THREE.Vector3(targetScale, targetScale, targetScale), 0.14);
+
+          // Project 3D planet world position to 2D screen anchor for floating label
+          if (rt.labelEl) {
+            rt.holder.getWorldPosition(projVec);
+            projVec.y += rt.def.size * 1.45 + 0.55;
+            projVec.project(camera);
+
+            if (projVec.z > 1) {
+              rt.labelEl.style.opacity = '0';
+            } else {
+              const sx = (projVec.x * halfW) + halfW;
+              const sy = -(projVec.y * halfH) + halfH;
+              const inBounds = sx > 40 && sx < window.innerWidth - 40 && sy > 75 && sy < window.innerHeight - 85;
+              rt.labelEl.style.transform = `translate3d(${sx.toFixed(1)}px, ${sy.toFixed(1)}px, 0) translate(-50%, -100%)`;
+              rt.labelEl.style.opacity = inBounds ? (rt.assigned ? '1' : '0.48') : '0';
+              rt.labelEl.style.zIndex = rt.assigned ? '4' : '2';
+            }
+          }
+        });
+
+        renderer.render(scene, camera);
+      }
+
+      requestAnimationFrame(animate);
     }
 
-    async function syncLiveTelemetry() {
+    /* Live GitHub Category Discovery -> Automatically assigns new folders to waiting planets! */
+    async function syncCategoriesToPlanets() {
       try {
         const cached = JSON.parse(localStorage.getItem(CACHE_KEY) || 'null');
         if (cached && cached.data && (Date.now() - cached.savedAt < CACHE_TTL_MS)) {
-          renderPortalTelemetry(cached.data);
+          applyRepoData(cached.data.posts, cached.data.commits);
           return;
         }
       } catch (_) {}
@@ -1426,71 +1050,52 @@
       try {
         const [treeRes, commitsRes] = await Promise.all([
           fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/git/trees/${BRANCH}?recursive=1`),
-          fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/commits?sha=${BRANCH}&per_page=10`)
+          fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/commits?sha=${BRANCH}&per_page=5`)
         ]);
         if (!treeRes.ok) return;
         const treeJson = await treeRes.json();
         const commitsJson = commitsRes.ok ? await commitsRes.json() : [];
 
-        const blobs = (treeJson.tree || []).filter(item =>
+        const readmes = (treeJson.tree || []).filter(item =>
           item.type === 'blob' &&
           !IGNORED_ROOT_FILES.has(item.path) &&
-          !item.path.endsWith('/.gitkeep') &&
+          item.path !== 'README.md' &&
+          item.path.endsWith('/README.md') &&
           !item.path.startsWith('.github/')
         );
-        const readmes = blobs.filter(b => b.path !== 'README.md' && b.path.endsWith('/README.md'));
-        const studyCount = readmes.filter(r => r.path.startsWith('学习/')).length;
-        const researchCount = readmes.filter(r => r.path.startsWith('科研/')).length;
-        const skillCount = blobs.filter(b => b.path.endsWith('SKILL.md')).length;
 
-        renderPortalTelemetry({
-          topicCount: readmes.length,
-          totalFilesCount: blobs.length,
-          studyCount,
-          researchCount,
-          skillCount,
-          commits: commitsJson.slice(0, 3).map(c => ({
-            sha: c.sha.slice(0, 7),
-            message: c.commit.message.split('\n')[0]
-          }))
-        });
+        const syntheticPosts = readmes.map(r => ({
+          topCategory: r.path.split('/')[0]
+        }));
+        const commits = commitsJson.map(c => ({
+          sha: c.sha.slice(0, 7),
+          message: c.commit.message.split('\n')[0]
+        }));
+        applyRepoData(syntheticPosts, commits);
       } catch (_) {}
     }
 
-    function renderPortalTelemetry(info) {
-      const topics = info.posts ? info.posts.length : (info.topicCount || 12);
-      const files = info.totalFilesCount || 46;
-      animateNumber(document.getElementById('dockTopics'), topics);
-      animateNumber(document.getElementById('dockFiles'), files);
-
-      document.getElementById('liveTelemetryLabel').textContent =
-        `NEBULA ENGINE ACTIVE · 已实时挂载 ${topics} 个资源星系节点`;
-
-      if (info.posts) {
-        const sCount = info.posts.filter(p => p.topCategory === '学习').length;
-        const rCount = info.posts.filter(p => p.topCategory === '科研').length;
-        const skCount = info.posts.filter(p => p.tags && p.tags.includes('AI Skill')).length;
-        if (sCount) document.getElementById('gwStudyCount').textContent = `${sCount} 个专栏 · 23 大包`;
-        if (rCount) document.getElementById('gwResearchCount').textContent = `${rCount} 个科研专栏`;
-        if (skCount) document.getElementById('gwSkillCount').textContent = `${skCount} 项精选 AI Skill`;
-      } else {
-        if (info.studyCount) document.getElementById('gwStudyCount').textContent = `${info.studyCount} 个专栏 · 23 大包`;
-        if (info.researchCount) document.getElementById('gwResearchCount').textContent = `${info.researchCount} 个科研专栏`;
-        if (info.skillCount) document.getElementById('gwSkillCount').textContent = `${info.skillCount} 项精选 AI Skill`;
+    function applyRepoData(posts, commits) {
+      if (posts && posts.length) {
+        const counts = new Map();
+        posts.forEach(p => {
+          counts.set(p.topCategory, (counts.get(p.topCategory) || 0) + 1);
+        });
+        planetAssignments = Array.from(counts.entries()).map(([cat, count]) => ({
+          category: cat,
+          count,
+          url: `./hub.html?channel=${encodeURIComponent('CAT:' + cat)}`
+        }));
+        rebuildPlanetDomOverlays();
       }
-
-      const latestCommit = info.commits && info.commits[0];
-      if (latestCommit) {
-        const link = document.getElementById('dockLatestCommit');
-        link.textContent = `[${latestCommit.sha}] ${latestCommit.message} — 点击进入推送舱查看`;
+      if (commits && commits[0]) {
+        document.getElementById('latestPushHint').textContent =
+          `最新仓库信号：[${commits[0].sha}] ${commits[0].message}`;
       }
     }
 
-    // Boot Portal Systems
-    init3DNebulaStage();
-    initInteractivePhysics();
-    initCyberDecoder();
-    syncLiveTelemetry();
+    initSolarSystem3D();
+    syncCategoriesToPlanets();
   </script>
 </body>
 </html>
