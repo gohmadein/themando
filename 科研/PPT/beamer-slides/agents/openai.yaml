@@ -1,0 +1,4 @@
+interface:
+  display_name: "Beamer 幻灯片"
+  short_description: "Write, compile, and check LaTeX Beamer slide decks"
+  default_prompt: "Use $beamer-slides to plan, write, compile, and visually check the requested Beamer presentation."

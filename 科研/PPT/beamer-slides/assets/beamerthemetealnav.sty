@@ -1,0 +1,266 @@
+% Beamer theme "tealnav": teal section navigation bar, section-tinted frame titles,
+% progress-bar section pages, a numbered outline, and code/result boxes.
+% The dark teal and orange follow the metropolis theme's palette.
+% Load with \usetheme{tealnav}; keep this file next to the deck.
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{beamerthemetealnav}[2026/10/07 v1.0 Teal section-navigation Beamer theme]
+
+\RequirePackage{iftex}
+\RequirePackage{tikz}
+\RequirePackage{tcolorbox}
+\tcbuselibrary{listings,skins}
+\usetikzlibrary{shadings}
+
+\mode<presentation>
+
+% ---------------------------------------------------------------- colors
+\definecolor{tealnavDark}{HTML}{23373B}
+\definecolor{tealnavOrange}{HTML}{EB811B}
+\definecolor{tealnavPaper}{HTML}{FAFAFA}
+\definecolor{tealnavGrey}{HTML}{DEE1E2}
+\definecolor{tealnavBlue}{HTML}{D9EAF5}
+\definecolor{tealnavPeach}{HTML}{F9E5DD}
+\definecolor{tealnavLavender}{HTML}{ECE0EE}
+\definecolor{tealnavPink}{HTML}{FCCCCC}
+\definecolor{tealnavTrack}{HTML}{D6C6B7}
+\definecolor{tealnavBarStart}{HTML}{BBC3CB}
+
+% Frame-title band colors, cycled by section number; redefine to change the order.
+\newcommand{\tealnavtints}{tealnavGrey,tealnavBlue,tealnavPeach,tealnavLavender}
+
+\setbeamercolor{normal text}{fg=tealnavDark,bg=tealnavPaper}
+\setbeamercolor{structure}{fg=tealnavDark}
+\setbeamercolor{alerted text}{fg=tealnavOrange}
+\setbeamercolor{example text}{fg=tealnavDark}
+\setbeamercolor{headline}{fg=white,bg=tealnavDark}
+\setbeamercolor{section in head/foot}{fg=white,bg=tealnavDark}
+\setbeamercolor{frametitle}{fg=tealnavDark,bg=tealnavGrey}
+\setbeamercolor{title}{fg=tealnavDark}
+\setbeamercolor{subtitle}{fg=tealnavDark}
+\setbeamercolor{section title}{fg=tealnavDark}
+\setbeamercolor{page number in head/foot}{fg=tealnavDark!70}
+\setbeamercolor{block title}{fg=tealnavDark,bg=tealnavGrey}
+\setbeamercolor{block body}{fg=tealnavDark}
+\setbeamercolor{block title alerted}{fg=tealnavOrange,bg=tealnavPink}
+\setbeamercolor{block body alerted}{fg=tealnavDark}
+\setbeamercolor{block title example}{fg=tealnavDark,bg=tealnavBlue}
+\setbeamercolor{block body example}{fg=tealnavDark}
+\setbeamercolor{footnote}{fg=tealnavDark!80}
+\setbeamercolor{footnote mark}{fg=tealnavDark}
+\setbeamercolor{standout}{fg=white,bg=tealnavDark}
+
+% ---------------------------------------------------------------- fonts
+% Linux Biolinum for Latin text, then the first installed CJK and mono fonts.
+% Decks can override any choice after \usetheme.
+\ifXeTeX\RequirePackage{fontspec}\fi
+\ifLuaTeX\RequirePackage{fontspec}\fi
+\ifPDFTeX
+  \RequirePackage[T1]{fontenc}
+  \RequirePackage{biolinum}
+  \RequirePackage[scaled=0.85]{DejaVuSansMono}
+\fi
+\newcommand{\tealnav@firstfont}[3]{% #1 setter, #2 font list, #3 options
+  \def\tealnav@found{0}%
+  \@for\tealnav@name:=#2\do{%
+    \ifnum\tealnav@found=0
+      \IfFontExistsTF{\tealnav@name}{#1{\tealnav@name}[#3]\def\tealnav@found{1}}{}%
+    \fi}}
+\@ifpackageloaded{fontspec}{%
+  \IfFontExistsTF{LinBiolinum_R.otf}{%
+    \setsansfont{LinBiolinum}[Extension=.otf,UprightFont=*_R,BoldFont=*_RB,
+      ItalicFont=*_RI,BoldItalicFont=*_RBO]}{%
+    \tealnav@firstfont{\setsansfont}{Linux Biolinum O}{}}%
+  \tealnav@firstfont{\setmonofont}{Menlo,DejaVu Sans Mono,Consolas}{Scale=MatchLowercase}%
+  \@ifpackageloaded{xeCJK}{\def\tealnav@cjk{1}}{%
+    \@ifpackageloaded{luatexja-fontspec}{\def\tealnav@cjk{1}}{\def\tealnav@cjk{0}}}%
+  \ifnum\tealnav@cjk=1
+    \IfFontExistsTF{PingFang SC}{%
+      \setCJKsansfont{PingFang SC}[BoldFont={PingFang SC Semibold}]%
+      \setCJKmainfont{PingFang SC}[BoldFont={PingFang SC Semibold}]}{%
+      \tealnav@firstfont{\setCJKsansfont}{Noto Sans CJK SC,Source Han Sans SC,Microsoft YaHei}{}%
+      \tealnav@firstfont{\setCJKmainfont}{Noto Sans CJK SC,Source Han Sans SC,Microsoft YaHei}{}}%
+    \tealnav@firstfont{\setCJKmonofont}{PingFang SC,Noto Sans CJK SC,Source Han Sans SC,Microsoft YaHei}{}%
+  \fi
+}{}
+\usefonttheme{professionalfonts}
+
+\setbeamerfont{headline}{size=\tiny}
+\setbeamerfont{section in head/foot}{size=\tiny}
+\setbeamerfont{frametitle}{size=\large,series=\bfseries}
+\setbeamerfont{framesubtitle}{size=\small,series=\mdseries}
+\setbeamerfont{title}{size=\Large,series=\bfseries}
+\setbeamerfont{subtitle}{size=\large,series=\mdseries}
+\setbeamerfont{author}{size=\small}
+\setbeamerfont{date}{size=\small}
+\setbeamerfont{institute}{size=\small}
+\setbeamerfont{section title}{size=\Large,series=\bfseries}
+\setbeamerfont{page number in head/foot}{size=\scriptsize}
+\setbeamerfont{block title}{size=\normalsize,series=\bfseries}
+\setbeamerfont{footnote}{size=\tiny}
+\setbeamerfont{standout}{size=\Large,series=\bfseries}
+\setbeamerfont{caption}{size=\small}
+
+% ---------------------------------------------------------------- layout
+\setbeamersize{text margin left=1cm,text margin right=1cm}
+\setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{itemize items}{\textbullet}
+\setbeamertemplate{enumerate items}[default]
+\setbeamertemplate{caption}[numbered]
+\setbeamertemplate{blocks}[default]
+
+% Section navigation: all section short titles spread across a dark bar.
+\setbeamertemplate{headline}{%
+  \begin{beamercolorbox}[wd=\paperwidth,ht=8.2pt,dp=3.8pt]{headline}%
+    \insertsectionnavigationhorizontal{\paperwidth}{}{}%
+  \end{beamercolorbox}}
+
+% Frame title on a band whose color follows the section number.
+\newcommand{\tealnav@tint}{%
+  \pgfmathtruncatemacro\tealnav@count{0}%
+  \@for\tealnav@c:=\tealnavtints\do{\pgfmathtruncatemacro\tealnav@count{\tealnav@count+1}}%
+  \pgfmathtruncatemacro\tealnav@index{\value{section}<1 ? 1 : mod(\value{section}-1,\tealnav@count)+1}%
+  \pgfmathtruncatemacro\tealnav@i{0}%
+  \@for\tealnav@c:=\tealnavtints\do{%
+    \pgfmathtruncatemacro\tealnav@i{\tealnav@i+1}%
+    \ifnum\tealnav@i=\tealnav@index
+      \edef\tealnav@set{\noexpand\setbeamercolor{frametitle}{bg=\tealnav@c}}\tealnav@set
+    \fi}}
+\setbeamertemplate{frametitle}{%
+  \tealnav@tint
+  \nointerlineskip
+  \begin{beamercolorbox}[wd=\paperwidth,leftskip=0.38cm,rightskip=0.38cm plus 1fil]{frametitle}%
+    % Struts set the one-line band height; longer titles grow downward.
+    \usebeamerfont{frametitle}\rule{0pt}{18.9pt}\insertframetitle
+    \ifx\insertframesubtitle\@empty\else
+      \\{\usebeamerfont{framesubtitle}\insertframesubtitle}%
+    \fi
+    \rule[-10pt]{0pt}{10pt}%
+  \end{beamercolorbox}%
+  \vskip0.4em}
+
+% Frame number at the bottom right; frames after \appendix restart from 1.
+\setbeamertemplate{footline}{%
+  \hfill
+  \usebeamerfont{page number in head/foot}\usebeamercolor[fg]{page number in head/foot}%
+  \ifbeamer@inappendix\insertframenumberinappendix\else\insertframenumber\fi
+  \hspace*{7.8pt}%
+  \vskip 8pt}
+
+% Title page: the block is centered; an optional \titlegraphic sits at the top left.
+\setbeamertemplate{title page}{%
+  \ifx\inserttitlegraphic\@empty\else
+    \begin{tikzpicture}[remember picture,overlay]
+      \node[anchor=north west,inner sep=0pt]
+        at ([xshift=1cm,yshift=-21pt]current page.north west) {\inserttitlegraphic};
+    \end{tikzpicture}%
+    \vskip6.25em
+  \fi
+  {\usebeamerfont{title}\usebeamercolor[fg]{title}\raggedright\inserttitle\par}%
+  \ifx\insertsubtitle\@empty\else
+    \vskip0.75em{\usebeamerfont{subtitle}\usebeamercolor[fg]{subtitle}\raggedright\insertsubtitle\par}%
+  \fi
+  \vskip0.6em{\color{tealnavOrange}\rule{\linewidth}{0.5pt}}\par
+  \vskip1.3em
+  {\usebeamerfont{author}\insertauthor\par}%
+  \ifx\insertinstitute\@empty\else
+    \vskip0.3em{\usebeamerfont{institute}\insertinstitute\par}%
+  \fi
+  \vskip0.3em{\usebeamerfont{date}\insertdate\par}}
+
+% Section page: centered 22em block with a progress bar through the main part of the deck.
+\newlength{\tealnav@barwidth}
+\setbeamertemplate{section page}{%
+  \centering
+  \vspace*{2.2em}%
+  \begin{minipage}{22em}
+    \raggedright
+    {\usebeamercolor[fg]{section title}\usebeamerfont{section title}\insertsectionhead\par}%
+    \vskip0.05em
+    \setlength{\tealnav@barwidth}{\dimexpr 22em*\insertframenumber/\insertmainframenumber\relax}%
+    \ifdim\tealnav@barwidth>22em\setlength{\tealnav@barwidth}{22em}\fi
+    \begin{tikzpicture}
+      \fill[tealnavTrack] (0,0) rectangle (22em,0.4pt);
+      \fill[tealnavOrange] (0,-0.1pt) rectangle (\tealnav@barwidth,0.5pt);
+    \end{tikzpicture}%
+  \end{minipage}\par}
+\AtBeginSection{\begin{frame}[plain,noframenumbering]\sectionpage\end{frame}}
+
+% Outline: numbered rows with gradient bars. \sectionaside{English} inside a
+% section title shows only here, right-aligned.
+\newif\iftealnav@intoc
+\DeclareRobustCommand{\sectionaside}[1]{%
+  \iftealnav@intoc\hfill{\footnotesize\mdseries#1}\fi}
+\AtBeginDocument{\@ifpackageloaded{hyperref}{\pdfstringdefDisableCommands{\def\sectionaside#1{}}}{}}
+\newlength{\tealnavtocskip}
+\setlength{\tealnavtocskip}{1.35em}
+\setbeamertemplate{section in toc}{%
+  \noindent
+  \begin{tikzpicture}[baseline=(row.base)]
+    \shade[left color=black!55,right color=black!90] (0,-5.6pt) rectangle (19.2pt,11.7pt);
+    \node[anchor=base,text=white,inner sep=0pt] at (9.6pt,0pt)
+      {\normalsize\ifnum\inserttocsectionnumber<10 0\fi\inserttocsectionnumber};
+    \shade[left color=tealnavBarStart,right color=tealnavPaper]
+      (21.4pt,-5.6pt) rectangle (\linewidth,11.7pt);
+    \node[anchor=base west,inner sep=0pt] (row) at (25pt,0pt)
+      {\hbox to \dimexpr\linewidth-29pt\relax{\tealnav@intoctrue\normalsize\inserttocsection}};
+  \end{tikzpicture}\par
+  \vskip\tealnavtocskip}
+\setbeamertemplate{subsection in toc}{}
+% Beamer spreads outline rows over the whole frame; these margins keep the first
+% row off the top edge and the last one clear of the frame number.
+\pretocmd{\beamer@tableofcontents}{\vspace*{2.1em}}{}{}
+\apptocmd{\beamer@tableofcontents}{\vspace*{0.8em}}{}{}
+
+% Standout frames: \begin{frame}[standout] ... \end{frame}
+% The settings live in a group that closes when Beamer finishes the frame,
+% so they do not leak into the next frame.
+\newif\iftealnav@standout
+\newif\iftealnav@standoutgroup
+\define@key{beamerframe}{standout}[true]{%
+  \global\tealnav@standoutgrouptrue
+  \begingroup
+  \tealnav@standouttrue
+  \setbeamercolor{background canvas}{bg=tealnavDark}%
+  \setbeamercolor{page number in head/foot}{fg=tealnavDark!80!white}%
+  \setbeamertemplate{frametitle}{}}
+\apptocmd{\beamer@reseteecodes}{%
+  \iftealnav@standoutgroup\global\tealnav@standoutgroupfalse\endgroup\fi}{}{}
+% Setting the text color per slide also keeps XeTeX + pgfpages presenter builds
+% from losing it after the first page.
+\AtBeginEnvironment{beamer@frameslide}{%
+  \iftealnav@standout
+    \usebeamercolor[fg]{standout}\usebeamerfont{standout}\centering
+  \else
+    \usebeamercolor[fg]{normal text}%
+  \fi}
+
+% Speaker notes page for presenter builds (show notes on second screen).
+\setbeamercolor{note page}{fg=tealnavDark,bg=tealnavPaper}
+\setbeamerfont{note page}{size=\small}
+\setbeamertemplate{note page}{%
+  \vspace*{1.2em}%
+  {\leftskip=1cm\rightskip=1cm\parskip=0.5em
+   {\usebeamerfont{frametitle}\usebeamercolor[fg]{frametitle}\insertframetitle\par}%
+   \insertnote\par}}
+
+% ---------------------------------------------------------------- code boxes
+% codeexample: source above its typeset result; codeside: side by side.
+% Both are listings, so the frame needs the [fragile] option.
+\lstdefinestyle{tealnav}{
+  basicstyle=\ttfamily\small,
+  keywordstyle=\bfseries,
+  commentstyle=\itshape\color{black!60},
+  columns=fullflexible,
+  keepspaces=true,
+  breaklines=true,
+  language=[LaTeX]TeX,
+}
+\tcbset{tealnav/.style={enhanced,arc=1mm,colback=black!5,colframe=black!75,
+  boxrule=1pt,left=2mm,right=2mm,top=1mm,bottom=1mm,
+  listing options={style=tealnav}}}
+% No optional argument: probing for one would swallow the first code token.
+% Adjust them with \tcbset{tealnav/.append style={...}}.
+\newtcblisting{codeexample}{tealnav,listing and text}
+\newtcblisting{codeside}{tealnav,listing side text}
+
+\mode<all>

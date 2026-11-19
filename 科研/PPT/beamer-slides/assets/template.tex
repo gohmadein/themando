@@ -1,0 +1,53 @@
+% !TEX program = xelatex
+% Starter deck for the tealnav theme; copy beamerthemetealnav.sty next to this file
+% and logo.png into figures/.
+% See example.tex for every layout the theme provides.
+% Chinese deck: replace the class line with
+%   \documentclass[aspectratio=169,11pt,fontset=fandol]{ctexbeamer}
+% The theme then switches FandolHei to PingFang SC, Noto Sans CJK SC, or another installed CJK font.
+\documentclass[aspectratio=169,11pt]{beamer}
+\usetheme{tealnav}
+\usepackage{booktabs}
+\graphicspath{{figures/}}
+
+% `slides.py build DECK.tex --notes` writes DECK-notes.tex, which defines \presenternotes
+% and inputs this file; the main PDF stays without notes.
+\ifdefined\presenternotes
+  \usepackage{pgfpages}
+  \setbeameroption{show notes on second screen=right}
+\fi
+
+\title{Title}
+\subtitle{Subtitle}
+\author{Author}
+\institute{Institute}
+\date{\today}
+% Southeast University logo by default; replace figures/logo.png or delete this line.
+\titlegraphic{\includegraphics[height=1cm]{logo}}
+
+\begin{document}
+
+\begin{frame}[plain]
+  \titlepage
+\end{frame}
+
+\begin{frame}[plain]
+  \tableofcontents
+\end{frame}
+
+% Each \section opens with a section page and adds an entry to the top bar.
+% \section[Short]{Full title\sectionaside{Note shown on the outline only}}
+\section{Section}
+
+\begin{frame}{Frame title}
+  % Content.
+\end{frame}
+
+\begin{frame}[standout]
+  Thanks!
+\end{frame}
+
+\appendix
+% Backup frames: numbered from 1 again and left out of the section progress bars.
+
+\end{document}
