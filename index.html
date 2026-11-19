@@ -3,2337 +3,1422 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="TheMando · 学习与科研资源动态推送站 — 自动同步本科核心课程资料、AI 编程工具、LaTeX Beamer 模板、英文论文写作与科研效率指南。" />
-  <title>TheMando · 学习与科研资源动态推送站</title>
+  <meta name="description" content="TheMando · 3D 全息学习与科研资源门户 — 探索本科课程归档、AI 智能体研发工具、LaTeX 组会模板与英文学术写作技能。" />
+  <title>TheMando · 学习与科研全息资源门户</title>
   <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <script>
+    // Forward legacy deep-links (#post=... or #mdfile=...) directly to the Resource Push Hub
+    if (location.hash.startsWith('#post=') || location.hash.startsWith('#mdfile=')) {
+      location.replace('./hub.html' + location.hash);
+    }
+  </script>
   <style>
     /* ==========================================================================
-       UI/UX Pro Max Design System v2 — Aurora + Interactive Spotlight + Motion
-       Brand Palette: Deep Navy -> Research Blue -> Cyan (#172554 -> #1D4ED8 -> #0284C7)
+       TheMando 3D Holographic Portal — UI/UX Pro Max Futuristic System
+       Brand Core: Deep Space Navy (#030712) + Research Blue (#1D4ED8) + Plasma Cyan (#38BDF8 / #22D3EE)
        ========================================================================== */
     :root {
-      --header-height: 72px;
-      --radius-sm: 8px;
-      --radius-md: 12px;
-      --radius-lg: 18px;
-      --radius-xl: 24px;
-
-      /* Light Mode Semantic Tokens (WCAG >= 4.5:1 verified) */
-      --bg: #F4F7FB;
-      --bg-subtle: #EBF1F8;
-      --surface: rgba(255, 255, 255, 0.86);
-      --surface-solid: #FFFFFF;
-      --surface-elevated: rgba(255, 255, 255, 0.96);
-      --surface-hover: #EEF4FB;
-      --fg: #0F172A;
-      --fg-secondary: #1E293B;
-      --fg-muted: #475569;
-      --border: rgba(148, 163, 184, 0.30);
-      --border-strong: rgba(100, 116, 139, 0.42);
-      --primary: #1D4ED8;
-      --primary-hover: #1E40AF;
-      --on-primary: #FFFFFF;
-      --accent: #0284C7;
-      --accent-cyan: #0369A1;
-      --accent-soft: rgba(2, 132, 199, 0.10);
-      --accent-border: rgba(2, 132, 199, 0.32);
-      --spotlight-fill: rgba(29, 78, 216, 0.08);
-      --spotlight-border: rgba(2, 132, 199, 0.45);
-      --grid-line: rgba(29, 78, 216, 0.055);
-      --orb-1: rgba(29, 78, 216, 0.16);
-      --orb-2: rgba(2, 132, 199, 0.15);
-      --orb-3: rgba(56, 189, 248, 0.14);
-      --particle-rgb: 29, 78, 216;
-      --badge-new-bg: #DCFCE7;
-      --badge-new-fg: #166534;
-      --badge-study-bg: #DBEAFE;
-      --badge-study-fg: #1E40AF;
-      --badge-research-bg: #E0F2FE;
-      --badge-research-fg: #0369A1;
-      --ring: #0284C7;
-      --code-bg: #0F172A;
-      --code-fg: #F8FAFC;
-      --inline-code-bg: #E2E8F0;
-      --inline-code-fg: #0F172A;
-      --overlay: rgba(15, 23, 42, 0.52);
-      --shadow-sm: 0 2px 8px rgba(15, 23, 42, 0.04);
-      --shadow-md: 0 12px 32px -8px rgba(15, 23, 42, 0.09);
-      --shadow-lg: 0 24px 54px -12px rgba(15, 23, 42, 0.18);
-    }
-
-    [data-theme="dark"] {
-      --bg: #060B16;
-      --bg-subtle: #0C1426;
-      --surface: rgba(15, 24, 42, 0.72);
-      --surface-solid: #0F182A;
-      --surface-elevated: rgba(21, 33, 56, 0.88);
-      --surface-hover: rgba(30, 41, 59, 0.82);
+      --bg: #030712;
+      --bg-deep: #02050D;
+      --surface-glass: rgba(11, 19, 38, 0.58);
+      --surface-glass-strong: rgba(15, 25, 48, 0.78);
       --fg: #F8FAFC;
       --fg-secondary: #E2E8F0;
       --fg-muted: #94A3B8;
-      --border: rgba(148, 163, 184, 0.15);
-      --border-strong: rgba(148, 163, 184, 0.28);
-      --primary: #0284C7;
-      --primary-hover: #0EA5E9;
-      --on-primary: #FFFFFF;
+      --border: rgba(56, 189, 248, 0.18);
+      --border-strong: rgba(56, 189, 248, 0.44);
+      --primary: #1D4ED8;
       --accent: #38BDF8;
-      --accent-cyan: #22D3EE;
-      --accent-soft: rgba(56, 189, 248, 0.12);
-      --accent-border: rgba(56, 189, 248, 0.34);
-      --spotlight-fill: rgba(56, 189, 248, 0.11);
-      --spotlight-border: rgba(56, 189, 248, 0.55);
-      --grid-line: rgba(56, 189, 248, 0.055);
-      --orb-1: rgba(29, 78, 216, 0.28);
-      --orb-2: rgba(2, 132, 199, 0.22);
-      --orb-3: rgba(34, 211, 238, 0.16);
-      --particle-rgb: 56, 189, 248;
-      --badge-new-bg: rgba(34, 197, 94, 0.16);
-      --badge-new-fg: #4ADE80;
-      --badge-study-bg: rgba(96, 165, 250, 0.16);
-      --badge-study-fg: #93C5FD;
-      --badge-research-bg: rgba(34, 211, 238, 0.15);
-      --badge-research-fg: #67E8F9;
+      --cyan: #22D3EE;
+      --emerald: #22C55E;
       --ring: #38BDF8;
-      --code-bg: #050811;
-      --code-fg: #E2E8F0;
-      --inline-code-bg: #1E293B;
-      --inline-code-fg: #7DD3FC;
-      --overlay: rgba(2, 6, 23, 0.76);
-      --shadow-sm: 0 2px 10px rgba(0, 0, 0, 0.35);
-      --shadow-md: 0 14px 34px -8px rgba(0, 0, 0, 0.55);
-      --shadow-lg: 0 28px 64px -12px rgba(0, 0, 0, 0.78);
+      --vignette: radial-gradient(circle at 50% 42%, transparent 22%, rgba(2, 6, 18, 0.74) 88%, #02050D 100%);
+    }
+
+    [data-theme="light"] {
+      --bg: #EFF5FC;
+      --bg-deep: #E2ECF8;
+      --surface-glass: rgba(255, 255, 255, 0.76);
+      --surface-glass-strong: rgba(255, 255, 255, 0.92);
+      --fg: #0F172A;
+      --fg-secondary: #1E293B;
+      --fg-muted: #475569;
+      --border: rgba(2, 132, 199, 0.22);
+      --border-strong: rgba(29, 78, 216, 0.48);
+      --primary: #1D4ED8;
+      --accent: #0284C7;
+      --cyan: #0369A1;
+      --emerald: #16A34A;
+      --ring: #0284C7;
+      --vignette: radial-gradient(circle at 50% 42%, transparent 35%, rgba(226, 236, 248, 0.78) 95%);
     }
 
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-    html {
-      scroll-behavior: smooth;
-      scroll-padding-top: calc(var(--header-height) + 24px);
-    }
-
-    body {
-      font-family: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
-      font-size: 16px;
-      line-height: 1.6;
+    html, body {
+      min-height: 100%;
       background-color: var(--bg);
       color: var(--fg);
-      min-height: 100vh;
+      font-family: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
       overflow-x: hidden;
-      position: relative;
-      transition: background-color 260ms ease, color 260ms ease;
+      transition: background-color 300ms ease, color 300ms ease;
     }
 
-    a, button, input, select { font: inherit; }
-    button, [role="button"], a { cursor: pointer; }
+    a, button, input { font: inherit; }
+    a, button { cursor: pointer; }
 
     :focus-visible {
       outline: 2px solid var(--ring);
-      outline-offset: 2px;
+      outline-offset: 3px;
     }
 
     /* ==========================================================================
-       Ambient Dynamic Background: Perspective Grid + Floating Aurora + Canvas
+       3D WebGL Nebula Stage & Hyperspace Warp Transition Layer
        ========================================================================== */
-    .ambient-stage {
+    .webgl-stage {
       position: fixed;
       inset: 0;
-      z-index: -1;
+      z-index: 0;
       pointer-events: none;
       overflow: hidden;
     }
 
-    .ambient-grid {
-      position: absolute;
-      inset: -10% 0 0 0;
-      background-image:
-        linear-gradient(to right, var(--grid-line) 1px, transparent 1px),
-        linear-gradient(to bottom, var(--grid-line) 1px, transparent 1px);
-      background-size: 52px 52px;
-      mask-image: radial-gradient(ellipse 85% 65% at 50% 18%, #000 25%, transparent 80%);
-      -webkit-mask-image: radial-gradient(ellipse 85% 65% at 50% 18%, #000 25%, transparent 80%);
-    }
-
-    .aurora-orb {
-      position: absolute;
-      border-radius: 50%;
-      filter: blur(88px);
-      will-change: transform;
-    }
-
-    .orb-one {
-      width: 560px;
-      height: 560px;
-      left: -120px;
-      top: -160px;
-      background: var(--orb-1);
-      animation: floatOrbA 18s ease-in-out infinite alternate;
-    }
-
-    .orb-two {
-      width: 500px;
-      height: 500px;
-      right: -100px;
-      top: 40px;
-      background: var(--orb-2);
-      animation: floatOrbB 22s ease-in-out infinite alternate;
-    }
-
-    .orb-three {
-      width: 440px;
-      height: 440px;
-      left: 36%;
-      top: 42%;
-      background: var(--orb-3);
-      animation: floatOrbC 25s ease-in-out infinite alternate;
-    }
-
-    @keyframes floatOrbA {
-      0% { transform: translate3d(0, 0, 0) scale(1); }
-      100% { transform: translate3d(90px, 70px, 0) scale(1.12); }
-    }
-
-    @keyframes floatOrbB {
-      0% { transform: translate3d(0, 0, 0) scale(1.05); }
-      100% { transform: translate3d(-110px, 85px, 0) scale(0.94); }
-    }
-
-    @keyframes floatOrbC {
-      0% { transform: translate3d(0, 0, 0) scale(0.95); }
-      100% { transform: translate3d(70px, -80px, 0) scale(1.1); }
-    }
-
-    #constellationCanvas {
-      position: absolute;
-      inset: 0;
+    #nebulaCanvas {
       width: 100%;
       height: 100%;
-      opacity: 0.72;
+      display: block;
     }
 
-    /* Top Scroll Reading Progress Laser Bar */
-    .scroll-laser {
-      position: fixed;
-      top: 0;
-      left: 0;
-      height: 3px;
-      width: 100%;
-      z-index: 100;
-      transform-origin: 0 50%;
-      transform: scaleX(0);
-      background: linear-gradient(90deg, #1D4ED8 0%, #0284C7 50%, #22D3EE 100%);
-      box-shadow: 0 0 12px rgba(56, 189, 248, 0.75);
+    .stage-vignette {
+      position: absolute;
+      inset: 0;
+      background: var(--vignette);
       pointer-events: none;
     }
 
-    /* Skip Link for Keyboard Users */
-    .skip-link {
+    /* Subtle Sci-Fi Horizon Grid at Bottom */
+    .horizon-grid {
       position: absolute;
-      left: -9999px;
-      top: 10px;
-      z-index: 200;
-      padding: 10px 16px;
-      border-radius: var(--radius-sm);
-      background: var(--primary);
-      color: #FFFFFF;
-      font-weight: 600;
-      text-decoration: none;
+      left: -25%;
+      right: -25%;
+      bottom: -18%;
+      height: 56%;
+      background-image:
+        linear-gradient(to right, rgba(56, 189, 248, 0.09) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(56, 189, 248, 0.09) 1px, transparent 1px);
+      background-size: 56px 56px;
+      transform: perspective(520px) rotateX(68deg);
+      mask-image: radial-gradient(ellipse 65% 65% at 50% 35%, #000 10%, transparent 72%);
+      -webkit-mask-image: radial-gradient(ellipse 65% 65% at 50% 35%, #000 10%, transparent 72%);
+      animation: gridAdvance 12s linear infinite;
     }
-    .skip-link:focus { left: 12px; }
+
+    @keyframes gridAdvance {
+      from { background-position: 0 0; }
+      to { background-position: 0 56px; }
+    }
+
+    /* Hyperspace Warp Curtain on Navigation */
+    .warp-curtain {
+      position: fixed;
+      inset: 0;
+      z-index: 200;
+      pointer-events: none;
+      opacity: 0;
+      background: radial-gradient(circle at 50% 45%, rgba(56, 189, 248, 0.36), #030712 72%);
+      transition: opacity 340ms cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    .warp-curtain.active {
+      opacity: 1;
+    }
 
     /* ==========================================================================
-       Sticky Glass Top Navigation
+       Portal Foreground Layout
        ========================================================================== */
-    .site-header {
-      position: sticky;
-      top: 0;
-      z-index: 40;
-      height: var(--header-height);
-      background: color-mix(in srgb, var(--bg) 76%, transparent);
-      backdrop-filter: blur(18px) saturate(150%);
-      -webkit-backdrop-filter: blur(18px) saturate(150%);
-      border-bottom: 1px solid var(--border);
+    .portal-wrapper {
+      position: relative;
+      z-index: 2;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      max-width: 1380px;
+      margin: 0 auto;
+      padding: 18px 18px 26px;
     }
 
-    .header-inner {
-      max-width: 1380px;
-      height: 100%;
-      margin: 0 auto;
-      padding: 0 16px;
+    @media (min-width: 768px) {
+      .portal-wrapper { padding: 24px 36px 32px; }
+    }
+
+    /* Top HUD Navigation Bar */
+    .portal-nav {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 12px;
-    }
-
-    @media (min-width: 768px) {
-      .header-inner { padding: 0 28px; gap: 20px; }
-    }
-
-    .brand-link {
-      display: inline-flex;
-      align-items: center;
-      gap: 12px;
-      text-decoration: none;
-      color: var(--fg);
-      min-height: 44px;
-      flex-shrink: 0;
-    }
-
-    .brand-logo-svg {
-      width: 60px;
-      height: 34px;
-      display: block;
-      flex-shrink: 0;
-      filter: drop-shadow(0 0 10px rgba(56, 189, 248, 0.22));
-      transition: transform 240ms cubic-bezier(0.22, 1, 0.36, 1), filter 240ms ease;
-    }
-
-    .brand-link:hover .brand-logo-svg {
-      transform: translateY(-1px) scale(1.03);
-      filter: drop-shadow(0 0 14px rgba(56, 189, 248, 0.48));
-    }
-
-    .brand-meta {
-      display: flex;
-      flex-direction: column;
-    }
-
-    .brand-title {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 1.04rem;
-      font-weight: 700;
-      letter-spacing: -0.02em;
-      line-height: 1.2;
-    }
-
-    .brand-subtitle {
-      font-size: 0.74rem;
-      color: var(--fg-muted);
-      display: none;
-    }
-
-    @media (min-width: 540px) {
-      .brand-subtitle { display: block; }
-    }
-
-    /* Search Input with Animated Focus Aura */
-    .search-box {
-      flex: 1;
-      max-width: 490px;
-      position: relative;
-      display: flex;
-      align-items: center;
-    }
-
-    .search-icon {
-      position: absolute;
-      left: 14px;
-      width: 17px;
-      height: 17px;
-      color: var(--fg-muted);
-      pointer-events: none;
-      transition: color 180ms ease;
-    }
-
-    .search-box:focus-within .search-icon {
-      color: var(--accent);
-    }
-
-    .search-input {
-      width: 100%;
-      height: 44px;
-      padding: 0 68px 0 42px;
-      border-radius: 999px;
-      border: 1px solid var(--border);
-      background: var(--surface);
-      backdrop-filter: blur(10px);
-      color: var(--fg);
-      font-size: 0.9rem;
-      transition: border-color 200ms ease, box-shadow 200ms ease, background-color 200ms ease;
-    }
-
-    .search-input::placeholder { color: var(--fg-muted); }
-
-    .search-input:focus {
-      border-color: var(--ring);
-      background: var(--surface-elevated);
-      outline: none;
-      box-shadow: 0 0 0 4px var(--accent-soft), 0 8px 24px -6px rgba(2, 132, 199, 0.25);
-    }
-
-    .search-kbd {
-      position: absolute;
-      right: 13px;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.72rem;
-      padding: 2px 7px;
-      border-radius: 6px;
-      background: var(--bg-subtle);
-      color: var(--fg-muted);
-      border: 1px solid var(--border);
-      pointer-events: none;
-      display: none;
-    }
-
-    @media (min-width: 640px) {
-      .search-kbd { display: inline-block; }
-    }
-
-    .header-actions {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      flex-shrink: 0;
-    }
-
-    .icon-btn {
-      min-width: 44px;
-      min-height: 44px;
-      padding: 0 12px;
-      border-radius: 11px;
-      border: 1px solid var(--border);
-      background: var(--surface);
-      backdrop-filter: blur(10px);
-      color: var(--fg);
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 7px;
-      font-size: 0.85rem;
-      font-weight: 500;
-      text-decoration: none;
-      transition: background-color 180ms ease, border-color 180ms ease, box-shadow 180ms ease;
-    }
-
-    .icon-btn:hover {
-      background: var(--surface-hover);
-      border-color: var(--accent-border);
-      box-shadow: 0 4px 14px -4px rgba(2, 132, 199, 0.25);
-    }
-
-    .spin-once svg {
-      animation: spin360 650ms cubic-bezier(0.22, 1, 0.36, 1);
-    }
-
-    @keyframes spin360 {
-      from { transform: rotate(0deg); }
-      to { transform: rotate(360deg); }
-    }
-
-    .btn-label-desktop { display: none; }
-    @media (min-width: 920px) { .btn-label-desktop { display: inline; } }
-
-    /* ==========================================================================
-       Main Container & Dynamic Bento Hero Showcase
-       ========================================================================== */
-    .page-shell {
-      max-width: 1380px;
-      margin: 0 auto;
-      padding: 22px 16px 76px;
-    }
-
-    @media (min-width: 768px) {
-      .page-shell { padding: 28px 28px 92px; }
-    }
-
-    /* Spotlight Surface Mixin — Cursor-tracking radial glow */
-    .spotlight-box {
-      --mx: 50%;
-      --my: 50%;
-      position: relative;
-      background: var(--surface);
+      gap: 14px;
+      padding: 10px 16px;
+      border-radius: 16px;
+      background: var(--surface-glass);
       backdrop-filter: blur(16px) saturate(140%);
       -webkit-backdrop-filter: blur(16px) saturate(140%);
       border: 1px solid var(--border);
-      overflow: hidden;
     }
 
-    .spotlight-box::after {
+    .nav-brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      color: var(--fg);
+      min-height: 40px;
+    }
+
+    .nav-logo-mini {
+      width: 52px;
+      height: 29px;
+      filter: drop-shadow(0 0 10px rgba(56, 189, 248, 0.35));
+    }
+
+    .nav-brand-text {
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 700;
+      font-size: 0.98rem;
+      letter-spacing: 0.04em;
+    }
+
+    .nav-coords {
+      display: none;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.74rem;
+      color: var(--fg-muted);
+      letter-spacing: 0.06em;
+    }
+
+    @media (min-width: 900px) {
+      .nav-coords { display: inline-flex; align-items: center; gap: 14px; }
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .hud-btn {
+      min-height: 40px;
+      padding: 0 13px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: rgba(56, 189, 248, 0.06);
+      color: var(--fg);
+      font-size: 0.83rem;
+      font-weight: 500;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      transition: border-color 180ms ease, background-color 180ms ease, box-shadow 180ms ease;
+    }
+
+    .hud-btn:hover {
+      border-color: var(--border-strong);
+      background: rgba(56, 189, 248, 0.14);
+      box-shadow: 0 0 18px -4px rgba(56, 189, 248, 0.4);
+    }
+
+    /* ==========================================================================
+       Centerpiece Stage: 3D Holographic LMX Energy Core + Kinetic Hero
+       ========================================================================== */
+    .hero-centerpiece {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      padding: 32px 0 26px;
+    }
+
+    /* 3D Interactive Holographic LMX Emblem Core */
+    .holo-core-wrap {
+      perspective: 900px;
+      margin-bottom: 22px;
+    }
+
+    .holo-core {
+      width: 248px;
+      height: 158px;
+      border-radius: 28px;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: radial-gradient(circle at 50% 50%, rgba(29, 78, 216, 0.24), rgba(11, 19, 38, 0.55) 72%);
+      border: 1px solid var(--border-strong);
+      box-shadow:
+        0 0 48px -8px rgba(56, 189, 248, 0.38),
+        inset 0 0 28px rgba(56, 189, 248, 0.14);
+      transform-style: preserve-3d;
+      transition: transform 140ms ease-out, box-shadow 260ms ease;
+      will-change: transform;
+    }
+
+    @media (min-width: 768px) {
+      .holo-core {
+        width: 292px;
+        height: 176px;
+      }
+    }
+
+    /* Specular Hologram Glare Layer */
+    .holo-core::after {
       content: "";
       position: absolute;
       inset: 0;
       border-radius: inherit;
-      background: radial-gradient(480px circle at var(--mx) var(--my), var(--spotlight-fill), transparent 45%);
-      opacity: 0;
-      transition: opacity 280ms ease;
+      background: radial-gradient(240px circle at var(--gx, 50%) var(--gy, 30%), rgba(255, 255, 255, 0.20), transparent 60%);
       pointer-events: none;
-      z-index: 0;
     }
 
-    .spotlight-box:hover::after {
-      opacity: 1;
-    }
-
-    .spotlight-box > * {
-      position: relative;
-      z-index: 1;
-    }
-
-    /* Hero Asymmetric Bento Grid */
-    .hero-bento {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 18px;
-      margin-bottom: 18px;
-    }
-
-    @media (min-width: 1060px) {
-      .hero-bento {
-        grid-template-columns: 1.38fr 1fr;
-        gap: 20px;
-      }
-    }
-
-    .hero-main-card {
-      border-radius: var(--radius-xl);
-      padding: 28px 22px;
-      box-shadow: var(--shadow-md);
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      gap: 22px;
-    }
-
-    @media (min-width: 768px) {
-      .hero-main-card { padding: 34px 36px; }
-    }
-
-    /* Animated Shimmer Border Beam at top of Hero */
-    .hero-main-card::before {
-      content: "";
+    /* Rotating Concentric Telemetry Rings Behind LMX */
+    .orbital-hud-svg {
       position: absolute;
-      inset: 0 0 auto 0;
-      height: 3px;
-      background: linear-gradient(90deg, #172554 0%, #1D4ED8 30%, #38BDF8 55%, #22D3EE 75%, #172554 100%);
-      background-size: 220% 100%;
-      animation: beamSweep 5s linear infinite;
+      width: 340px;
+      height: 340px;
+      pointer-events: none;
+      opacity: 0.52;
+    }
+
+    .ring-cw {
+      transform-origin: 50% 50%;
+      animation: orbitCW 28s linear infinite;
+    }
+
+    .ring-ccw {
+      transform-origin: 50% 50%;
+      animation: orbitCCW 20s linear infinite;
+    }
+
+    @keyframes orbitCW { to { transform: rotate(360deg); } }
+    @keyframes orbitCCW { to { transform: rotate(-360deg); } }
+
+    .core-lmx-svg {
+      width: 82%;
+      height: auto;
+      position: relative;
       z-index: 2;
+      transform: translateZ(26px);
+      overflow: visible;
     }
 
-    @keyframes beamSweep {
-      0% { background-position: 200% 0; }
-      100% { background-position: -20% 0; }
+    .lmx-bloom-layer {
+      filter: blur(8px);
+      opacity: 0.65;
     }
 
-    .hero-top-split {
-      display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-      gap: 20px;
+    .lmx-main-stroke {
+      stroke-dasharray: 820;
+      stroke-dashoffset: 820;
+      animation: drawCoreLmx 1.6s cubic-bezier(0.22, 1, 0.36, 1) 0.1s forwards;
     }
 
-    .live-pill {
+    .lmx-plasma-beam {
+      stroke-dasharray: 110 730;
+      stroke-dashoffset: 840;
+      animation: plasmaRace 3.8s cubic-bezier(0.4, 0, 0.2, 1) 1.5s infinite;
+    }
+
+    @keyframes drawCoreLmx {
+      to { stroke-dashoffset: 0; }
+    }
+
+    @keyframes plasmaRace {
+      0% { stroke-dashoffset: 840; opacity: 0; }
+      15% { opacity: 1; }
+      85% { opacity: 1; }
+      100% { stroke-dashoffset: -110; opacity: 0; }
+    }
+
+    /* Telemetry Status Pill */
+    .telemetry-pill {
       display: inline-flex;
       align-items: center;
       gap: 9px;
-      padding: 5px 13px;
+      padding: 5px 14px;
       border-radius: 999px;
-      background: var(--accent-soft);
-      border: 1px solid var(--accent-border);
-      color: var(--accent);
-      font-size: 0.78rem;
+      background: rgba(56, 189, 248, 0.10);
+      border: 1px solid var(--border-strong);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.76rem;
       font-weight: 600;
+      color: var(--accent);
+      letter-spacing: 0.05em;
       margin-bottom: 14px;
-      max-width: 100%;
     }
 
-    .live-pill span:last-child {
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-
-    .pulse-dot {
-      position: relative;
+    .radar-dot {
       width: 8px;
       height: 8px;
       border-radius: 50%;
-      background: #22C55E;
-      flex-shrink: 0;
+      background: var(--emerald);
+      position: relative;
     }
 
-    .pulse-dot::after {
+    .radar-dot::after {
       content: "";
       position: absolute;
       inset: -5px;
       border-radius: 50%;
-      border: 2px solid #22C55E;
-      animation: radarPing 2.1s cubic-bezier(0, 0, 0.2, 1) infinite;
+      border: 2px solid var(--emerald);
+      animation: pingWave 2s cubic-bezier(0, 0, 0.2, 1) infinite;
     }
 
-    @keyframes radarPing {
-      0% { transform: scale(0.55); opacity: 0.9; }
-      80%, 100% { transform: scale(1.85); opacity: 0; }
+    @keyframes pingWave {
+      0% { transform: scale(0.5); opacity: 0.95; }
+      100% { transform: scale(1.9); opacity: 0; }
     }
 
-    .hero-heading {
-      font-size: clamp(1.55rem, 2.7vw, 2.25rem);
+    /* Giant Holographic Shimmer Title */
+    .portal-title {
+      font-size: clamp(2.1rem, 5vw, 3.85rem);
       font-weight: 700;
-      line-height: 1.24;
-      letter-spacing: -0.028em;
+      line-height: 1.14;
+      letter-spacing: -0.035em;
       margin-bottom: 12px;
-      text-wrap: balance;
+      max-width: 920px;
     }
 
-    .gradient-headline {
-      background: linear-gradient(120deg, var(--primary) 0%, var(--accent) 45%, #22D3EE 80%, var(--primary) 100%);
-      background-size: 200% auto;
+    .holo-text {
+      background: linear-gradient(120deg, #FFFFFF 10%, #93C5FD 35%, #38BDF8 58%, #22D3EE 78%, #FFFFFF 95%);
+      background-size: 220% auto;
       -webkit-background-clip: text;
       background-clip: text;
       color: transparent;
-      animation: textShimmer 6s ease-in-out infinite;
+      animation: holoFlow 6s linear infinite;
     }
 
-    @keyframes textShimmer {
-      0%, 100% { background-position: 0% 50%; }
-      50% { background-position: 100% 50%; }
+    [data-theme="light"] .holo-text {
+      background: linear-gradient(120deg, #0F172A 10%, #1D4ED8 42%, #0284C7 72%, #0F172A 95%);
+      background-size: 220% auto;
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
     }
 
-    .hero-desc {
+    @keyframes holoFlow {
+      to { background-position: 220% center; }
+    }
+
+    /* Cyber Scramble Decoder Subtitle */
+    .decode-line {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: clamp(0.86rem, 1.5vw, 1.05rem);
+      color: var(--cyan);
+      min-height: 1.7em;
+      margin-bottom: 10px;
+      letter-spacing: 0.02em;
+    }
+
+    .portal-lead {
       color: var(--fg-muted);
-      font-size: 0.96rem;
-      max-width: 600px;
-      line-height: 1.68;
+      font-size: clamp(0.92rem, 1.3vw, 1.04rem);
+      max-width: 650px;
+      margin-bottom: 26px;
+      line-height: 1.65;
     }
 
-    /* Animated LMX Hero Emblem Showcase */
-    .hero-emblem-stage {
-      display: none;
-      width: 176px;
-      height: 112px;
-      border-radius: 18px;
-      background: radial-gradient(circle at 50% 50%, var(--accent-soft), transparent 72%);
-      border: 1px solid var(--border);
+    /* Primary Magnetic CTA + Quick Search Bar */
+    .cta-command-row {
+      display: flex;
+      flex-wrap: wrap;
       align-items: center;
       justify-content: center;
-      flex-shrink: 0;
-      position: relative;
-      padding: 12px;
-    }
-
-    @media (min-width: 680px) {
-      .hero-emblem-stage { display: flex; }
-    }
-
-    .hero-lmx-svg {
-      width: 148px;
-      height: auto;
-      overflow: visible;
-      filter: drop-shadow(0 0 18px rgba(56, 189, 248, 0.32));
-    }
-
-    /* Base stroke draw animation */
-    .lmx-draw-base {
-      stroke-dasharray: 820;
-      stroke-dashoffset: 820;
-      animation: drawLmxStroke 1.65s cubic-bezier(0.22, 1, 0.36, 1) 0.1s forwards;
-    }
-
-    /* Traveling laser pulse over the LMX stroke */
-    .lmx-energy-pulse {
-      stroke-dasharray: 95 740;
-      stroke-dashoffset: 835;
-      opacity: 0.9;
-      animation: pulseAlongLmx 4.4s cubic-bezier(0.4, 0, 0.2, 1) 1.7s infinite;
-    }
-
-    @keyframes drawLmxStroke {
-      to { stroke-dashoffset: 0; }
-    }
-
-    @keyframes pulseAlongLmx {
-      0% { stroke-dashoffset: 835; opacity: 0; }
-      15% { opacity: 0.95; }
-      85% { opacity: 0.95; }
-      100% { stroke-dashoffset: -95; opacity: 0; }
-    }
-
-    /* Animated Stat Counters Row */
-    .hero-stats-grid {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 10px;
-    }
-
-    .stat-tile {
-      padding: 12px 14px;
-      border-radius: var(--radius-md);
-      background: var(--bg-subtle);
-      border: 1px solid var(--border);
-      transition: border-color 200ms ease, transform 200ms ease;
-    }
-
-    .stat-tile:hover {
-      border-color: var(--accent-border);
-      transform: translateY(-2px);
-    }
-
-    .stat-num {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: clamp(1.1rem, 2vw, 1.45rem);
-      font-weight: 700;
-      color: var(--fg);
-      line-height: 1.2;
-      display: flex;
-      align-items: baseline;
-      gap: 4px;
-    }
-
-    .stat-unit {
-      font-size: 0.76rem;
-      color: var(--accent);
-      font-weight: 600;
-    }
-
-    .stat-caption {
-      font-size: 0.76rem;
-      color: var(--fg-muted);
-      margin-top: 2px;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    /* Right Bento Card: Live Git Radar Console */
-    .push-radar-card {
-      border-radius: var(--radius-xl);
-      padding: 24px 22px;
-      box-shadow: var(--shadow-md);
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
       gap: 14px;
+      width: 100%;
+      max-width: 720px;
     }
 
-    .radar-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 8px;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.78rem;
-      font-weight: 600;
-      color: var(--fg-muted);
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-    }
-
-    .radar-title-left {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .radar-sweep-icon {
-      width: 16px;
-      height: 16px;
-      color: var(--accent);
-      animation: spin360 8s linear infinite;
-    }
-
-    .radar-list {
-      list-style: none;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-
-    .radar-item {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      font-size: 0.84rem;
-      padding: 9px 11px;
-      border-radius: 10px;
-      background: var(--bg-subtle);
-      border: 1px solid var(--border);
-      transition: border-color 180ms ease, transform 180ms ease;
-    }
-
-    .radar-item:hover {
-      border-color: var(--accent-border);
-      transform: translateX(3px);
-    }
-
-    .radar-msg {
-      color: var(--fg);
-      font-weight: 500;
-      display: -webkit-box;
-      -webkit-line-clamp: 1;
-      -webkit-box-orient: vertical;
-      overflow: hidden;
-      text-decoration: none;
-    }
-
-    .radar-msg:hover { color: var(--accent); }
-
-    .radar-time {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.73rem;
-      color: var(--fg-muted);
-      white-space: nowrap;
-      flex-shrink: 0;
-    }
-
-    /* ==========================================================================
-       Live Push Stream Ticker Bar (Accessible with Pause Toggle)
-       ========================================================================== */
-    .ticker-bar {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 9px 14px;
-      margin-bottom: 24px;
-      border-radius: 14px;
-      background: var(--surface);
-      backdrop-filter: blur(12px);
-      border: 1px solid var(--border);
-      box-shadow: var(--shadow-sm);
-      overflow: hidden;
-    }
-
-    .ticker-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 4px 10px;
-      border-radius: 8px;
-      background: var(--primary);
-      color: #FFFFFF;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.72rem;
-      font-weight: 700;
-      letter-spacing: 0.04em;
-      flex-shrink: 0;
-    }
-
-    .ticker-viewport {
-      flex: 1;
-      overflow: hidden;
-      mask-image: linear-gradient(90deg, transparent, #000 4%, #000 96%, transparent);
-      -webkit-mask-image: linear-gradient(90deg, transparent, #000 4%, #000 96%, transparent);
-    }
-
-    .ticker-track {
-      display: flex;
-      align-items: center;
-      gap: 28px;
-      width: max-content;
-      animation: tickerMarquee 34s linear infinite;
-    }
-
-    .ticker-bar:hover .ticker-track,
-    .ticker-bar:focus-within .ticker-track,
-    .ticker-track.paused {
-      animation-play-state: paused;
-    }
-
-    @keyframes tickerMarquee {
-      0% { transform: translate3d(0, 0, 0); }
-      100% { transform: translate3d(-50%, 0, 0); }
-    }
-
-    .ticker-chip {
-      background: none;
-      border: none;
-      padding: 2px 0;
-      color: var(--fg-secondary);
-      font-size: 0.84rem;
-      display: inline-flex;
-      align-items: center;
-      gap: 7px;
-      white-space: nowrap;
-      transition: color 160ms ease;
-    }
-
-    .ticker-chip:hover {
-      color: var(--accent);
-    }
-
-    .ticker-chip-cat {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.72rem;
-      color: var(--accent);
-      font-weight: 600;
-    }
-
-    .ticker-pause-btn {
-      width: 32px;
-      height: 32px;
-      border-radius: 8px;
-      border: 1px solid var(--border);
-      background: var(--bg-subtle);
-      color: var(--fg-muted);
+    /* Rotating Plasma Conic Border CTA Button */
+    .plasma-cta {
+      position: relative;
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      flex-shrink: 0;
-      transition: color 160ms ease, border-color 160ms ease;
-    }
-
-    .ticker-pause-btn:hover {
-      color: var(--fg);
-      border-color: var(--accent-border);
-    }
-
-    /* ==========================================================================
-       Hybrid Feed Layout: Left Channel Sidebar + Right Stream
-       ========================================================================== */
-    .hub-grid {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 24px;
-      align-items: start;
-    }
-
-    @media (min-width: 1024px) {
-      .hub-grid {
-        grid-template-columns: 272px minmax(0, 1fr);
-        gap: 28px;
-      }
-    }
-
-    .sidebar {
-      position: static;
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-    }
-
-    @media (min-width: 1024px) {
-      .sidebar {
-        position: sticky;
-        top: calc(var(--header-height) + 20px);
-      }
-    }
-
-    .sidebar-panel {
-      background: var(--surface);
-      backdrop-filter: blur(14px);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-lg);
-      padding: 16px;
-      box-shadow: var(--shadow-sm);
-    }
-
-    .panel-title {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.76rem;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      color: var(--fg-muted);
-      margin-bottom: 10px;
-      padding: 0 8px;
-    }
-
-    .channel-nav {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-    }
-
-    @media (min-width: 1024px) {
-      .channel-nav {
-        flex-direction: column;
-        gap: 5px;
-      }
-    }
-
-    .channel-btn {
-      min-height: 44px;
-      padding: 8px 12px;
-      border-radius: 11px;
-      border: 1px solid transparent;
-      background: transparent;
-      color: var(--fg-secondary);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
       gap: 10px;
-      font-size: 0.9rem;
-      font-weight: 500;
-      text-align: left;
-      position: relative;
-      transition: background-color 180ms ease, color 180ms ease, border-color 180ms ease, transform 180ms ease;
-    }
-
-    .channel-btn:hover {
-      background: var(--surface-hover);
-      color: var(--fg);
-      transform: translateX(2px);
-    }
-
-    .channel-btn[aria-current="true"] {
-      background: var(--accent-soft);
-      border-color: var(--accent-border);
-      color: var(--accent);
-      font-weight: 600;
-      box-shadow: inset 3px 0 0 var(--accent);
-    }
-
-    .channel-left {
-      display: inline-flex;
-      align-items: center;
-      gap: 9px;
-      min-width: 0;
-    }
-
-    .channel-left span {
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .channel-count {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.75rem;
-      padding: 2px 8px;
+      min-height: 52px;
+      padding: 0 28px;
       border-radius: 999px;
-      background: var(--bg-subtle);
-      color: var(--fg-muted);
-      flex-shrink: 0;
-    }
-
-    .channel-btn[aria-current="true"] .channel-count {
-      background: var(--surface-solid);
-      color: var(--accent);
-    }
-
-    .guide-card {
-      background: linear-gradient(155deg, rgba(23, 37, 84, 0.22), rgba(2, 132, 199, 0.12));
-      backdrop-filter: blur(14px);
-      border: 1px solid var(--accent-border);
-      border-radius: var(--radius-lg);
-      padding: 18px;
-      font-size: 0.85rem;
-    }
-
-    .guide-card h3 {
-      font-size: 0.92rem;
       font-weight: 700;
-      margin-bottom: 6px;
+      font-size: 0.98rem;
+      color: #FFFFFF;
+      text-decoration: none;
+      background: linear-gradient(135deg, #1D4ED8 0%, #0284C7 55%, #0891B2 100%);
+      box-shadow:
+        0 0 0 1px rgba(56, 189, 248, 0.55),
+        0 12px 34px -6px rgba(2, 132, 199, 0.65);
+      overflow: hidden;
+      will-change: transform;
+      transition: box-shadow 220ms ease, transform 200ms cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .plasma-cta::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(110deg, transparent 25%, rgba(255, 255, 255, 0.32) 50%, transparent 75%);
+      transform: translateX(-120%);
+      animation: ctaSweep 3.4s ease-in-out infinite;
+    }
+
+    @keyframes ctaSweep {
+      0%, 35% { transform: translateX(-120%); }
+      80%, 100% { transform: translateX(120%); }
+    }
+
+    .plasma-cta:hover {
+      box-shadow:
+        0 0 0 2px #38BDF8,
+        0 16px 42px -4px rgba(56, 189, 248, 0.78);
+    }
+
+    .plasma-cta svg {
+      transition: transform 200ms ease;
+    }
+    .plasma-cta:hover svg {
+      transform: translateX(4px);
+    }
+
+    /* Quick Portal Search Command Input */
+    .portal-search-form {
+      flex: 1;
+      min-width: 260px;
+      max-width: 380px;
+      position: relative;
       display: flex;
       align-items: center;
-      gap: 7px;
     }
 
-    .guide-card p {
-      color: var(--fg-muted);
-      margin-bottom: 12px;
-      font-size: 0.82rem;
-    }
-
-    .guide-code {
-      display: block;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.74rem;
-      background: var(--code-bg);
-      color: var(--code-fg);
-      padding: 10px 12px;
-      border-radius: var(--radius-sm);
-      overflow-x: auto;
-      margin-bottom: 10px;
+    .portal-search-input {
+      width: 100%;
+      height: 52px;
+      padding: 0 52px 0 44px;
+      border-radius: 999px;
       border: 1px solid var(--border);
+      background: var(--surface-glass-strong);
+      backdrop-filter: blur(16px);
+      color: var(--fg);
+      font-size: 0.9rem;
+      transition: border-color 200ms ease, box-shadow 200ms ease;
+    }
+
+    .portal-search-input::placeholder { color: var(--fg-muted); }
+
+    .portal-search-input:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 4px rgba(56, 189, 248, 0.16), 0 0 28px -6px rgba(56, 189, 248, 0.4);
+    }
+
+    .portal-search-icon {
+      position: absolute;
+      left: 16px;
+      width: 18px;
+      height: 18px;
+      color: var(--accent);
+      pointer-events: none;
+    }
+
+    .portal-search-kbd {
+      position: absolute;
+      right: 16px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      padding: 2px 8px;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      color: var(--fg-muted);
+      pointer-events: none;
     }
 
     /* ==========================================================================
-       Feed Toolbar & Spotlight Interactive Push Cards
+       4 Interactive 3D Tilt Holographic Gateway Cards
        ========================================================================== */
-    .feed-toolbar {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      margin-bottom: 18px;
+    .gateways-section {
+      margin: 14px 0 22px;
     }
 
-    .feed-status {
-      font-size: 0.92rem;
-      color: var(--fg-muted);
-    }
-
-    .feed-status strong {
-      color: var(--fg);
-      font-weight: 700;
-    }
-
-    .sort-group {
-      display: inline-flex;
-      background: var(--surface);
-      backdrop-filter: blur(10px);
-      border: 1px solid var(--border);
-      border-radius: 11px;
-      padding: 3px;
-      gap: 3px;
-    }
-
-    .sort-btn {
-      min-height: 38px;
-      padding: 0 12px;
-      border-radius: 8px;
-      border: none;
-      background: transparent;
-      color: var(--fg-muted);
-      font-size: 0.83rem;
-      font-weight: 500;
-      transition: background-color 180ms ease, color 180ms ease;
-    }
-
-    .sort-btn[aria-pressed="true"] {
-      background: var(--accent-soft);
-      color: var(--accent);
-      font-weight: 600;
-    }
-
-    /* Feed Cards Grid */
-    .feed-grid {
+    .gateways-grid {
       display: grid;
       grid-template-columns: 1fr;
-      gap: 18px;
+      gap: 16px;
     }
 
-    @media (min-width: 720px) {
-      .feed-grid.mode-cards {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-      }
+    @media (min-width: 640px) {
+      .gateways-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     }
 
-    /* Interactive Spotlight + Elevated Lift Card */
-    .feed-card {
-      border-radius: var(--radius-lg);
-      padding: 22px;
-      box-shadow: var(--shadow-sm);
+    @media (min-width: 1120px) {
+      .gateways-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    }
+
+    .tilt-gateway {
+      --rx: 0deg;
+      --ry: 0deg;
+      --gx: 50%;
+      --gy: 50%;
+      position: relative;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
       gap: 16px;
-      transition:
-        transform 280ms cubic-bezier(0.22, 1, 0.36, 1),
-        border-color 240ms ease,
-        box-shadow 280ms cubic-bezier(0.22, 1, 0.36, 1),
-        background-color 240ms ease;
+      padding: 22px 20px;
+      border-radius: 20px;
+      background: var(--surface-glass);
+      backdrop-filter: blur(18px) saturate(150%);
+      -webkit-backdrop-filter: blur(18px) saturate(150%);
+      border: 1px solid var(--border);
+      text-decoration: none;
+      color: var(--fg);
+      transform: perspective(900px) rotateX(var(--rx)) rotateY(var(--ry));
+      transition: transform 160ms ease-out, border-color 220ms ease, box-shadow 240ms ease;
+      overflow: hidden;
       will-change: transform;
     }
 
-    .feed-card:hover {
-      transform: translateY(-4px);
-      border-color: var(--spotlight-border);
-      box-shadow: var(--shadow-md), 0 0 28px -8px var(--accent-border);
-      background: var(--surface-elevated);
-    }
-
-    /* Featured First Push Highlight */
-    @media (min-width: 720px) {
-      .feed-grid.mode-cards .feed-card.featured-first {
-        grid-column: 1 / -1;
-        background: linear-gradient(135deg, var(--surface-elevated), var(--surface));
-        border-color: var(--accent-border);
-      }
-    }
-
-    /* Spring Stagger Entrance */
-    @media (prefers-reduced-motion: no-preference) {
-      .feed-card.enter-anim {
-        animation: cardSpringIn 460ms cubic-bezier(0.22, 1.18, 0.36, 1) both;
-      }
-    }
-
-    @keyframes cardSpringIn {
-      from {
-        opacity: 0;
-        transform: translate3d(0, 20px, 0) scale(0.965);
-      }
-      to {
-        opacity: 1;
-        transform: translate3d(0, 0, 0) scale(1);
-      }
-    }
-
-    /* Animated Timeline View Mode */
-    .feed-grid.mode-timeline {
-      position: relative;
-      padding-left: 26px;
-    }
-
-    .feed-grid.mode-timeline::before {
-      content: "";
-      position: absolute;
-      left: 7px;
-      top: 14px;
-      bottom: 14px;
-      width: 2px;
-      background: linear-gradient(180deg, var(--accent), var(--border) 85%);
-    }
-
-    .feed-grid.mode-timeline .feed-card::before {
-      content: "";
-      position: absolute;
-      left: -25px;
-      top: 26px;
-      width: 13px;
-      height: 13px;
-      border-radius: 50%;
-      background: var(--accent);
-      border: 2px solid var(--bg);
-      box-shadow: 0 0 0 3px var(--accent-soft), 0 0 12px var(--accent);
-      z-index: 2;
-    }
-
-    .card-top-meta {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      justify-content: space-between;
-      gap: 8px;
-    }
-
-    .pill-row {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      gap: 6px;
-      min-width: 0;
-    }
-
-    .pill-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-      padding: 3px 10px;
-      border-radius: 999px;
-      font-size: 0.74rem;
-      font-weight: 600;
-      white-space: nowrap;
-      max-width: 100%;
-    }
-
-    .pill-study { background: var(--badge-study-bg); color: var(--badge-study-fg); }
-    .pill-research { background: var(--badge-research-bg); color: var(--badge-research-fg); }
-    .pill-new {
-      background: var(--badge-new-bg);
-      color: var(--badge-new-fg);
-      box-shadow: 0 0 12px rgba(34, 197, 94, 0.22);
-    }
-    .pill-neutral {
-      background: var(--bg-subtle);
-      color: var(--fg-muted);
-      border: 1px solid var(--border);
-      font-family: 'JetBrains Mono', monospace;
-      font-weight: 500;
-    }
-
-    .push-time {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.76rem;
-      color: var(--fg-muted);
-      white-space: nowrap;
-    }
-
-    .card-title-btn {
-      background: none;
-      border: none;
-      padding: 0;
-      text-align: left;
-      color: var(--fg);
-      font-size: 1.16rem;
-      font-weight: 700;
-      line-height: 1.35;
-      letter-spacing: -0.015em;
-      margin: 9px 0 7px;
-      display: block;
-      width: 100%;
-      transition: color 180ms ease;
-    }
-
-    .feed-card:hover .card-title-btn,
-    .card-title-btn:hover {
-      color: var(--accent);
-    }
-
-    .card-summary {
-      color: var(--fg-muted);
-      font-size: 0.91rem;
-      display: -webkit-box;
-      -webkit-line-clamp: 3;
-      -webkit-box-orient: vertical;
-      overflow: hidden;
-    }
-
-    .card-files-preview {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-      margin-top: 13px;
-    }
-
-    .file-chip {
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-      padding: 3px 9px;
-      border-radius: 6px;
-      background: var(--bg-subtle);
-      border: 1px solid var(--border);
-      color: var(--fg-secondary);
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.74rem;
-      max-width: 230px;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      transition: border-color 160ms ease;
-    }
-
-    .feed-card:hover .file-chip {
+    .tilt-gateway:hover {
       border-color: var(--border-strong);
+      box-shadow: 0 20px 44px -12px rgba(2, 132, 199, 0.34);
     }
 
-    .card-footer {
+    /* Holographic Specular Glare Overlay */
+    .tilt-gateway::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(340px circle at var(--gx) var(--gy), rgba(56, 189, 248, 0.16), transparent 55%);
+      opacity: 0;
+      transition: opacity 240ms ease;
+      pointer-events: none;
+    }
+
+    .tilt-gateway:hover::before {
+      opacity: 1;
+    }
+
+    /* Sci-Fi HUD Corner Bracket Accent */
+    .hud-corner {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      width: 14px;
+      height: 14px;
+      border-top: 2px solid var(--accent);
+      border-right: 2px solid var(--accent);
+      border-top-right-radius: 5px;
+      opacity: 0.45;
+      transition: opacity 200ms ease, transform 200ms ease;
+    }
+
+    .tilt-gateway:hover .hud-corner {
+      opacity: 1;
+      transform: translate(2px, -2px);
+    }
+
+    .gw-top {
       display: flex;
       align-items: center;
       justify-content: space-between;
       gap: 10px;
-      padding-top: 14px;
-      border-top: 1px solid var(--border);
     }
 
-    .path-crumb {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.76rem;
-      color: var(--fg-muted);
-      min-width: 0;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .btn-read {
-      min-height: 38px;
-      padding: 0 14px;
-      border-radius: 9px;
-      border: 1px solid var(--accent-border);
-      background: var(--accent-soft);
+    .gw-icon-box {
+      width: 42px;
+      height: 42px;
+      border-radius: 12px;
+      background: rgba(56, 189, 248, 0.12);
+      border: 1px solid var(--border-strong);
       color: var(--accent);
-      font-size: 0.83rem;
-      font-weight: 600;
       display: inline-flex;
       align-items: center;
-      gap: 6px;
-      transition: background-color 180ms ease, color 180ms ease, border-color 180ms ease, box-shadow 180ms ease;
+      justify-content: center;
     }
 
-    .btn-read svg {
-      transition: transform 200ms cubic-bezier(0.22, 1, 0.36, 1);
+    .gw-code {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      color: var(--fg-muted);
+      letter-spacing: 0.05em;
     }
 
-    .btn-read:hover {
-      background: var(--primary);
-      border-color: var(--primary);
-      color: #FFFFFF;
-      box-shadow: 0 6px 18px -4px rgba(2, 132, 199, 0.45);
+    .gw-title {
+      font-size: 1.12rem;
+      font-weight: 700;
+      margin: 12px 0 6px;
+      letter-spacing: -0.015em;
     }
 
-    .btn-read:hover svg {
-      transform: translateX(3px);
+    .gw-desc {
+      font-size: 0.84rem;
+      color: var(--fg-muted);
+      line-height: 1.58;
     }
 
-    /* Empty & Loading Skeletons */
-    .empty-state {
-      background: var(--surface);
-      border: 1px dashed var(--border-strong);
-      border-radius: var(--radius-lg);
-      padding: 48px 24px;
-      text-align: center;
+    .gw-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-top: 12px;
+      border-top: 1px solid var(--border);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.76rem;
+      color: var(--accent);
+      font-weight: 600;
     }
 
-    .empty-state h3 { font-size: 1.1rem; margin: 12px 0 6px; }
-    .empty-state p { color: var(--fg-muted); font-size: 0.9rem; margin-bottom: 16px; }
-
-    .skeleton-card {
-      height: 225px;
-      border-radius: var(--radius-lg);
-      background: var(--surface);
-      border: 1px solid var(--border);
-      position: relative;
-      overflow: hidden;
+    .gw-arrow {
+      transition: transform 200ms ease;
     }
 
-    .skeleton-card::after {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(90deg, transparent, var(--surface-hover), transparent);
-      animation: shimmer 1.5s infinite;
-    }
-
-    @keyframes shimmer {
-      0% { transform: translateX(-100%); }
-      100% { transform: translateX(100%); }
+    .tilt-gateway:hover .gw-arrow {
+      transform: translateX(4px);
     }
 
     /* ==========================================================================
-       Slide-Over Immersive Reader Drawer
+       Bottom Live Telemetry & Latest Push Dock
        ========================================================================== */
-    .drawer-backdrop {
-      position: fixed;
-      inset: 0;
-      z-index: 80;
-      background: var(--overlay);
-      backdrop-filter: blur(6px);
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 240ms ease;
-    }
-
-    .drawer-backdrop.open {
-      opacity: 1;
-      pointer-events: auto;
-    }
-
-    .drawer-panel {
-      position: fixed;
-      top: 0;
-      right: 0;
-      bottom: 0;
-      z-index: 90;
-      width: min(890px, 100vw);
-      background: var(--surface-solid);
-      border-left: 1px solid var(--border-strong);
-      box-shadow: var(--shadow-lg);
+    .telemetry-dock {
       display: flex;
-      flex-direction: column;
-      transform: translateX(100%);
-      transition: transform 280ms cubic-bezier(0.22, 1, 0.36, 1);
-    }
-
-    .drawer-panel.open {
-      transform: translateX(0);
-    }
-
-    .drawer-header {
-      padding: 16px 22px;
-      border-bottom: 1px solid var(--border);
-      display: flex;
+      flex-wrap: wrap;
       align-items: center;
       justify-content: space-between;
-      gap: 12px;
-      background: var(--bg-subtle);
-      flex-shrink: 0;
-    }
-
-    .drawer-crumb {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.84rem;
-      color: var(--accent);
-      font-weight: 600;
-      min-width: 0;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-
-    .drawer-header-actions {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      flex-shrink: 0;
-    }
-
-    .drawer-body {
-      flex: 1;
-      overflow-y: auto;
-      padding: 28px 22px 56px;
-    }
-
-    @media (min-width: 768px) {
-      .drawer-body { padding: 34px 40px 64px; }
-    }
-
-    .attachments-box {
-      background: var(--bg-subtle);
+      gap: 16px;
+      padding: 14px 20px;
+      border-radius: 18px;
+      background: var(--surface-glass);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
       border: 1px solid var(--border);
-      border-radius: var(--radius-md);
-      padding: 16px 18px;
-      margin-bottom: 28px;
     }
 
-    .attachments-title {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.78rem;
-      font-weight: 600;
-      text-transform: uppercase;
-      color: var(--fg-muted);
-      margin-bottom: 10px;
+    .dock-metrics {
       display: flex;
+      flex-wrap: wrap;
       align-items: center;
-      justify-content: space-between;
+      gap: 20px;
     }
 
-    .attachments-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
-      gap: 8px;
-    }
-
-    .att-item {
+    .dock-stat {
       display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-      padding: 9px 12px;
-      border-radius: var(--radius-sm);
-      background: var(--surface-solid);
-      border: 1px solid var(--border);
-      text-decoration: none;
-      color: var(--fg);
+      align-items: baseline;
+      gap: 6px;
       font-size: 0.82rem;
-      transition: border-color 160ms ease, transform 160ms ease;
-    }
-
-    .att-item:hover {
-      border-color: var(--accent);
-      transform: translateY(-1px);
-    }
-
-    .att-name {
-      font-family: 'JetBrains Mono', monospace;
-      min-width: 0;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-
-    .att-size {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.73rem;
       color: var(--fg-muted);
+    }
+
+    .dock-stat strong {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 1.05rem;
+      color: var(--fg);
+      font-weight: 700;
+    }
+
+    .dock-latest {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
+      max-width: 100%;
+    }
+
+    .dock-tag {
+      padding: 3px 9px;
+      border-radius: 6px;
+      background: rgba(34, 197, 94, 0.16);
+      color: var(--emerald);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      font-weight: 700;
       flex-shrink: 0;
     }
 
-    .subfile-bar {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-      padding: 12px 16px;
-      margin-bottom: 22px;
-      border-radius: var(--radius-md);
-      background: var(--accent-soft);
-      border: 1px solid var(--accent-border);
-      font-size: 0.85rem;
-    }
-
-    /* Rich Markdown Typography inside Drawer */
-    .md-prose {
+    .dock-commit-link {
+      font-size: 0.84rem;
       color: var(--fg-secondary);
-      font-size: 0.98rem;
-      line-height: 1.75;
-    }
-
-    .md-prose h1 {
-      color: var(--fg);
-      font-size: 1.65rem;
-      line-height: 1.3;
-      margin-bottom: 14px;
-      letter-spacing: -0.02em;
-    }
-
-    .md-prose h2 {
-      color: var(--fg);
-      font-size: 1.25rem;
-      margin: 28px 0 12px;
-      padding-bottom: 8px;
-      border-bottom: 1px solid var(--border);
-    }
-
-    .md-prose h3, .md-prose h4 {
-      color: var(--fg);
-      font-size: 1.06rem;
-      margin: 20px 0 8px;
-    }
-
-    .md-prose p { margin-bottom: 14px; }
-    .md-prose ul, .md-prose ol { margin: 0 0 16px 22px; }
-    .md-prose li { margin-bottom: 6px; }
-
-    .md-prose hr {
-      border: none;
-      border-top: 1px solid var(--border);
-      margin: 24px 0;
-    }
-
-    .md-prose a {
-      color: var(--accent);
-      text-decoration: underline;
-      text-underline-offset: 3px;
-      font-weight: 500;
-    }
-
-    .md-prose a:hover { opacity: 0.85; }
-
-    .md-prose code {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.86em;
-      padding: 2px 6px;
-      border-radius: 5px;
-      background: var(--inline-code-bg);
-      color: var(--inline-code-fg);
-    }
-
-    .md-prose pre {
-      background: var(--code-bg);
-      color: var(--code-fg);
-      padding: 16px 18px;
-      border-radius: var(--radius-md);
-      overflow-x: auto;
-      margin: 14px 0 18px;
-      border: 1px solid var(--border);
-    }
-
-    .md-prose pre code {
-      background: transparent;
-      color: inherit;
-      padding: 0;
-      font-size: 0.84rem;
-    }
-
-    .md-prose blockquote {
-      border-left: 3px solid var(--accent);
-      background: var(--accent-soft);
-      padding: 12px 16px;
-      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
-      margin: 14px 0 18px;
-      color: var(--fg);
-    }
-
-    .md-prose blockquote p:last-child { margin-bottom: 0; }
-
-    .md-table-wrap {
-      overflow-x: auto;
-      margin: 16px 0 22px;
-      border: 1px solid var(--border);
-      border-radius: var(--radius-md);
-    }
-
-    .md-prose table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 0.88rem;
-    }
-
-    .md-prose th, .md-prose td {
-      padding: 10px 14px;
-      border-bottom: 1px solid var(--border);
-      text-align: left;
-      vertical-align: top;
-    }
-
-    .md-prose th {
-      background: var(--bg-subtle);
-      color: var(--fg);
-      font-weight: 600;
+      text-decoration: none;
       white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 440px;
+      transition: color 160ms ease;
     }
 
-    .md-prose tr:last-child td { border-bottom: none; }
-
-    .md-prose img {
-      max-width: 100%;
-      height: auto;
-      border-radius: var(--radius-md);
-      border: 1px solid var(--border);
-      margin: 12px 0;
+    .dock-commit-link:hover {
+      color: var(--accent);
     }
 
-    /* Footer */
-    .site-footer {
-      max-width: 1380px;
-      margin: 0 auto;
-      padding: 24px 28px 48px;
-      border-top: 1px solid var(--border);
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      font-size: 0.84rem;
-      color: var(--fg-muted);
-    }
-
-    .toast {
-      position: fixed;
-      bottom: 22px;
-      right: 22px;
-      z-index: 120;
-      background: var(--fg);
-      color: var(--bg);
-      padding: 11px 16px;
-      border-radius: 10px;
-      font-size: 0.86rem;
-      font-weight: 600;
-      box-shadow: var(--shadow-lg);
-      opacity: 0;
-      transform: translateY(8px);
-      pointer-events: none;
-      transition: opacity 180ms ease, transform 180ms ease;
-    }
-    .toast.show { opacity: 1; transform: translateY(0); }
-
-    /* Strict Accessibility Reduced Motion Support */
+    /* Accessibility: Reduced Motion */
     @media (prefers-reduced-motion: reduce) {
-      html { scroll-behavior: auto; }
       *, *::before, *::after {
         animation-duration: 0.01ms !important;
         animation-iteration-count: 1 !important;
         transition-duration: 0.01ms !important;
       }
-      .lmx-draw-base { stroke-dashoffset: 0 !important; }
-      .lmx-energy-pulse { display: none !important; }
-      #constellationCanvas { display: none !important; }
+      .lmx-main-stroke { stroke-dashoffset: 0 !important; }
+      .lmx-plasma-beam { display: none !important; }
+      .tilt-gateway, .holo-core { transform: none !important; }
     }
   </style>
 </head>
 <body>
-  <!-- Scroll Laser Reading Indicator -->
-  <div class="scroll-laser" id="scrollLaser" aria-hidden="true"></div>
-
-  <!-- Ambient Dynamic Aurora + Constellation Background -->
-  <div class="ambient-stage" aria-hidden="true">
-    <div class="ambient-grid"></div>
-    <div class="aurora-orb orb-one"></div>
-    <div class="aurora-orb orb-two"></div>
-    <div class="aurora-orb orb-three"></div>
-    <canvas id="constellationCanvas"></canvas>
+  <!-- 3D WebGL Interactive Galaxy & Orbital Gravity Stage -->
+  <div class="webgl-stage" aria-hidden="true">
+    <canvas id="nebulaCanvas"></canvas>
+    <div class="horizon-grid"></div>
+    <div class="stage-vignette"></div>
   </div>
 
-  <a href="#mainFeed" class="skip-link">跳转到资源推送流</a>
+  <!-- Hyperspace Warp Overlay -->
+  <div class="warp-curtain" id="warpCurtain" aria-hidden="true"></div>
 
   <!-- Shared SVG Gradient Defs for LMX Brand Mark -->
   <svg width="0" height="0" style="position:absolute" aria-hidden="true">
     <defs>
-      <linearGradient id="lmxNavLight" x1="0%" y1="0%" x2="100%" y2="0%">
+      <linearGradient id="lmxPortalDark" x1="0%" y1="0%" x2="100%" y2="0%">
+        <stop offset="0%" stop-color="#60A5FA" />
+        <stop offset="50%" stop-color="#38BDF8" />
+        <stop offset="100%" stop-color="#22D3EE" />
+      </linearGradient>
+      <linearGradient id="lmxPortalLight" x1="0%" y1="0%" x2="100%" y2="0%">
         <stop offset="0%" stop-color="#172554" />
         <stop offset="52%" stop-color="#1D4ED8" />
         <stop offset="100%" stop-color="#0284C7" />
       </linearGradient>
-      <linearGradient id="lmxNavDark" x1="0%" y1="0%" x2="100%" y2="0%">
-        <stop offset="0%" stop-color="#60A5FA" />
-        <stop offset="52%" stop-color="#38BDF8" />
-        <stop offset="100%" stop-color="#22D3EE" />
-      </linearGradient>
-      <linearGradient id="lmxLaserPulse" x1="0%" y1="0%" x2="100%" y2="0%">
-        <stop offset="0%" stop-color="#38BDF8" stop-opacity="0.1" />
-        <stop offset="50%" stop-color="#FFFFFF" stop-opacity="0.98" />
-        <stop offset="100%" stop-color="#22D3EE" stop-opacity="0.1" />
+      <linearGradient id="lmxPlasmaWhite" x1="0%" y1="0%" x2="100%" y2="0%">
+        <stop offset="0%" stop-color="#38BDF8" stop-opacity="0" />
+        <stop offset="50%" stop-color="#FFFFFF" stop-opacity="1" />
+        <stop offset="100%" stop-color="#22D3EE" stop-opacity="0" />
       </linearGradient>
     </defs>
   </svg>
 
-  <!-- Sticky Glass Header -->
-  <header class="site-header">
-    <div class="header-inner">
-      <a href="#" class="brand-link" id="resetHomeLink" aria-label="TheMando 首页">
-        <svg class="brand-logo-svg" viewBox="0 0 310 172" fill="none" stroke="url(#lmxNavDark)" id="headerLogoSvg" stroke-width="17" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <div class="portal-wrapper">
+    <!-- Top HUD Glass Bar -->
+    <header class="portal-nav">
+      <a href="./index.html" class="nav-brand" aria-label="TheMando 全息主页">
+        <svg class="nav-logo-mini" id="navMiniLogo" viewBox="0 0 310 172" fill="none" stroke="url(#lmxPortalDark)" stroke-width="17" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
           <path d="M 88 22 L 30 114 Q 24 123 35 123 L 96 123 Q 105 123 108 114 L 119 62 Q 123 47 132 60 L 160 112 Q 167 124 171 110 L 182 62 Q 186 46 198 58 L 268 122 Q 280 132 280 116 L 280 62 Q 280 45 268 57 L 168 154" />
         </svg>
-        <div class="brand-meta">
-          <span class="brand-title">TheMando</span>
-          <span class="brand-subtitle">学习资料 · 科研工具动态推送站</span>
-        </div>
+        <span class="nav-brand-text">THEMANDO</span>
       </a>
 
-      <div class="search-box" role="search">
-        <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <circle cx="11" cy="11" r="8"></circle>
-          <path d="m21 21-4.3-4.3"></path>
-        </svg>
-        <input
-          type="search"
-          id="searchInput"
-          class="search-input"
-          placeholder="搜索推送资源：Beamer、uv、论文写作、六级、科目一..."
-          aria-label="搜索全部学习与科研资源"
-          autocomplete="off"
-        />
-        <kbd class="search-kbd" aria-hidden="true">/</kbd>
+      <div class="nav-coords" aria-hidden="true">
+        <span>NODE // GOHMADEIN-THEMANDO</span>
+        <span>·</span>
+        <span id="cursorTelemetry">ORBIT: 0.00° / 0.00°</span>
       </div>
 
-      <div class="header-actions">
-        <button type="button" class="icon-btn" id="refreshSyncBtn" title="立即从 GitHub 仓库拉取最新目录与推送动态" aria-label="立即同步最新仓库内容">
-          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path>
-            <path d="M3 3v5h5"></path>
-            <path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"></path>
-            <path d="M16 16h5v5"></path>
-          </svg>
-          <span class="btn-label-desktop">实时同步</span>
-        </button>
-
-        <button type="button" class="icon-btn" id="themeToggleBtn" aria-label="切换深浅色主题">
-          <svg id="themeIcon" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <div class="nav-actions">
+        <button type="button" class="hud-btn" id="themeBtn" aria-label="切换星云深浅主题">
+          <svg id="themeSvg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <circle cx="12" cy="12" r="4"></circle>
             <path d="M12 2v2M12 20v2m-7.07-14.07 1.41 1.41m11.32 11.32 1.41 1.41M2 12h2m16 0h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"></path>
           </svg>
-          <span class="btn-label-desktop" id="themeLabel">浅色</span>
+          <span id="themeText">浅色</span>
         </button>
 
-        <a href="https://github.com/gohmadein/themando" target="_blank" rel="noopener noreferrer" class="icon-btn" aria-label="访问 GitHub 源仓库">
-          <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+        <a href="./hub.html" class="hud-btn warp-link" style="border-color:var(--border-strong);color:var(--accent);font-weight:600;">
+          <span>推送大厅</span>
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+        </a>
+
+        <a href="https://github.com/gohmadein/themando" target="_blank" rel="noopener noreferrer" class="hud-btn" aria-label="访问 GitHub 仓库">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
             <path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0 1 12 6.844a9.59 9.59 0 0 1 2.504.337c1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.02 10.02 0 0 0 22 12.017C22 6.484 17.522 2 12 2Z"></path>
           </svg>
-          <span class="btn-label-desktop">GitHub</span>
         </a>
       </div>
-    </div>
-  </header>
+    </header>
 
-  <main class="page-shell" id="mainFeed">
-    <!-- Asymmetric Bento Hero Section -->
-    <section class="hero-bento" aria-label="站点动态概览">
-      <!-- Left Main Bento Showcase -->
-      <div class="hero-main-card spotlight-box">
-        <div class="hero-top-split">
-          <div>
-            <div class="live-pill">
-              <span class="pulse-dot" aria-hidden="true"></span>
-              <span id="syncStatusBadge">已连接 gohmadein/themando · 自动识别新目录推送</span>
-            </div>
-            <h1 class="hero-heading">
-              学习资料与科研效率工具<br />
-              <span class="gradient-headline">零构建 · 实时动态推送流</span>
-            </h1>
-            <p class="hero-desc">
-              持续同步本科核心课程归档、AI 编码舰队、LaTeX 组会模板、英文论文强叙事写作与审稿实战指南。仓库每新增一个文件夹或更新文档，此处即刻点亮新卡片推送。
-            </p>
-          </div>
+    <!-- Centerpiece: 3D Holographic LMX Core + Kinetic Decode Hero -->
+    <main class="hero-centerpiece">
+      <div class="holo-core-wrap">
+        <div class="holo-core" id="holoCore">
+          <!-- Counter-rotating Orbital Telemetry Rings -->
+          <svg class="orbital-hud-svg" viewBox="0 0 340 340" fill="none" aria-hidden="true">
+            <g class="ring-cw">
+              <circle cx="170" cy="170" r="154" stroke="currentColor" stroke-opacity="0.22" stroke-width="1" stroke-dasharray="6 10" />
+              <path d="M 170 16 A 154 154 0 0 1 312 110" stroke="#38BDF8" stroke-width="2" stroke-linecap="round" />
+              <circle cx="312" cy="110" r="3.5" fill="#22D3EE" />
+            </g>
+            <g class="ring-ccw">
+              <circle cx="170" cy="170" r="128" stroke="currentColor" stroke-opacity="0.16" stroke-width="1" stroke-dasharray="2 8" />
+              <path d="M 48 215 A 128 128 0 0 0 170 298" stroke="#60A5FA" stroke-width="1.8" stroke-linecap="round" />
+            </g>
+          </svg>
 
-          <!-- Animated LMX Continuous-Stroke Laser Emblem -->
-          <div class="hero-emblem-stage" aria-hidden="true">
-            <svg class="hero-lmx-svg" viewBox="0 0 310 172" fill="none" stroke-linecap="round" stroke-linejoin="round">
-              <path
-                class="lmx-draw-base"
-                id="heroLogoBase"
-                stroke="url(#lmxNavDark)"
-                stroke-width="15.5"
-                d="M 88 22 L 30 114 Q 24 123 35 123 L 96 123 Q 105 123 108 114 L 119 62 Q 123 47 132 60 L 160 112 Q 167 124 171 110 L 182 62 Q 186 46 198 58 L 268 122 Q 280 132 280 116 L 280 62 Q 280 45 268 57 L 168 154"
-              />
-              <path
-                class="lmx-energy-pulse"
-                stroke="url(#lmxLaserPulse)"
-                stroke-width="6"
-                d="M 88 22 L 30 114 Q 24 123 35 123 L 96 123 Q 105 123 108 114 L 119 62 Q 123 47 132 60 L 160 112 Q 167 124 171 110 L 182 62 Q 186 46 198 58 L 268 122 Q 280 132 280 116 L 280 62 Q 280 45 268 57 L 168 154"
-              />
-            </svg>
-          </div>
-        </div>
-
-        <!-- Animated Rolling Stat Counters -->
-        <div class="hero-stats-grid">
-          <div class="stat-tile">
-            <div class="stat-num">
-              <span id="statTopics" data-counter="0">--</span>
-              <span class="stat-unit">专栏</span>
-            </div>
-            <div class="stat-caption">自动发现推送目录</div>
-          </div>
-          <div class="stat-tile">
-            <div class="stat-num">
-              <span id="statFiles" data-counter="0">--</span>
-              <span class="stat-unit">文件</span>
-            </div>
-            <div class="stat-caption">仓库在线直链与模板</div>
-          </div>
-          <div class="stat-tile">
-            <div class="stat-num">
-              <span id="statReleases">23</span>
-              <span class="stat-unit">大包 / 86 分卷</span>
-            </div>
-            <div class="stat-caption">Releases 高速归档</div>
-          </div>
+          <!-- Finalized Connected LMX Mark with Bloom + Laser Plasma -->
+          <svg class="core-lmx-svg" viewBox="0 0 310 172" fill="none" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="LMX 全息能量标志">
+            <path
+              class="lmx-bloom-layer"
+              id="coreBloomPath"
+              stroke="url(#lmxPortalDark)"
+              stroke-width="19"
+              d="M 88 22 L 30 114 Q 24 123 35 123 L 96 123 Q 105 123 108 114 L 119 62 Q 123 47 132 60 L 160 112 Q 167 124 171 110 L 182 62 Q 186 46 198 58 L 268 122 Q 280 132 280 116 L 280 62 Q 280 45 268 57 L 168 154"
+            />
+            <path
+              class="lmx-main-stroke"
+              id="coreMainPath"
+              stroke="url(#lmxPortalDark)"
+              stroke-width="15.5"
+              d="M 88 22 L 30 114 Q 24 123 35 123 L 96 123 Q 105 123 108 114 L 119 62 Q 123 47 132 60 L 160 112 Q 167 124 171 110 L 182 62 Q 186 46 198 58 L 268 122 Q 280 132 280 116 L 280 62 Q 280 45 268 57 L 168 154"
+            />
+            <path
+              class="lmx-plasma-beam"
+              stroke="url(#lmxPlasmaWhite)"
+              stroke-width="6.5"
+              d="M 88 22 L 30 114 Q 24 123 35 123 L 96 123 Q 105 123 108 114 L 119 62 Q 123 47 132 60 L 160 112 Q 167 124 171 110 L 182 62 Q 186 46 198 58 L 268 122 Q 280 132 280 116 L 280 62 Q 280 45 268 57 L 168 154"
+            />
+          </svg>
         </div>
       </div>
 
-      <!-- Right Bento Live Git Commit Radar -->
-      <div class="push-radar-card spotlight-box" aria-label="最近仓库更新动态">
-        <div class="radar-header">
-          <span class="radar-title-left">
-            <svg class="radar-sweep-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <path d="M19.07 4.93A10 10 0 0 0 6.99 3.34"/><path d="M4 6h.01"/><path d="M2.29 9.62A10 10 0 1 0 21.31 8.35"/><path d="M16.24 7.76A6 6 0 1 0 8.23 16.67"/><path d="M12 18h.01"/><path d="M17.99 11.66A6 6 0 0 1 15.77 16.67"/><circle cx="12" cy="12" r="2"/><path d="m13.41 10.59 5.66-5.66"/>
-            </svg>
-            <span>实时推送雷达 (Git Commits)</span>
-          </span>
-          <a href="https://github.com/gohmadein/themando/commits/main/" target="_blank" rel="noopener noreferrer" style="color:var(--accent);text-decoration:none;">全部记录 →</a>
-        </div>
-        <ul class="radar-list" id="commitRadarList">
-          <li class="radar-item"><span class="radar-msg">正在同步仓库最新提交记录...</span><span class="radar-time">--</span></li>
-        </ul>
+      <div class="telemetry-pill">
+        <span class="radar-dot" aria-hidden="true"></span>
+        <span id="liveTelemetryLabel">NEBULA ENGINE ACTIVE · 实时联动 GitHub 资源星系</span>
+      </div>
+
+      <h1 class="portal-title">
+        探索学习与科研的<br />
+        <span class="holo-text">全息知识与工具引力场</span>
+      </h1>
+
+      <div class="decode-line" id="decodeSubtitle" aria-live="polite">
+        // 01 · 本科全学期核心课程与备考归档
+      </div>
+
+      <p class="portal-lead">
+        集结计算机与 AI 课程复习大包、智能体编程舰队、LaTeX 组会幻灯片模板与英文学术论文强叙事写作技能。每次向仓库推送新目录，资源星系即刻自动扩张。
+      </p>
+
+      <!-- Magnetic CTA + Instant Portal Search -->
+      <div class="cta-command-row">
+        <a href="./hub.html" class="plasma-cta warp-link" id="magneticCta">
+          <span>进入资源推送舱</span>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+        </a>
+
+        <form class="portal-search-form" id="portalSearchForm" role="search">
+          <svg class="portal-search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="11" cy="11" r="8"></circle>
+            <path d="m21 21-4.3-4.3"></path>
+          </svg>
+          <input
+            type="search"
+            id="portalSearchInput"
+            class="portal-search-input"
+            placeholder="输入关键词直达资源舱 (如 Beamer, uv, 六级)..."
+            aria-label="全局检索并跃迁至资源推送舱"
+            autocomplete="off"
+          />
+          <kbd class="portal-search-kbd" aria-hidden="true">/</kbd>
+        </form>
+      </div>
+    </main>
+
+    <!-- 4 Interactive 3D Tilt Holographic Gateways -->
+    <section class="gateways-section" aria-label="核心板块跃迁入口">
+      <div class="gateways-grid">
+        <a href="./hub.html?channel=CAT:%E5%AD%A6%E4%B9%A0" class="tilt-gateway warp-link">
+          <span class="hud-corner" aria-hidden="true"></span>
+          <div>
+            <div class="gw-top">
+              <span class="gw-icon-box">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/></svg>
+              </span>
+              <span class="gw-code">SECTOR // 01</span>
+            </div>
+            <h2 class="gw-title">学习资源星系</h2>
+            <p class="gw-desc">大一至大三全套课程归档、机器学习与深度学习实验、数学建模、六级备考与驾考手写重点笔记。</p>
+          </div>
+          <div class="gw-footer">
+            <span id="gwStudyCount">含 23 项 Release 大包</span>
+            <span class="gw-arrow">跃迁进入 →</span>
+          </div>
+        </a>
+
+        <a href="./hub.html?channel=CAT:%E7%A7%91%E7%A0%94" class="tilt-gateway warp-link">
+          <span class="hud-corner" aria-hidden="true"></span>
+          <div>
+            <div class="gw-top">
+              <span class="gw-icon-box">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 2v7.31"/><path d="M14 9.3V1.99"/><path d="M8.5 2h7"/><path d="M14 9.3a6.5 6.5 0 1 1-4 0"/><path d="M5.52 16h12.96"/></svg>
+              </span>
+              <span class="gw-code">SECTOR // 02</span>
+            </div>
+            <h2 class="gw-title">科研效率矩阵</h2>
+            <p class="gw-desc">AI 智能体编排（Orca）、LaTeX Beamer 16:9 模板、`uv` 极速环境管理、Optuna 调参与国际期刊审稿范例。</p>
+          </div>
+          <div class="gw-footer">
+            <span id="gwResearchCount">8 大科研实战专栏</span>
+            <span class="gw-arrow">跃迁进入 →</span>
+          </div>
+        </a>
+
+        <a href="./hub.html?channel=TAG:AI%20Skill" class="tilt-gateway warp-link">
+          <span class="hud-corner" aria-hidden="true"></span>
+          <div>
+            <div class="gw-top">
+              <span class="gw-icon-box">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="16" height="16" x="4" y="4" rx="2"/><rect width="6" height="6" x="9" y="9" rx="1"/><path d="M15 2v2M15 20v2M2 15h2M2 9h2M20 15h2M20 9h2M9 2v2M9 20v2"/></svg>
+              </span>
+              <span class="gw-code">SECTOR // 03</span>
+            </div>
+            <h2 class="gw-title">AI Skills 武器库</h2>
+            <p class="gw-desc">收录英文论文反防御性写作（发布会原则重构主线）与自动化幻灯片构建技能，支持在线抽屉阅读源码。</p>
+          </div>
+          <div class="gw-footer">
+            <span id="gwSkillCount">精选 Agent 技能</span>
+            <span class="gw-arrow">跃迁进入 →</span>
+          </div>
+        </a>
+
+        <a href="./hub.html?view=timeline" class="tilt-gateway warp-link">
+          <span class="hud-corner" aria-hidden="true"></span>
+          <div>
+            <div class="gw-top">
+              <span class="gw-icon-box">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+              </span>
+              <span class="gw-code">SECTOR // 04</span>
+            </div>
+            <h2 class="gw-title">实时推送时间线</h2>
+            <p class="gw-desc">按 Git 提交时序追踪仓库每一次新增文件夹与文档迭代，零构建自动捕获最新鲜的科研与学习动态。</p>
+          </div>
+          <div class="gw-footer">
+            <span>LIVE COMMITS</span>
+            <span class="gw-arrow">时间线视图 →</span>
+          </div>
+        </a>
       </div>
     </section>
 
-    <!-- Live Push Stream Marquee Ticker -->
-    <div class="ticker-bar" aria-label="精选资源快讯流">
-      <span class="ticker-badge">
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-        PUSH LIVE
-      </span>
-      <div class="ticker-viewport">
-        <div class="ticker-track" id="tickerTrack">
-          <span style="font-size:0.83rem;color:var(--fg-muted)">正在连接实时推送流...</span>
-        </div>
+    <!-- Bottom Live Telemetry & Pre-Warmed Cache Dock -->
+    <footer class="telemetry-dock" aria-label="实时仓库遥测数据">
+      <div class="dock-metrics">
+        <div class="dock-stat">推送专栏 <strong id="dockTopics">12</strong></div>
+        <div class="dock-stat">直链文件 <strong id="dockFiles">46</strong></div>
+        <div class="dock-stat">分卷归档 <strong>86 卷</strong></div>
       </div>
-      <button type="button" class="ticker-pause-btn" id="tickerPauseBtn" aria-label="暂停滚动快讯" aria-pressed="false" title="暂停 / 恢复滚动">
-        <svg id="tickerPauseIcon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/>
-        </svg>
-      </button>
-    </div>
 
-    <!-- Hybrid Feed Grid -->
-    <div class="hub-grid">
-      <!-- Left Channels Sidebar -->
-      <aside class="sidebar" aria-label="资源频道筛选">
-        <div class="sidebar-panel">
-          <div class="panel-title">订阅频道 / 板块</div>
-          <nav class="channel-nav" id="channelNav"></nav>
-        </div>
-
-        <div class="guide-card">
-          <h3>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>
-            大文件分卷一键还原
-          </h3>
-          <p>超过 GitHub 单文件限制的学期课程包托管在 Releases 中，支持 CLI 一键拉取并自动校验 SHA-256：</p>
-          <code class="guide-code">gh release download study-materials-20261014 --repo gohmadein/themando<br/>py -3 restore.py</code>
-          <a href="https://github.com/gohmadein/themando/releases/tag/study-materials-20261014" target="_blank" rel="noopener noreferrer" style="color:var(--accent);font-weight:600;text-decoration:none;font-size:0.82rem;">前往 Releases 下载中心 →</a>
-        </div>
-      </aside>
-
-      <!-- Right Stream Content -->
-      <section aria-label="资源推送列表">
-        <div class="feed-toolbar">
-          <div class="feed-status" id="feedStatusText" role="status" aria-atomic="true">
-            正在扫描仓库资源目录...
-          </div>
-          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
-            <div class="sort-group" role="group" aria-label="排序切换">
-              <button type="button" class="sort-btn" data-sort="latest" aria-pressed="true">最新更新优先</button>
-              <button type="button" class="sort-btn" data-sort="category" aria-pressed="false">按目录归类</button>
-            </div>
-            <div class="sort-group" role="group" aria-label="布局视图">
-              <button type="button" class="sort-btn" data-view="cards" aria-pressed="true">卡片流</button>
-              <button type="button" class="sort-btn" data-view="timeline" aria-pressed="false">时间线</button>
-            </div>
-          </div>
-        </div>
-
-        <div class="feed-grid mode-cards" id="feedContainer">
-          <div class="skeleton-card"></div>
-          <div class="skeleton-card"></div>
-          <div class="skeleton-card"></div>
-          <div class="skeleton-card"></div>
-        </div>
-      </section>
-    </div>
-  </main>
-
-  <footer class="site-footer">
-    <div style="display:flex;align-items:center;gap:10px;">
-      <span><strong>TheMando</strong> · Live Aurora Resource Push Hub</span>
-    </div>
-    <div>
-      只需向 <code>gohmadein/themando</code> 推送新文件夹与 <code>README.md</code>，本站将零构建自动点亮新资源卡片。
-    </div>
-  </footer>
-
-  <!-- Slide-Over Immersive Markdown & Attachment Drawer -->
-  <div class="drawer-backdrop" id="drawerBackdrop" aria-hidden="true"></div>
-  <aside class="drawer-panel" id="drawerPanel" role="dialog" aria-modal="true" aria-labelledby="drawerCrumb" aria-hidden="true">
-    <div class="drawer-header">
-      <div class="drawer-crumb" id="drawerCrumb">加载中...</div>
-      <div class="drawer-header-actions">
-        <button type="button" class="icon-btn" id="copyShareLinkBtn" title="复制该资源直达分享链接">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
-          <span>分享链接</span>
-        </button>
-        <a href="#" target="_blank" rel="noopener noreferrer" class="icon-btn" id="drawerGithubBtn">
-          <span>在 GitHub 查看</span>
+      <div class="dock-latest">
+        <span class="dock-tag">LATEST PUSH</span>
+        <a href="./hub.html" class="dock-commit-link warp-link" id="dockLatestCommit">
+          正在连接 gohmadein/themando 获取最新推送信号...
         </a>
-        <button type="button" class="icon-btn" id="closeDrawerBtn" aria-label="关闭阅读抽屉">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
-        </button>
       </div>
-    </div>
-    <div class="drawer-body" id="drawerBody"></div>
-  </aside>
+    </footer>
+  </div>
 
-  <div class="toast" id="toast" role="status" aria-live="polite"></div>
-
-  <!-- Marked.js + DOMPurify from jsDelivr with safe native fallback -->
-  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/dompurify@3.1.6/dist/purify.min.js"></script>
+  <!-- Three.js WebGL Engine (with automatic pure-Canvas 3D fallback if offline) -->
+  <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
   <script>
     const REPO_OWNER = 'gohmadein';
     const REPO_NAME = 'themando';
     const BRANCH = 'main';
-    const CACHE_KEY = 'themando_feed_cache_v2';
+    const CACHE_KEY = 'themando_feed_cache_v3';
     const COMMIT_CACHE_KEY = 'themando_commit_map_v1';
     const CACHE_TTL_MS = 5 * 60 * 1000;
-
     const IGNORED_ROOT_FILES = new Set([
-      '.gitignore', '.nojekyll', 'index.html', 'logo.svg', 'favicon.svg', 'CNAME', 'LICENSE'
+      '.gitignore', '.nojekyll', 'index.html', 'hub.html', 'logo.svg', 'favicon.svg', 'CNAME', 'LICENSE'
     ]);
 
-    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
-
-    const appState = {
-      theme: localStorage.getItem('themando_theme') || 'dark',
-      channel: 'ALL',
-      query: '',
-      sortBy: 'latest',
-      viewMode: 'cards',
-      posts: [],
-      commits: [],
-      totalFilesCount: 0,
-      tickerPaused: false,
-      lastFocusedEl: null
-    };
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+    let warpSpeedMultiplier = 1;
+    let currentTheme = localStorage.getItem('themando_theme') || 'dark';
 
     /* ========================================================================
-       1. Dynamic Constellation Particle Network + Scroll Laser + Spotlight
+       1. Theme Switcher (Synchronized with hub.html via localStorage)
        ======================================================================== */
-    function initConstellationCanvas() {
-      const canvas = document.getElementById('constellationCanvas');
-      if (!canvas || prefersReducedMotion.matches) return;
-      const ctx = canvas.getContext('2d');
-      let w = 0, h = 0, particles = [], rafId = null;
-      const mouse = { x: -9999, y: -9999 };
-
-      function resize() {
-        w = canvas.width = window.innerWidth;
-        h = canvas.height = window.innerHeight;
-        const count = Math.min(46, Math.max(18, Math.floor((w * h) / 36000)));
-        particles = Array.from({ length: count }, () => ({
-          x: Math.random() * w,
-          y: Math.random() * h,
-          vx: (Math.random() - 0.5) * 0.34,
-          vy: (Math.random() - 0.5) * 0.34,
-          r: Math.random() * 1.6 + 0.8
-        }));
-      }
-
-      window.addEventListener('resize', resize, { passive: true });
-      window.addEventListener('pointermove', (e) => {
-        mouse.x = e.clientX;
-        mouse.y = e.clientY;
-      }, { passive: true });
-      window.addEventListener('pointerleave', () => {
-        mouse.x = -9999;
-        mouse.y = -9999;
-      });
-
-      function step() {
-        if (document.hidden) {
-          rafId = requestAnimationFrame(step);
-          return;
-        }
-        ctx.clearRect(0, 0, w, h);
-        const rgb = appState.theme === 'dark' ? '56, 189, 248' : '29, 78, 216';
-
-        for (let i = 0; i < particles.length; i++) {
-          const p = particles[i];
-          p.x += p.vx;
-          p.y += p.vy;
-          if (p.x < 0 || p.x > w) p.vx *= -1;
-          if (p.y < 0 || p.y > h) p.vy *= -1;
-
-          // Gentle attraction/interaction near pointer
-          const mdx = mouse.x - p.x;
-          const mdy = mouse.y - p.y;
-          const mDist = Math.hypot(mdx, mdy);
-          if (mDist < 170) {
-            ctx.beginPath();
-            ctx.moveTo(p.x, p.y);
-            ctx.lineTo(mouse.x, mouse.y);
-            ctx.strokeStyle = `rgba(${rgb}, ${(1 - mDist / 170) * 0.24})`;
-            ctx.lineWidth = 0.9;
-            ctx.stroke();
-          }
-
-          ctx.beginPath();
-          ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-          ctx.fillStyle = `rgba(${rgb}, 0.42)`;
-          ctx.fill();
-
-          for (let j = i + 1; j < particles.length; j++) {
-            const q = particles[j];
-            const dist = Math.hypot(p.x - q.x, p.y - q.y);
-            if (dist < 135) {
-              ctx.beginPath();
-              ctx.moveTo(p.x, p.y);
-              ctx.lineTo(q.x, q.y);
-              ctx.strokeStyle = `rgba(${rgb}, ${(1 - dist / 135) * 0.14})`;
-              ctx.lineWidth = 0.75;
-              ctx.stroke();
-            }
-          }
-        }
-        rafId = requestAnimationFrame(step);
-      }
-
-      resize();
-      step();
-    }
-
-    function bindSpotlightTracking(root = document) {
-      root.querySelectorAll('.spotlight-box').forEach(box => {
-        if (box._spotlightBound) return;
-        box._spotlightBound = true;
-        box.addEventListener('pointermove', (e) => {
-          const rect = box.getBoundingClientRect();
-          box.style.setProperty('--mx', `${e.clientX - rect.left}px`);
-          box.style.setProperty('--my', `${e.clientY - rect.top}px`);
-        }, { passive: true });
-      });
-    }
-
-    function updateScrollLaser() {
-      const bar = document.getElementById('scrollLaser');
-      if (!bar) return;
-      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
-      const ratio = docHeight > 0 ? Math.min(1, Math.max(0, window.scrollY / docHeight)) : 0;
-      bar.style.transform = `scaleX(${ratio})`;
-    }
-    window.addEventListener('scroll', updateScrollLaser, { passive: true });
-
-    function animateCounter(el, targetValue) {
-      if (!el) return;
-      if (prefersReducedMotion.matches) {
-        el.textContent = String(targetValue);
-        return;
-      }
-      const startVal = parseInt(el.getAttribute('data-counter') || '0', 10) || 0;
-      el.setAttribute('data-counter', String(targetValue));
-      const duration = 680;
-      const startTime = performance.now();
-
-      function tick(now) {
-        const progress = Math.min(1, (now - startTime) / duration);
-        const eased = 1 - Math.pow(1 - progress, 3);
-        el.textContent = String(Math.round(startVal + (targetValue - startVal) * eased));
-        if (progress < 1) requestAnimationFrame(tick);
-      }
-      requestAnimationFrame(tick);
-    }
-
-    /* ========================================================================
-       2. Theme Management
-       ======================================================================== */
-    function applyTheme(theme) {
-      appState.theme = theme;
+    function applyPortalTheme(theme) {
+      currentTheme = theme;
       document.documentElement.setAttribute('data-theme', theme);
       localStorage.setItem('themando_theme', theme);
-      const gradRef = theme === 'dark' ? 'url(#lmxNavDark)' : 'url(#lmxNavLight)';
-      const logoSvg = document.getElementById('headerLogoSvg');
-      const heroLogoBase = document.getElementById('heroLogoBase');
-      if (logoSvg) logoSvg.setAttribute('stroke', gradRef);
-      if (heroLogoBase) heroLogoBase.setAttribute('stroke', gradRef);
 
-      const label = document.getElementById('themeLabel');
-      const icon = document.getElementById('themeIcon');
+      const grad = theme === 'dark' ? 'url(#lmxPortalDark)' : 'url(#lmxPortalLight)';
+      document.getElementById('navMiniLogo').setAttribute('stroke', grad);
+      document.getElementById('coreBloomPath').setAttribute('stroke', grad);
+      document.getElementById('coreMainPath').setAttribute('stroke', grad);
+
+      const tText = document.getElementById('themeText');
+      const tSvg = document.getElementById('themeSvg');
       if (theme === 'dark') {
-        label.textContent = '浅色';
-        icon.innerHTML = '<circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2m-7.07-14.07 1.41 1.41m11.32 11.32 1.41 1.41M2 12h2m16 0h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"></path>';
+        tText.textContent = '浅色';
+        tSvg.innerHTML = '<circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2m-7.07-14.07 1.41 1.41m11.32 11.32 1.41 1.41M2 12h2m16 0h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"></path>';
       } else {
-        label.textContent = '深色';
-        icon.innerHTML = '<path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"></path>';
+        tText.textContent = '深色';
+        tSvg.innerHTML = '<path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"></path>';
       }
+      if (window._updateThreeTheme) window._updateThreeTheme(theme);
     }
-    applyTheme(appState.theme);
+    applyPortalTheme(currentTheme);
 
-    document.getElementById('themeToggleBtn').addEventListener('click', () => {
-      applyTheme(appState.theme === 'dark' ? 'light' : 'dark');
+    document.getElementById('themeBtn').addEventListener('click', () => {
+      applyPortalTheme(currentTheme === 'dark' ? 'light' : 'dark');
     });
 
-    function showToast(msg) {
-      const t = document.getElementById('toast');
-      t.textContent = msg;
-      t.classList.add('show');
-      clearTimeout(t._timer);
-      t._timer = setTimeout(() => t.classList.remove('show'), 2400);
+    /* ========================================================================
+       2. 3D WebGL Spiral Nebula & Orbital Gyroscope Engine (Three.js + Fallback)
+       ======================================================================== */
+    function init3DNebulaStage() {
+      const canvas = document.getElementById('nebulaCanvas');
+      if (!canvas) return;
+
+      const pointer = { nx: 0, ny: 0 };
+      const telemetryEl = document.getElementById('cursorTelemetry');
+
+      window.addEventListener('pointermove', (e) => {
+        pointer.nx = (e.clientX / window.innerWidth) * 2 - 1;
+        pointer.ny = -(e.clientY / window.innerHeight) * 2 + 1;
+        if (telemetryEl) {
+          telemetryEl.textContent = `ORBIT: ${(pointer.ny * 18).toFixed(2)}° / ${(pointer.nx * 24).toFixed(2)}°`;
+        }
+      }, { passive: true });
+
+      if (window.THREE) {
+        try {
+          const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true, powerPreference: 'high-performance' });
+          renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+          renderer.setSize(window.innerWidth, window.innerHeight);
+
+          const scene = new THREE.Scene();
+          const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+          camera.position.set(0, 5.5, 22);
+
+          // Procedural soft glowing star sprite
+          const spriteCanvas = document.createElement('canvas');
+          spriteCanvas.width = 64;
+          spriteCanvas.height = 64;
+          const sCtx = spriteCanvas.getContext('2d');
+          const radGrad = sCtx.createRadialGradient(32, 32, 0, 32, 32, 32);
+          radGrad.addColorStop(0, 'rgba(255,255,255,1)');
+          radGrad.addColorStop(0.32, 'rgba(125,211,252,0.85)');
+          radGrad.addColorStop(0.7, 'rgba(29,78,216,0.22)');
+          radGrad.addColorStop(1, 'rgba(0,0,0,0)');
+          sCtx.fillStyle = radGrad;
+          sCtx.fillRect(0, 0, 64, 64);
+          const starTexture = new THREE.CanvasTexture(spriteCanvas);
+
+          // 3,400-particle 3-arm Spiral Galaxy + Deep Space Halo
+          const count = 3400;
+          const positions = new Float32Array(count * 3);
+          const colors = new Float32Array(count * 3);
+
+          const cCore = new THREE.Color('#E0F2FE');
+          const cMid = new THREE.Color('#38BDF8');
+          const cOuter = new THREE.Color('#1D4ED8');
+          const cDeep = new THREE.Color('#172554');
+
+          for (let i = 0; i < count; i++) {
+            const i3 = i * 3;
+            if (i < 2500) {
+              const radius = Math.pow(Math.random(), 1.35) * 24 + 1.2;
+              const branchAngle = ((i % 3) / 3) * Math.PI * 2;
+              const spinAngle = radius * 0.36;
+              const scatter = (Math.random() - 0.5) * 2.6 * (1 - radius / 30 + 0.25);
+
+              positions[i3] = Math.cos(branchAngle + spinAngle) * radius + scatter;
+              positions[i3 + 1] = (Math.random() - 0.5) * (3.4 - Math.min(2.6, radius * 0.1));
+              positions[i3 + 2] = Math.sin(branchAngle + spinAngle) * radius + scatter;
+
+              const t = Math.min(1, radius / 22);
+              const mixed = cCore.clone().lerp(t < 0.45 ? cMid : cOuter, t);
+              if (t > 0.78) mixed.lerp(cDeep, (t - 0.78) / 0.22);
+              colors[i3] = mixed.r;
+              colors[i3 + 1] = mixed.g;
+              colors[i3 + 2] = mixed.b;
+            } else {
+              // Ambient 3D floating starfield shell
+              positions[i3] = (Math.random() - 0.5) * 70;
+              positions[i3 + 1] = (Math.random() - 0.5) * 45;
+              positions[i3 + 2] = (Math.random() - 0.5) * 60;
+              colors[i3] = 0.22;
+              colors[i3 + 1] = 0.74;
+              colors[i3 + 2] = 0.97;
+            }
+          }
+
+          const geo = new THREE.BufferGeometry();
+          geo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+          geo.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+
+          const mat = new THREE.PointsMaterial({
+            size: 0.34,
+            map: starTexture,
+            vertexColors: true,
+            transparent: true,
+            opacity: currentTheme === 'dark' ? 0.92 : 0.55,
+            depthWrite: false,
+            blending: currentTheme === 'dark' ? THREE.AdditiveBlending : THREE.NormalBlending
+          });
+
+          const galaxy = new THREE.Points(geo, mat);
+          galaxy.rotation.x = 0.32;
+          scene.add(galaxy);
+
+          // 3D Concentric Gyroscope Energy Rings
+          const gyroGroup = new THREE.Group();
+          const ringMat1 = new THREE.MeshBasicMaterial({ color: 0x38bdf8, transparent: true, opacity: 0.22, wireframe: true });
+          const ringMat2 = new THREE.MeshBasicMaterial({ color: 0x1d4ed8, transparent: true, opacity: 0.18, wireframe: true });
+
+          const ringA = new THREE.Mesh(new THREE.TorusGeometry(6.5, 0.035, 8, 96), ringMat1);
+          const ringB = new THREE.Mesh(new THREE.TorusGeometry(9.2, 0.03, 8, 110), ringMat2);
+          ringA.rotation.x = Math.PI * 0.42;
+          ringB.rotation.y = Math.PI * 0.28;
+          ringB.rotation.x = Math.PI * 0.62;
+          gyroGroup.add(ringA, ringB);
+          scene.add(gyroGroup);
+
+          window._updateThreeTheme = (th) => {
+            mat.opacity = th === 'dark' ? 0.92 : 0.48;
+            mat.blending = th === 'dark' ? THREE.AdditiveBlending : THREE.NormalBlending;
+            mat.needsUpdate = true;
+          };
+
+          window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+          }, { passive: true });
+
+          let lastTime = performance.now();
+          function animateThree(now) {
+            requestAnimationFrame(animateThree);
+            if (document.hidden) return;
+            const dt = Math.min(0.05, (now - lastTime) / 1000);
+            lastTime = now;
+
+            if (!reducedMotion.matches) {
+              galaxy.rotation.y += dt * 0.085 * warpSpeedMultiplier;
+              ringA.rotation.z += dt * 0.22 * warpSpeedMultiplier;
+              ringB.rotation.x -= dt * 0.16 * warpSpeedMultiplier;
+
+              // Smooth 3D camera parallax toward pointer + hyperspace zoom on warp
+              const targetX = pointer.nx * 3.8;
+              const targetY = 5.2 + pointer.ny * 2.4;
+              const targetZ = warpSpeedMultiplier > 1 ? 6.5 : 22;
+
+              camera.position.x += (targetX - camera.position.x) * 0.05;
+              camera.position.y += (targetY - camera.position.y) * 0.05;
+              camera.position.z += (targetZ - camera.position.z) * (warpSpeedMultiplier > 1 ? 0.12 : 0.05);
+            }
+            camera.lookAt(0, 0.6, 0);
+            renderer.render(scene, camera);
+          }
+
+          renderer.render(scene, camera);
+          requestAnimationFrame(animateThree);
+          return;
+        } catch (e) {
+          console.warn('WebGL fallback activated:', e);
+        }
+      }
+
+      // Pure 2D Canvas 3D-Projection Starfield Fallback if WebGL/CDN unavailable
+      const ctx = canvas.getContext('2d');
+      let w = canvas.width = window.innerWidth;
+      let h = canvas.height = window.innerHeight;
+      const stars = Array.from({ length: 380 }, () => ({
+        x: (Math.random() - 0.5) * 1600,
+        y: (Math.random() - 0.5) * 1000,
+        z: Math.random() * 1200 + 80
+      }));
+      window.addEventListener('resize', () => {
+        w = canvas.width = window.innerWidth;
+        h = canvas.height = window.innerHeight;
+      }, { passive: true });
+
+      function drawFallback() {
+        requestAnimationFrame(drawFallback);
+        if (document.hidden) return;
+        ctx.clearRect(0, 0, w, h);
+        const cx = w / 2 + pointer.nx * 45;
+        const cy = h / 2 - pointer.ny * 35;
+        for (const s of stars) {
+          if (!reducedMotion.matches) s.z -= 2.2 * warpSpeedMultiplier;
+          if (s.z <= 20) s.z = 1200;
+          const k = 320 / s.z;
+          const px = cx + s.x * k;
+          const py = cy + s.y * k;
+          if (px < 0 || px > w || py < 0 || py > h) continue;
+          const size = Math.max(0.6, (1 - s.z / 1200) * 2.8);
+          ctx.fillStyle = `rgba(56, 189, 248, ${(1 - s.z / 1200) * 0.85})`;
+          ctx.beginPath();
+          ctx.arc(px, py, size, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      }
+      drawFallback();
     }
 
     /* ========================================================================
-       3. Utilities & GitHub Auto-Discovery Engine (Rate-Limit Safe)
+       3. 3D Holographic Core Tilt + Gateway Card Tilt + Magnetic CTA + Warp
        ======================================================================== */
-    function encodeRepoPath(p) {
-      return p.split('/').map(encodeURIComponent).join('/');
-    }
+    function initInteractivePhysics() {
+      if (reducedMotion.matches) return;
 
-    function rawFileUrl(path) {
-      return `https://raw.githubusercontent.com/${REPO_OWNER}/${REPO_NAME}/${BRANCH}/${encodeRepoPath(path)}`;
-    }
-
-    function githubBlobUrl(path, isDir = false) {
-      if (!path) return `https://github.com/${REPO_OWNER}/${REPO_NAME}`;
-      const kind = isDir ? 'tree' : 'blob';
-      return `https://github.com/${REPO_OWNER}/${REPO_NAME}/${kind}/${BRANCH}/${encodeRepoPath(path)}`;
-    }
-
-    function formatBytes(bytes) {
-      if (!bytes && bytes !== 0) return '';
-      if (bytes < 1024) return bytes + ' B';
-      if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
-      return (bytes / (1024 * 1024)).toFixed(2) + ' MB';
-    }
-
-    function formatRelativeTime(isoStr) {
-      if (!isoStr) return '精选收录';
-      const date = new Date(isoStr);
-      const diffSec = Math.max(0, Math.floor((Date.now() - date.getTime()) / 1000));
-      if (diffSec < 60) return '刚刚推送';
-      if (diffSec < 3600) return `${Math.floor(diffSec / 60)} 分钟前`;
-      if (diffSec < 86400) return `${Math.floor(diffSec / 3600)} 小时前`;
-      const days = Math.floor(diffSec / 86400);
-      if (days <= 30) return `${days} 天前更新`;
-      return isoStr.slice(0, 10);
-    }
-
-    function isRecent(isoStr, withinDays = 14) {
-      if (!isoStr) return false;
-      return (Date.now() - new Date(isoStr).getTime()) < withinDays * 86400 * 1000;
-    }
-
-    function stripMarkdownExcerpt(md) {
-      const lines = md.split(/\r?\n/);
-      let title = '';
-      const bodyLines = [];
-      for (const raw of lines) {
-        const line = raw.trim();
-        if (!line) continue;
-        if (!title && line.startsWith('# ')) {
-          title = line.replace(/^#+\s*/, '').trim();
-          continue;
-        }
-        if (line.startsWith('#') || line.startsWith('|') || line.startsWith('---') || line.startsWith('```') || line.startsWith('![')) {
-          continue;
-        }
-        const cleaned = line
-          .replace(/^[-*>]\s+/, '')
-          .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
-          .replace(/[`*_~]/g, '')
-          .trim();
-        if (cleaned.length > 8) {
-          bodyLines.push(cleaned);
-          if (bodyLines.join(' ').length > 160) break;
-        }
+      // 3D Holographic LMX Core Tilt
+      const holoCore = document.getElementById('holoCore');
+      if (holoCore) {
+        window.addEventListener('pointermove', (e) => {
+          const rx = ((e.clientY / window.innerHeight) - 0.4) * -14;
+          const ry = ((e.clientX / window.innerWidth) - 0.5) * 18;
+          holoCore.style.transform = `rotateX(${rx.toFixed(2)}deg) rotateY(${ry.toFixed(2)}deg)`;
+          holoCore.style.setProperty('--gx', `${(e.clientX / window.innerWidth) * 100}%`);
+          holoCore.style.setProperty('--gy', `${(e.clientY / window.innerHeight) * 100}%`);
+        }, { passive: true });
       }
-      return {
-        title,
-        excerpt: bodyLines.join(' ') || '点击展开阅读完整目录说明与资源直链。'
-      };
-    }
 
-    async function buildCommitFolderDates(commitsList) {
-      let commitMap = {};
-      try {
-        commitMap = JSON.parse(localStorage.getItem(COMMIT_CACHE_KEY) || '{}') || {};
-      } catch (_) {}
+      // 3D Tilt + Specular Glare on the 4 Gateway Cards
+      document.querySelectorAll('.tilt-gateway').forEach(card => {
+        card.addEventListener('pointermove', (e) => {
+          const r = card.getBoundingClientRect();
+          const x = e.clientX - r.left;
+          const y = e.clientY - r.top;
+          const rx = ((y / r.height) - 0.5) * -11;
+          const ry = ((x / r.width) - 0.5) * 11;
+          card.style.setProperty('--rx', `${rx.toFixed(2)}deg`);
+          card.style.setProperty('--ry', `${ry.toFixed(2)}deg`);
+          card.style.setProperty('--gx', `${x}px`);
+          card.style.setProperty('--gy', `${y}px`);
+        }, { passive: true });
 
-      const topCommits = (commitsList || []).slice(0, 6);
-      await Promise.all(topCommits.map(async (c) => {
-        if (!c || !c.sha || commitMap[c.sha]) return;
-        try {
-          const r = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/commits/${c.sha}`);
-          if (r.ok) {
-            const detail = await r.json();
-            commitMap[c.sha] = {
-              date: detail.commit.committer.date,
-              message: detail.commit.message.split('\n')[0],
-              files: (detail.files || []).map(f => f.filename)
-            };
-          }
-        } catch (_) {}
-      }));
+        card.addEventListener('pointerleave', () => {
+          card.style.setProperty('--rx', '0deg');
+          card.style.setProperty('--ry', '0deg');
+        });
+      });
 
-      try {
-        localStorage.setItem(COMMIT_CACHE_KEY, JSON.stringify(commitMap));
-      } catch (_) {}
-
-      const orderedDetails = topCommits.map(c => commitMap[c.sha]).filter(Boolean);
-
-      return function lookupDirLatest(dirPath) {
-        const prefix = dirPath + '/';
-        for (const item of orderedDetails) {
-          if (item.files.some(fn => fn === dirPath || fn.startsWith(prefix))) {
-            return { updatedAt: item.date, latestCommitMsg: item.message };
-          }
-        }
-        return { updatedAt: null, latestCommitMsg: '' };
-      };
-    }
-
-    async function fallbackFromRootReadme() {
-      const rootResp = await fetch(rawFileUrl('README.md'));
-      if (!rootResp.ok) throw new Error('Root README fetch failed');
-      const rootMd = await rootResp.text();
-      const linkRegex = /\(([^()\s]+\/README\.md)\)/g;
-      const readmeSet = new Set();
-      let match;
-      while ((match = linkRegex.exec(rootMd)) !== null) {
-        const p = decodeURIComponent(match[1].replace(/^\.\//, ''));
-        if (!/^https?:/i.test(p)) readmeSet.add(p);
+      // Clamped Magnetic Pull on Primary CTA (per UI/UX Pro Max GSAP spec)
+      const cta = document.getElementById('magneticCta');
+      if (cta) {
+        cta.addEventListener('pointermove', (e) => {
+          const r = cta.getBoundingClientRect();
+          const dx = (e.clientX - r.left - r.width / 2) * 0.24;
+          const dy = (e.clientY - r.top - r.height / 2) * 0.24;
+          cta.style.transform = `translate3d(${dx.toFixed(1)}px, ${dy.toFixed(1)}px, 0)`;
+        }, { passive: true });
+        cta.addEventListener('pointerleave', () => {
+          cta.style.transform = 'translate3d(0, 0, 0)';
+        });
       }
-      const readmePaths = Array.from(readmeSet);
-      const posts = await Promise.all(readmePaths.map(async (rmPath) => {
-        const dirPath = rmPath.slice(0, -'/README.md'.length);
-        const segments = dirPath.split('/');
-        const topCategory = segments[0];
-        const folderName = segments[segments.length - 1];
-        const isOverviewIndex = segments.length === 1 && readmePaths.some(o => o !== rmPath && o.startsWith(dirPath + '/'));
-        let mdText = '';
-        try {
-          const r = await fetch(rawFileUrl(rmPath));
-          if (r.ok) mdText = await r.text();
-        } catch (_) {}
-        const { title, excerpt } = stripMarkdownExcerpt(mdText);
-        const tags = [];
-        if (dirPath === '学习') tags.push('含 23 项 Release 大文件');
-        if (isOverviewIndex) tags.push('板块总览');
-        return {
-          id: dirPath,
-          dirPath,
-          readmePath: rmPath,
-          topCategory,
-          folderName,
-          isOverviewIndex,
-          title: title || folderName,
-          excerpt,
-          markdown: mdText,
-          files: [],
-          tags,
-          updatedAt: null,
-          latestCommitMsg: ''
-        };
-      }));
-      return { posts, commits: [], totalFilesCount: posts.length };
     }
 
-    async function loadRepositoryFeed(forceRefresh = false) {
-      const badge = document.getElementById('syncStatusBadge');
-      badge.textContent = '正在从 GitHub 同步最新资源树...';
+    // Hyperspace Warp Navigation into hub.html
+    function triggerWarpNavigation(targetUrl) {
+      if (reducedMotion.matches) {
+        window.location.href = targetUrl;
+        return;
+      }
+      warpSpeedMultiplier = 14;
+      document.getElementById('warpCurtain').classList.add('active');
+      setTimeout(() => {
+        window.location.href = targetUrl;
+      }, 310);
+    }
 
-      let staleCached = null;
+    document.querySelectorAll('.warp-link').forEach(link => {
+      link.addEventListener('click', (e) => {
+        if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+        const href = link.getAttribute('href');
+        if (!href) return;
+        e.preventDefault();
+        triggerWarpNavigation(href);
+      });
+    });
+
+    // Quick Search Launcher -> Warps to hub.html?q=...
+    document.getElementById('portalSearchForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const val = document.getElementById('portalSearchInput').value.trim();
+      const url = val ? `./hub.html?q=${encodeURIComponent(val)}` : './hub.html';
+      triggerWarpNavigation(url);
+    });
+
+    window.addEventListener('keydown', (e) => {
+      if (e.key === '/' && document.activeElement.tagName !== 'INPUT') {
+        e.preventDefault();
+        document.getElementById('portalSearchInput').focus();
+      }
+    });
+
+    /* ========================================================================
+       4. Cyber Character Scramble Decoder Tagline
+       ======================================================================== */
+    function initCyberDecoder() {
+      const el = document.getElementById('decodeSubtitle');
+      if (!el || reducedMotion.matches) return;
+
+      const phrases = [
+        '// 01 · 本科全学期核心课程与备考归档',
+        '// 02 · AI 智能体研发舰队与 Vibe Coding',
+        '// 03 · 英文学术论文反防御性叙事 Skill',
+        '// 04 · LaTeX Beamer 组会模板与科研提效',
+        '// 05 · GitHub 零构建实时动态资源推送流'
+      ];
+      const glyphs = '01ABCDEF<>/_#ΔΣΩ*+=';
+      let idx = 0;
+
+      function scrambleTo(target) {
+        let frame = 0;
+        const totalFrames = 22;
+        const timer = setInterval(() => {
+          frame++;
+          const revealed = Math.floor((frame / totalFrames) * target.length);
+          let out = target.slice(0, revealed);
+          for (let i = revealed; i < target.length; i++) {
+            out += target[i] === ' ' ? ' ' : glyphs[Math.floor(Math.random() * glyphs.length)];
+          }
+          el.textContent = out;
+          if (frame >= totalFrames) {
+            clearInterval(timer);
+            el.textContent = target;
+          }
+        }, 28);
+      }
+
+      setInterval(() => {
+        if (document.hidden) return;
+        idx = (idx + 1) % phrases.length;
+        scrambleTo(phrases[idx]);
+      }, 3600);
+    }
+
+    /* ========================================================================
+       5. Live Telemetry Sync & Zero-Latency Cache Pre-Warming for hub.html
+       ======================================================================== */
+    function animateNumber(el, target) {
+      if (!el || reducedMotion.matches) {
+        if (el) el.textContent = String(target);
+        return;
+      }
+      const start = 0;
+      const t0 = performance.now();
+      function step(now) {
+        const p = Math.min(1, (now - t0) / 750);
+        const eased = 1 - Math.pow(1 - p, 3);
+        el.textContent = String(Math.round(start + (target - start) * eased));
+        if (p < 1) requestAnimationFrame(step);
+      }
+      requestAnimationFrame(step);
+    }
+
+    async function syncLiveTelemetry() {
       try {
-        staleCached = JSON.parse(localStorage.getItem(CACHE_KEY) || 'null');
-        if (!forceRefresh && staleCached && (Date.now() - staleCached.savedAt < CACHE_TTL_MS)) {
-          hydrateData(staleCached.data, true);
+        const cached = JSON.parse(localStorage.getItem(CACHE_KEY) || 'null');
+        if (cached && cached.data && (Date.now() - cached.savedAt < CACHE_TTL_MS)) {
+          renderPortalTelemetry(cached.data);
           return;
         }
       } catch (_) {}
@@ -2341,14 +1426,11 @@
       try {
         const [treeRes, commitsRes] = await Promise.all([
           fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/git/trees/${BRANCH}?recursive=1`),
-          fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/commits?sha=${BRANCH}&per_page=15`)
+          fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/commits?sha=${BRANCH}&per_page=10`)
         ]);
-
-        if (!treeRes.ok) throw new Error(`GitHub Tree API HTTP ${treeRes.status}`);
+        if (!treeRes.ok) return;
         const treeJson = await treeRes.json();
         const commitsJson = commitsRes.ok ? await commitsRes.json() : [];
-
-        const lookupDirLatest = await buildCommitFolderDates(commitsJson);
 
         const blobs = (treeJson.tree || []).filter(item =>
           item.type === 'blob' &&
@@ -2356,666 +1438,59 @@
           !item.path.endsWith('/.gitkeep') &&
           !item.path.startsWith('.github/')
         );
+        const readmes = blobs.filter(b => b.path !== 'README.md' && b.path.endsWith('/README.md'));
+        const studyCount = readmes.filter(r => r.path.startsWith('学习/')).length;
+        const researchCount = readmes.filter(r => r.path.startsWith('科研/')).length;
+        const skillCount = blobs.filter(b => b.path.endsWith('SKILL.md')).length;
 
-        const readmeItems = blobs.filter(b =>
-          b.path !== 'README.md' && b.path.endsWith('/README.md')
-        );
-
-        const postsRaw = await Promise.all(readmeItems.map(async (rm) => {
-          const dirPath = rm.path.slice(0, -'/README.md'.length);
-          const segments = dirPath.split('/');
-          const topCategory = segments[0];
-          const folderName = segments[segments.length - 1];
-          const isOverviewIndex = segments.length === 1 && readmeItems.some(other =>
-            other.path !== rm.path && other.path.startsWith(dirPath + '/')
-          );
-
-          const childReadmeDirs = readmeItems
-            .map(o => o.path.slice(0, -'/README.md'.length))
-            .filter(d => d !== dirPath && d.startsWith(dirPath + '/'));
-
-          const ownedFiles = blobs.filter(b => {
-            if (b.path === rm.path) return false;
-            if (!b.path.startsWith(dirPath + '/')) return false;
-            return !childReadmeDirs.some(sub => b.path.startsWith(sub + '/'));
-          });
-
-          let mdText = '';
-          try {
-            const resp = await fetch(rawFileUrl(rm.path));
-            if (resp.ok) mdText = await resp.text();
-          } catch (_) {}
-
-          const { title, excerpt } = stripMarkdownExcerpt(mdText);
-          const { updatedAt, latestCommitMsg } = lookupDirLatest(dirPath);
-
-          const tags = [];
-          if (ownedFiles.some(f => f.path.endsWith('SKILL.md'))) tags.push('AI Skill');
-          if (ownedFiles.some(f => f.path.endsWith('.pdf'))) tags.push('PDF 讲义');
-          if (ownedFiles.some(f => /\.(zip|rar|7z)$/i.test(f.path))) tags.push('打包归档');
-          if (ownedFiles.some(f => /\.(tex|sty)$/i.test(f.path))) tags.push('LaTeX 模板');
-          if (dirPath === '学习') tags.push('含 23 项 Release 大文件');
-          if (isOverviewIndex) tags.push('板块总览');
-
-          return {
-            id: dirPath,
-            dirPath,
-            readmePath: rm.path,
-            topCategory,
-            folderName,
-            isOverviewIndex,
-            title: title || folderName,
-            excerpt,
-            markdown: mdText,
-            files: ownedFiles,
-            tags,
-            updatedAt,
-            latestCommitMsg
-          };
-        }));
-
-        const payload = {
-          posts: postsRaw,
-          commits: commitsJson.slice(0, 4).map(c => ({
+        renderPortalTelemetry({
+          topicCount: readmes.length,
+          totalFilesCount: blobs.length,
+          studyCount,
+          researchCount,
+          skillCount,
+          commits: commitsJson.slice(0, 3).map(c => ({
             sha: c.sha.slice(0, 7),
-            message: c.commit.message.split('\n')[0],
-            date: c.commit.committer.date,
-            url: c.html_url
-          })),
-          totalFilesCount: blobs.length
-        };
-
-        try {
-          localStorage.setItem(CACHE_KEY, JSON.stringify({ savedAt: Date.now(), data: payload }));
-        } catch (_) {}
-
-        hydrateData(payload, false);
-        if (forceRefresh) showToast('已从 GitHub 同步最新推送！');
-      } catch (err) {
-        console.warn('GitHub API unavailable, trying local cache / raw CDN fallback:', err);
-        if (staleCached && staleCached.data) {
-          hydrateData(staleCached.data, true);
-          badge.textContent = '当前使用本地缓存快照 · GitHub API 稍后恢复实时同步';
-          return;
-        }
-        try {
-          const fallbackPayload = await fallbackFromRootReadme();
-          hydrateData(fallbackPayload, true);
-          badge.textContent = '已通过 Raw CDN 载入核心专栏 · API 限流恢复后自动补全文件树';
-          return;
-        } catch (_) {}
-
-        badge.textContent = '离线或 API 限流 · 请点击右上角 GitHub 直接浏览仓库';
-        document.getElementById('feedContainer').innerHTML = `
-          <div class="empty-state" style="grid-column:1/-1">
-            <h3>暂时无法连接 GitHub API</h3>
-            <p>可能是当前网络访问 GitHub 受限，您可直接前往源仓库查看全部资料。</p>
-            <a href="https://github.com/${REPO_OWNER}/${REPO_NAME}" target="_blank" rel="noopener noreferrer" class="btn-read" style="display:inline-flex">前往 GitHub 仓库浏览全部文件 →</a>
-          </div>
-        `;
-      }
-    }
-
-    function hydrateData(payload) {
-      appState.posts = payload.posts || [];
-      appState.commits = payload.commits || [];
-      appState.totalFilesCount = payload.totalFilesCount || 0;
-
-      animateCounter(document.getElementById('statTopics'), appState.posts.length);
-      animateCounter(document.getElementById('statFiles'), appState.totalFilesCount);
-
-      document.getElementById('syncStatusBadge').textContent =
-        `实时联动 ${REPO_OWNER}/${REPO_NAME} · 已点亮 ${appState.posts.length} 个资源推送专栏`;
-
-      renderCommitRadar();
-      renderLiveTicker();
-      renderChannels();
-      renderFeed();
-      checkUrlHashDeepLink();
-    }
-
-    /* ========================================================================
-       4. Render Radar, Live Ticker, Channels, and Spotlight Push Cards
-       ======================================================================== */
-    function renderCommitRadar() {
-      const list = document.getElementById('commitRadarList');
-      if (!appState.commits.length) {
-        list.innerHTML = '<li class="radar-item"><span class="radar-msg">仓库已就绪，等待新提交动态</span></li>';
-        return;
-      }
-      list.innerHTML = appState.commits.map(c => `
-        <li class="radar-item">
-          <a class="radar-msg" href="${c.url}" target="_blank" rel="noopener noreferrer" title="${escapeHtml(c.message)}">
-            <code style="font-family:'JetBrains Mono',monospace;font-size:0.74rem;color:var(--accent);margin-right:6px;">${c.sha}</code>${escapeHtml(c.message)}
-          </a>
-          <span class="radar-time">${formatRelativeTime(c.date)}</span>
-        </li>
-      `).join('');
-    }
-
-    function renderLiveTicker() {
-      const track = document.getElementById('tickerTrack');
-      if (!appState.posts.length) return;
-
-      // Duplicate items once for seamless infinite marquee loop
-      const ordered = [...appState.posts].sort((a, b) => (a.isOverviewIndex ? 1 : -1));
-      const itemsHtml = ordered.map(p => `
-        <button type="button" class="ticker-chip" data-open-post="${escapeHtml(p.id)}">
-          <span class="ticker-chip-cat">[${escapeHtml(p.topCategory)}]</span>
-          <span>${escapeHtml(p.title)}</span>
-          <span style="color:var(--fg-muted);font-size:0.75rem;">→</span>
-        </button>
-      `).join('');
-
-      track.innerHTML = itemsHtml + itemsHtml;
-      track.querySelectorAll('[data-open-post]').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-          openPostDrawer(btn.getAttribute('data-open-post'), e.currentTarget);
+            message: c.commit.message.split('\n')[0]
+          }))
         });
-      });
+      } catch (_) {}
     }
 
-    document.getElementById('tickerPauseBtn').addEventListener('click', (e) => {
-      appState.tickerPaused = !appState.tickerPaused;
-      const track = document.getElementById('tickerTrack');
-      const btn = e.currentTarget;
-      const icon = document.getElementById('tickerPauseIcon');
-      track.classList.toggle('paused', appState.tickerPaused);
-      btn.setAttribute('aria-pressed', String(appState.tickerPaused));
-      btn.setAttribute('aria-label', appState.tickerPaused ? '恢复滚动快讯' : '暂停滚动快讯');
-      icon.innerHTML = appState.tickerPaused
-        ? '<polygon points="6 4 20 12 6 20 6 4"/>'
-        : '<rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/>';
-    });
+    function renderPortalTelemetry(info) {
+      const topics = info.posts ? info.posts.length : (info.topicCount || 12);
+      const files = info.totalFilesCount || 46;
+      animateNumber(document.getElementById('dockTopics'), topics);
+      animateNumber(document.getElementById('dockFiles'), files);
 
-    function renderChannels() {
-      const nav = document.getElementById('channelNav');
-      const categoryCounts = new Map();
-      appState.posts.forEach(p => {
-        categoryCounts.set(p.topCategory, (categoryCounts.get(p.topCategory) || 0) + 1);
-      });
+      document.getElementById('liveTelemetryLabel').textContent =
+        `NEBULA ENGINE ACTIVE · 已实时挂载 ${topics} 个资源星系节点`;
 
-      const skillCount = appState.posts.filter(p => p.tags.includes('AI Skill')).length;
-
-      const items = [
-        { key: 'ALL', label: '全部资源推送', count: appState.posts.length, icon: 'layers' },
-        ...Array.from(categoryCounts.entries()).map(([cat, count]) => ({
-          key: `CAT:${cat}`,
-          label: `${cat}频道`,
-          count,
-          icon: cat === '学习' ? 'book' : (cat === '科研' ? 'flask' : 'folder')
-        })),
-      ];
-
-      if (skillCount > 0) {
-        items.push({ key: 'TAG:AI Skill', label: 'AI Skills 精选', count: skillCount, icon: 'cpu' });
+      if (info.posts) {
+        const sCount = info.posts.filter(p => p.topCategory === '学习').length;
+        const rCount = info.posts.filter(p => p.topCategory === '科研').length;
+        const skCount = info.posts.filter(p => p.tags && p.tags.includes('AI Skill')).length;
+        if (sCount) document.getElementById('gwStudyCount').textContent = `${sCount} 个专栏 · 23 大包`;
+        if (rCount) document.getElementById('gwResearchCount').textContent = `${rCount} 个科研专栏`;
+        if (skCount) document.getElementById('gwSkillCount').textContent = `${skCount} 项精选 AI Skill`;
+      } else {
+        if (info.studyCount) document.getElementById('gwStudyCount').textContent = `${info.studyCount} 个专栏 · 23 大包`;
+        if (info.researchCount) document.getElementById('gwResearchCount').textContent = `${info.researchCount} 个科研专栏`;
+        if (info.skillCount) document.getElementById('gwSkillCount').textContent = `${info.skillCount} 项精选 AI Skill`;
       }
 
-      nav.innerHTML = items.map(item => `
-        <button type="button" class="channel-btn" data-channel="${escapeHtml(item.key)}" aria-current="${appState.channel === item.key ? 'true' : 'false'}">
-          <span class="channel-left">
-            ${getChannelSvg(item.icon)}
-            <span>${escapeHtml(item.label)}</span>
-          </span>
-          <span class="channel-count">${item.count}</span>
-        </button>
-      `).join('');
-
-      nav.querySelectorAll('.channel-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-          appState.channel = btn.getAttribute('data-channel');
-          renderChannels();
-          renderFeed();
-        });
-      });
-    }
-
-    function getChannelSvg(name) {
-      const icons = {
-        layers: '<path d="m12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83Z"/><path d="m22 17.65-9.17 4.16a2 2 0 0 1-1.66 0L2 17.65"/><path d="m22 12.65-9.17 4.16a2 2 0 0 1-1.66 0L2 12.65"/>',
-        book: '<path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/>',
-        flask: '<path d="M10 2v7.31"/><path d="M14 9.3V1.99"/><path d="M8.5 2h7"/><path d="M14 9.3a6.5 6.5 0 1 1-4 0"/><path d="M5.52 16h12.96"/>',
-        cpu: '<rect width="16" height="16" x="4" y="4" rx="2"/><rect width="6" height="6" x="9" y="9" rx="1"/><path d="M15 2v2M15 20v2M2 15h2M2 9h2M20 15h2M20 9h2M9 2v2M9 20v2"/>',
-        folder: '<path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/>'
-      };
-      return `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex-shrink:0">${icons[name] || icons.folder}</svg>`;
-    }
-
-    function getFilteredAndSortedPosts() {
-      const q = appState.query.trim().toLowerCase();
-
-      const filtered = appState.posts.filter(p => {
-        if (appState.channel.startsWith('CAT:')) {
-          const cat = appState.channel.slice(4);
-          if (p.topCategory !== cat) return false;
-        } else if (appState.channel.startsWith('TAG:')) {
-          const tag = appState.channel.slice(4);
-          if (!p.tags.includes(tag)) return false;
-        }
-
-        if (!q) return true;
-        const haystack = [
-          p.dirPath,
-          p.title,
-          p.excerpt,
-          p.markdown,
-          ...p.tags,
-          ...p.files.map(f => f.path)
-        ].join(' ').toLowerCase();
-        return haystack.includes(q);
-      });
-
-      return filtered.sort((a, b) => {
-        if (appState.sortBy === 'latest') {
-          const ta = a.updatedAt ? new Date(a.updatedAt).getTime() : 0;
-          const tb = b.updatedAt ? new Date(b.updatedAt).getTime() : 0;
-          if (tb !== ta) return tb - ta;
-          if (a.isOverviewIndex !== b.isOverviewIndex) return a.isOverviewIndex ? 1 : -1;
-          return a.dirPath.localeCompare(b.dirPath, 'zh-CN');
-        } else {
-          if (a.topCategory !== b.topCategory) return a.topCategory.localeCompare(b.topCategory, 'zh-CN');
-          if (a.isOverviewIndex !== b.isOverviewIndex) return a.isOverviewIndex ? -1 : 1;
-          return a.dirPath.localeCompare(b.dirPath, 'zh-CN');
-        }
-      });
-    }
-
-    function renderFeed() {
-      const container = document.getElementById('feedContainer');
-      container.className = `feed-grid mode-${appState.viewMode}`;
-      const list = getFilteredAndSortedPosts();
-
-      const statusEl = document.getElementById('feedStatusText');
-      statusEl.innerHTML = appState.query
-        ? `搜索 “<strong>${escapeHtml(appState.query)}</strong>” 匹配到 <strong>${list.length}</strong> 条资源推送`
-        : `当前频道共展示 <strong>${list.length}</strong> 条资源专栏推送`;
-
-      if (!list.length) {
-        container.innerHTML = `
-          <div class="empty-state" style="grid-column:1/-1">
-            <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" style="color:var(--fg-muted)" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
-            <h3>未找到匹配的推送资源</h3>
-            <p>可以尝试搜索“Beamer”、“uv”、“Optuna”、“审稿”、“六级”或清空筛选条件。</p>
-            <button type="button" class="btn-read" id="clearFilterBtn" style="margin:0 auto">重置搜索与频道</button>
-          </div>
-        `;
-        document.getElementById('clearFilterBtn').addEventListener('click', () => {
-          appState.query = '';
-          appState.channel = 'ALL';
-          document.getElementById('searchInput').value = '';
-          renderChannels();
-          renderFeed();
-        });
-        return;
-      }
-
-      container.innerHTML = list.map((post, idx) => {
-        const catClass = post.topCategory === '学习' ? 'pill-study' : 'pill-research';
-        const recentBadge = isRecent(post.updatedAt, 14)
-          ? '<span class="pill-badge pill-new">NEW 推送</span>'
-          : '';
-        const featuredBadge = (idx === 0 && !appState.query && appState.viewMode === 'cards')
-          ? '<span class="pill-badge pill-neutral" style="border-color:var(--accent-border);color:var(--accent)">置顶焦点</span>'
-          : '';
-        const tagBadges = post.tags.slice(0, 2).map(t =>
-          `<span class="pill-badge pill-neutral">${escapeHtml(t)}</span>`
-        ).join('');
-
-        const previewFiles = post.files
-          .filter(f => !f.path.endsWith('manifest.json'))
-          .slice(0, idx === 0 ? 5 : 3)
-          .map(f => {
-            const shortName = f.path.slice(post.dirPath.length + 1);
-            return `<span class="file-chip" title="${escapeHtml(shortName)}">${escapeHtml(shortName)}</span>`;
-          }).join('');
-
-        const shownLimit = idx === 0 ? 5 : 3;
-        const moreFilesCount = Math.max(0, post.files.length - shownLimit);
-        const moreChip = moreFilesCount > 0
-          ? `<span class="file-chip">+${moreFilesCount} 个文件</span>`
-          : '';
-
-        const isFeaturedFirst = idx === 0 && !appState.query && appState.viewMode === 'cards' && (list.length % 2 === 1);
-
-        return `
-          <article class="feed-card spotlight-box enter-anim ${isFeaturedFirst ? 'featured-first' : ''}" style="animation-delay:${Math.min(idx * 45, 320)}ms">
-            <div>
-              <div class="card-top-meta">
-                <div class="pill-row">
-                  <span class="pill-badge ${catClass}">${escapeHtml(post.topCategory)}</span>
-                  ${recentBadge}
-                  ${featuredBadge}
-                  ${tagBadges}
-                </div>
-                <time class="push-time" datetime="${post.updatedAt || ''}">${formatRelativeTime(post.updatedAt)}</time>
-              </div>
-
-              <button type="button" class="card-title-btn" data-open-post="${escapeHtml(post.id)}">
-                ${escapeHtml(post.title)}
-              </button>
-
-              <p class="card-summary">${escapeHtml(post.excerpt)}</p>
-
-              ${previewFiles ? `<div class="card-files-preview">${previewFiles}${moreChip}</div>` : ''}
-            </div>
-
-            <div class="card-footer">
-              <span class="path-crumb" title="${escapeHtml(post.dirPath)}">/${escapeHtml(post.dirPath)}</span>
-              <div class="card-actions">
-                <button type="button" class="btn-read" data-open-post="${escapeHtml(post.id)}">
-                  <span>阅读详情与下载</span>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
-                </button>
-              </div>
-            </div>
-          </article>
-        `;
-      }).join('');
-
-      bindSpotlightTracking(container);
-
-      container.querySelectorAll('[data-open-post]').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-          const id = btn.getAttribute('data-open-post');
-          openPostDrawer(id, e.currentTarget);
-        });
-      });
-
-      updateScrollLaser();
-    }
-
-    /* ========================================================================
-       5. Slide-Over Reader Drawer with Subfile & Relative Link Support
-       ======================================================================== */
-    function resolveRelativeUrl(baseDir, href, forRawMedia = false) {
-      if (!href || /^(https?:|mailto:|tel:|#)/i.test(href)) return href;
-      const cleanHref = href.split('#')[0];
-      const hashPart = href.includes('#') ? '#' + href.split('#')[1] : '';
-
-      const stack = baseDir ? baseDir.split('/') : [];
-      for (const seg of cleanHref.split('/')) {
-        if (!seg || seg === '.') continue;
-        if (seg === '..') stack.pop();
-        else stack.push(decodeURIComponent(seg));
-      }
-      const resolvedPath = stack.join('/');
-
-      if (forRawMedia) {
-        return rawFileUrl(resolvedPath);
-      }
-
-      const normalizedDir = resolvedPath.replace(/\/README\.md$/i, '').replace(/\/$/, '');
-      const matchingPost = appState.posts.find(p => p.dirPath === normalizedDir);
-      if (matchingPost) {
-        return `#post=${encodeURIComponent(matchingPost.id)}`;
-      }
-
-      if (/\.md$/i.test(resolvedPath)) {
-        return `#mdfile=${encodeURIComponent(resolvedPath)}`;
-      }
-
-      if (/\.(pdf|zip|rar|7z|sty|tex|py|yaml|json|png|jpg)$/i.test(resolvedPath)) {
-        return rawFileUrl(resolvedPath) + hashPart;
-      }
-      return githubBlobUrl(resolvedPath, href.endsWith('/')) + hashPart;
-    }
-
-    function normalizeFrontmatter(md) {
-      return String(md || '').replace(/^---\r?\n([\s\S]*?)\r?\n---\r?\n/, '```yaml\n$1\n```\n\n');
-    }
-
-    function renderMarkdownSafe(md, baseDir, parentPostId = null) {
-      const preparedMd = normalizeFrontmatter(md);
-      if (window.marked) {
-        const html = window.marked.parse(preparedMd, { gfm: true, breaks: false });
-        const clean = window.DOMPurify ? window.DOMPurify.sanitize(html) : html;
-        const wrapper = document.createElement('div');
-        wrapper.innerHTML = clean;
-
-        wrapper.querySelectorAll('a').forEach(a => {
-          const rawHref = a.getAttribute('href') || '';
-          const nextHref = resolveRelativeUrl(baseDir, rawHref, false);
-          a.setAttribute('href', nextHref);
-          if (nextHref.startsWith('#post=')) {
-            a.addEventListener('click', (ev) => {
-              ev.preventDefault();
-              openPostDrawer(decodeURIComponent(nextHref.slice(6)), null);
-            });
-          } else if (nextHref.startsWith('#mdfile=')) {
-            a.addEventListener('click', (ev) => {
-              ev.preventDefault();
-              openMarkdownSubfile(decodeURIComponent(nextHref.slice(8)), parentPostId);
-            });
-          } else if (/^https?:/i.test(nextHref)) {
-            a.setAttribute('target', '_blank');
-            a.setAttribute('rel', 'noopener noreferrer');
-          }
-        });
-
-        wrapper.querySelectorAll('img').forEach(img => {
-          const rawSrc = img.getAttribute('src') || '';
-          img.setAttribute('src', resolveRelativeUrl(baseDir, rawSrc, true));
-          img.setAttribute('loading', 'lazy');
-        });
-
-        wrapper.querySelectorAll('table').forEach(tbl => {
-          const wrap = document.createElement('div');
-          wrap.className = 'md-table-wrap';
-          tbl.parentNode.insertBefore(wrap, tbl);
-          wrap.appendChild(tbl);
-        });
-
-        return wrapper;
-      }
-
-      const pre = document.createElement('pre');
-      pre.textContent = preparedMd;
-      return pre;
-    }
-
-    async function openMarkdownSubfile(filePath, parentPostId) {
-      const body = document.getElementById('drawerBody');
-      document.getElementById('drawerCrumb').textContent = `/${filePath}`;
-      document.getElementById('drawerGithubBtn').setAttribute('href', githubBlobUrl(filePath, false));
-
-      body.innerHTML = `<div class="subfile-bar"><span>正在读取 <code>${escapeHtml(filePath)}</code> ...</span></div>`;
-      body.scrollTop = 0;
-
-      let mdContent = '';
-      try {
-        const resp = await fetch(rawFileUrl(filePath));
-        if (resp.ok) mdContent = await resp.text();
-        else throw new Error(`HTTP ${resp.status}`);
-      } catch (_) {
-        mdContent = `# 无法直接预览文件\n\n请点击右上角“在 GitHub 查看”或 [下载原始文件](${rawFileUrl(filePath)})。`;
-      }
-
-      body.innerHTML = '';
-      const navBar = document.createElement('div');
-      navBar.className = 'subfile-bar';
-      navBar.innerHTML = `
-        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
-          ${parentPostId ? `<button type="button" class="btn-read" id="backToPostBtn">← 返回专栏说明</button>` : ''}
-          <span style="font-family:'JetBrains Mono',monospace;font-size:0.8rem;color:var(--fg-secondary);">${escapeHtml(filePath)}</span>
-        </div>
-        <a class="btn-read" href="${rawFileUrl(filePath)}" target="_blank" rel="noopener noreferrer" style="text-decoration:none;">打开/下载 Raw 源文件</a>
-      `;
-      body.appendChild(navBar);
-
-      if (parentPostId) {
-        navBar.querySelector('#backToPostBtn').addEventListener('click', () => {
-          openPostDrawer(parentPostId, null);
-        });
-      }
-
-      const subBaseDir = filePath.includes('/') ? filePath.slice(0, filePath.lastIndexOf('/')) : '';
-      const prose = document.createElement('div');
-      prose.className = 'md-prose';
-      prose.appendChild(renderMarkdownSafe(mdContent, subBaseDir, parentPostId));
-      body.appendChild(prose);
-    }
-
-    function openPostDrawer(postId, triggerEl) {
-      const post = appState.posts.find(p => p.id === postId);
-      if (!post) return;
-
-      if (triggerEl) appState.lastFocusedEl = triggerEl;
-      history.replaceState(null, '', `#post=${encodeURIComponent(post.id)}`);
-
-      document.getElementById('drawerCrumb').textContent = `/${post.dirPath}`;
-      document.getElementById('drawerGithubBtn').setAttribute('href', githubBlobUrl(post.dirPath, true));
-
-      const body = document.getElementById('drawerBody');
-      body.innerHTML = '';
-
-      if (post.files.length > 0) {
-        const attBox = document.createElement('div');
-        attBox.className = 'attachments-box';
-        attBox.innerHTML = `
-          <div class="attachments-title">
-            <span>本目录包含直链文件 (${post.files.length})</span>
-            <span>点击直接预览或下载</span>
-          </div>
-          <div class="attachments-grid">
-            ${post.files.map(f => {
-              const relName = f.path.slice(post.dirPath.length + 1);
-              const isMd = /\.md$/i.test(f.path);
-              return `
-                <a class="att-item" href="${isMd ? '#mdfile=' + encodeURIComponent(f.path) : rawFileUrl(f.path)}" ${isMd ? `data-md-subfile="${escapeHtml(f.path)}"` : 'target="_blank" rel="noopener noreferrer"'} title="${escapeHtml(relName)}">
-                  <span class="att-name">${escapeHtml(relName)}</span>
-                  <span class="att-size">${isMd ? '在线阅读 · ' : ''}${formatBytes(f.size)}</span>
-                </a>
-              `;
-            }).join('')}
-          </div>
-        `;
-        attBox.querySelectorAll('[data-md-subfile]').forEach(el => {
-          el.addEventListener('click', (ev) => {
-            ev.preventDefault();
-            openMarkdownSubfile(el.getAttribute('data-md-subfile'), post.id);
-          });
-        });
-        body.appendChild(attBox);
-      }
-
-      const prose = document.createElement('div');
-      prose.className = 'md-prose';
-      prose.appendChild(renderMarkdownSafe(post.markdown || `# ${post.title}`, post.dirPath, post.id));
-      body.appendChild(prose);
-
-      const backdrop = document.getElementById('drawerBackdrop');
-      const panel = document.getElementById('drawerPanel');
-      backdrop.classList.add('open');
-      panel.classList.add('open');
-      panel.setAttribute('aria-hidden', 'false');
-      document.body.style.overflow = 'hidden';
-      body.scrollTop = 0;
-
-      document.getElementById('closeDrawerBtn').focus();
-    }
-
-    function closeDrawer() {
-      const backdrop = document.getElementById('drawerBackdrop');
-      const panel = document.getElementById('drawerPanel');
-      if (!panel.classList.contains('open')) return;
-      backdrop.classList.remove('open');
-      panel.classList.remove('open');
-      panel.setAttribute('aria-hidden', 'true');
-      document.body.style.overflow = '';
-      if (location.hash.startsWith('#post=')) {
-        history.replaceState(null, '', location.pathname + location.search);
-      }
-      if (appState.lastFocusedEl) {
-        appState.lastFocusedEl.focus();
+      const latestCommit = info.commits && info.commits[0];
+      if (latestCommit) {
+        const link = document.getElementById('dockLatestCommit');
+        link.textContent = `[${latestCommit.sha}] ${latestCommit.message} — 点击进入推送舱查看`;
       }
     }
 
-    function checkUrlHashDeepLink() {
-      if (location.hash.startsWith('#post=')) {
-        openPostDrawer(decodeURIComponent(location.hash.slice(6)), null);
-      }
-    }
-
-    function escapeHtml(str) {
-      return String(str ?? '')
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;');
-    }
-
-    /* ========================================================================
-       6. Interactive Event Bindings & Boot
-       ======================================================================== */
-    document.getElementById('searchInput').addEventListener('input', (e) => {
-      appState.query = e.target.value;
-      renderFeed();
-    });
-
-    document.querySelectorAll('[data-sort]').forEach(btn => {
-      btn.addEventListener('click', () => {
-        document.querySelectorAll('[data-sort]').forEach(b => b.setAttribute('aria-pressed', 'false'));
-        btn.setAttribute('aria-pressed', 'true');
-        appState.sortBy = btn.getAttribute('data-sort');
-        renderFeed();
-      });
-    });
-
-    document.querySelectorAll('[data-view]').forEach(btn => {
-      btn.addEventListener('click', () => {
-        document.querySelectorAll('[data-view]').forEach(b => b.setAttribute('aria-pressed', 'false'));
-        btn.setAttribute('aria-pressed', 'true');
-        appState.viewMode = btn.getAttribute('data-view');
-        renderFeed();
-      });
-    });
-
-    document.getElementById('refreshSyncBtn').addEventListener('click', (e) => {
-      const btn = e.currentTarget;
-      btn.classList.remove('spin-once');
-      void btn.offsetWidth;
-      btn.classList.add('spin-once');
-      loadRepositoryFeed(true);
-    });
-
-    document.getElementById('resetHomeLink').addEventListener('click', (e) => {
-      e.preventDefault();
-      closeDrawer();
-      appState.channel = 'ALL';
-      appState.query = '';
-      document.getElementById('searchInput').value = '';
-      renderChannels();
-      renderFeed();
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    });
-
-    document.getElementById('closeDrawerBtn').addEventListener('click', closeDrawer);
-    document.getElementById('drawerBackdrop').addEventListener('click', closeDrawer);
-
-    document.getElementById('copyShareLinkBtn').addEventListener('click', async () => {
-      try {
-        await navigator.clipboard.writeText(window.location.href);
-        showToast('已复制该推送专栏的分享链接！');
-      } catch (_) {
-        showToast('请直接复制浏览器地址栏链接');
-      }
-    });
-
-    window.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') {
-        closeDrawer();
-      } else if (e.key === '/' && document.activeElement.tagName !== 'INPUT') {
-        e.preventDefault();
-        document.getElementById('searchInput').focus();
-      }
-    });
-
-    window.addEventListener('hashchange', checkUrlHashDeepLink);
-
-    // Boot interactive layers & live repository stream
-    bindSpotlightTracking(document);
-    initConstellationCanvas();
-    loadRepositoryFeed(false);
+    // Boot Portal Systems
+    init3DNebulaStage();
+    initInteractivePhysics();
+    initCyberDecoder();
+    syncLiveTelemetry();
   </script>
 </body>
 </html>
