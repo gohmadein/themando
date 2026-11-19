@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 310 172" fill="none" stroke="url(#lmxBrandGrad)" stroke-width="15" stroke-linecap="round" stroke-linejoin="round" aria-label="LMX logo">
+  <defs>
+    <linearGradient id="lmxBrandGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#172554" />
+      <stop offset="52%" stop-color="#1D4ED8" />
+      <stop offset="100%" stop-color="#0284C7" />
+    </linearGradient>
+  </defs>
+  <path d="M 88 22 L 30 114 Q 24 123 35 123 L 96 123 Q 105 123 108 114 L 119 62 Q 123 47 132 60 L 160 112 Q 167 124 171 110 L 182 62 Q 186 46 198 58 L 268 122 Q 280 132 280 116 L 280 62 Q 280 45 268 57 L 168 154" />
+</svg>
