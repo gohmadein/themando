@@ -3,12 +3,12 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="TheMando · 3D 太阳系知识门户 — 每个知识板块对应一颗环日运行的行星，点击星球跃迁至对应资源推送舱。" />
-  <title>TheMando · 太阳系知识引力门户</title>
+  <meta name="description" content="LMX · Closer to the ocean — 随滚动从海平面日落潜入深海丁达尔光束，探索科研与学习的知识领域。" />
+  <title>LMX · Closer to the Ocean | 知识深海门户</title>
   <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,400&family=IBM+Plex+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&family=Noto+Serif+SC:wght@500;600;700&display=swap" rel="stylesheet" />
   <script>
     if (location.hash.startsWith('#post=') || location.hash.startsWith('#mdfile=')) {
       location.replace('./hub.html' + location.hash);
@@ -16,576 +16,1376 @@
   </script>
   <style>
     :root {
-      --bg: #02050E;
-      --glass: rgba(8, 15, 32, 0.56);
-      --glass-strong: rgba(11, 21, 44, 0.82);
-      --fg: #F8FAFC;
-      --fg-muted: #94A3B8;
-      --border: rgba(56, 189, 248, 0.18);
-      --border-strong: rgba(56, 189, 248, 0.48);
-      --accent: #38BDF8;
-      --cyan: #22D3EE;
-      --amber: #F59E0B;
-      --emerald: #22C55E;
+      /* Dynamic scroll-driven variables updated by JS (0 = surface sunset, 1 = deep underwater) */
+      --hero-ink: #0b2240;
+      --hero-ink-muted: rgba(11, 34, 64, 0.78);
+      --hero-border: rgba(11, 34, 64, 0.24);
+      --hero-btn-bg: #0b2240;
+      --hero-btn-fg: #f8fafc;
+      --hero-pill-hover: rgba(11, 34, 64, 0.08);
+      --wave-mask-opacity: 1;
+      --wave-mask-blur: 0px;
+      --wave-mask-y: 0px;
+      --underwater-ui-opacity: 0;
+      --underwater-ui-y: 36px;
+      --underwater-pointer: none;
     }
 
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
     html, body {
+      width: 100%;
       height: 100%;
-      background: var(--bg);
-      color: var(--fg);
+      overflow: hidden;
+      background: #041527;
+      color: #f8fafc;
       font-family: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
-      overflow-x: hidden;
+      user-select: none;
+      overscroll-behavior: none;
     }
 
-    a, button, input { font: inherit; }
-    a, button { cursor: pointer; }
-    :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+    a, button, input {
+      font: inherit;
+      color: inherit;
+    }
 
-    /* Interactive 3D Solar System Stage */
-    .solar-stage {
+    a, button {
+      cursor: pointer;
+      text-decoration: none;
+    }
+
+    /* Full-Screen WebGL Ocean Surface -> Waterline -> Underwater God Rays Canvas */
+    .ocean-stage {
       position: fixed;
       inset: 0;
       z-index: 0;
       overflow: hidden;
+      background: #041527;
     }
 
-    #solarCanvas {
+    #oceanCanvas {
       width: 100%;
       height: 100%;
       display: block;
-      cursor: grab;
     }
-    #solarCanvas:active { cursor: grabbing; }
-    #solarCanvas.hovering-planet { cursor: pointer; }
 
-    .space-vignette {
+    /* Fixed Cinematic Viewport Frame */
+    .cinema-viewport {
       position: fixed;
       inset: 0;
-      z-index: 1;
+      z-index: 10;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
       pointer-events: none;
-      background: radial-gradient(circle at 50% 48%, transparent 32%, rgba(2, 5, 14, 0.72) 92%);
+      transition: color 180ms ease;
     }
 
-    /* Floating 3D Planet Anchor Labels */
-    .planet-labels-layer {
-      position: fixed;
-      inset: 0;
-      z-index: 2;
-      pointer-events: none;
-      overflow: hidden;
-    }
-
-    .planet-tag {
-      position: absolute;
-      left: 0;
-      top: 0;
-      transform: translate(-50%, -100%);
+    .ui-interactive {
       pointer-events: auto;
-      display: inline-flex;
-      align-items: center;
-      gap: 7px;
-      padding: 5px 11px;
-      border-radius: 999px;
-      background: rgba(7, 14, 30, 0.78);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      border: 1px solid var(--border-strong);
-      color: var(--fg);
-      font-size: 0.78rem;
-      font-weight: 600;
-      text-decoration: none;
-      white-space: nowrap;
-      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.55);
-      transition: border-color 180ms ease, background-color 180ms ease, box-shadow 180ms ease;
-      will-change: transform, opacity;
     }
 
-    .planet-tag:hover {
-      background: rgba(14, 30, 62, 0.95);
-      border-color: var(--cyan);
-      box-shadow: 0 0 22px rgba(56, 189, 248, 0.55);
-    }
-
-    .planet-tag.dormant {
-      pointer-events: none;
-      padding: 3px 8px;
-      font-size: 0.68rem;
-      font-weight: 500;
-      color: rgba(148, 163, 184, 0.65);
-      border-color: rgba(148, 163, 184, 0.16);
-      background: rgba(6, 11, 24, 0.52);
-      box-shadow: none;
-    }
-
-    .planet-dot {
-      width: 7px;
-      height: 7px;
-      border-radius: 50%;
-      flex-shrink: 0;
-      box-shadow: 0 0 8px currentColor;
-    }
-
-    .planet-count {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.7rem;
-      color: var(--accent);
-    }
-
-    /* Hyperspace Warp Curtain */
-    .warp-curtain {
-      position: fixed;
-      inset: 0;
-      z-index: 200;
-      pointer-events: none;
-      opacity: 0;
-      background: radial-gradient(circle at 50% 48%, rgba(251, 191, 36, 0.22), rgba(56, 189, 248, 0.25) 35%, #02050E 78%);
-      transition: opacity 340ms ease;
-    }
-    .warp-curtain.active { opacity: 1; }
-
-    /* Foreground UI Layout (Pass-through clicks to 3D planets in open space!) */
-    .portal-shell {
-      position: relative;
-      z-index: 5;
-      min-height: 100vh;
-      max-width: 1400px;
-      margin: 0 auto;
-      padding: 18px 18px 24px;
+    /* 1. Top Announcement Bar (Exact match to video top strip) */
+    .top-announcement {
+      width: 100%;
+      height: 36px;
       display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      pointer-events: none;
-    }
-
-    @media (min-width: 768px) {
-      .portal-shell { padding: 24px 36px 28px; }
-    }
-
-    .ui-interactive { pointer-events: auto; }
-
-    /* Top HUD Header */
-    .portal-nav {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 14px;
-      padding: 10px 18px;
-      border-radius: 16px;
-      background: var(--glass);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      border: 1px solid var(--border);
-    }
-
-    .nav-brand {
-      display: inline-flex;
-      align-items: center;
-      gap: 12px;
-      text-decoration: none;
-      color: var(--fg);
-    }
-
-    .nav-logo-mini {
-      width: 50px;
-      height: 28px;
-      filter: drop-shadow(0 0 10px rgba(56, 189, 248, 0.4));
-    }
-
-    .nav-brand-text {
-      font-family: 'JetBrains Mono', monospace;
-      font-weight: 700;
-      font-size: 0.96rem;
-      letter-spacing: 0.05em;
-    }
-
-    .nav-telemetry {
-      display: none;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.74rem;
-      color: var(--fg-muted);
-      letter-spacing: 0.04em;
-    }
-    @media (min-width: 920px) {
-      .nav-telemetry { display: inline-flex; align-items: center; gap: 12px; }
-    }
-
-    .nav-actions { display: flex; align-items: center; gap: 8px; }
-
-    .hud-btn {
-      min-height: 40px;
-      padding: 0 14px;
-      border-radius: 10px;
-      border: 1px solid var(--border);
-      background: rgba(56, 189, 248, 0.08);
-      color: var(--fg);
-      font-size: 0.83rem;
-      font-weight: 600;
-      text-decoration: none;
-      display: inline-flex;
-      align-items: center;
-      gap: 7px;
-      transition: border-color 180ms ease, background-color 180ms ease, box-shadow 180ms ease;
-    }
-
-    .hud-btn:hover {
-      border-color: var(--border-strong);
-      background: rgba(56, 189, 248, 0.16);
-      box-shadow: 0 0 18px -4px rgba(56, 189, 248, 0.45);
-    }
-
-    /* Frameless Pure Floating LMX Hero Centerpiece */
-    .hero-top-overlay {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      text-align: center;
-      margin-top: 10px;
-    }
-
-    .frameless-lmx-wrap {
-      margin-bottom: 8px;
-      pointer-events: none;
-    }
-
-    .frameless-lmx-svg {
-      width: clamp(168px, 20vw, 232px);
-      height: auto;
-      overflow: visible;
-      filter: drop-shadow(0 0 22px rgba(56, 189, 248, 0.45));
-    }
-
-    .lmx-glow-under {
-      filter: blur(9px);
-      opacity: 0.58;
-    }
-
-    .lmx-stroke-draw {
-      stroke-dasharray: 820;
-      stroke-dashoffset: 820;
-      animation: drawLmx 1.5s cubic-bezier(0.22, 1, 0.36, 1) 0.1s forwards;
-    }
-
-    .lmx-plasma-pulse {
-      stroke-dasharray: 105 735;
-      stroke-dashoffset: 840;
-      animation: pulseLmx 4s cubic-bezier(0.4, 0, 0.2, 1) 1.5s infinite;
-    }
-
-    @keyframes drawLmx { to { stroke-dashoffset: 0; } }
-    @keyframes pulseLmx {
-      0% { stroke-dashoffset: 840; opacity: 0; }
-      15%, 85% { opacity: 1; }
-      100% { stroke-dashoffset: -105; opacity: 0; }
-    }
-
-    .portal-title {
-      font-size: clamp(1.75rem, 3.6vw, 2.85rem);
-      font-weight: 700;
-      line-height: 1.18;
-      letter-spacing: -0.03em;
-      margin-bottom: 8px;
-      text-shadow: 0 4px 28px rgba(0, 0, 0, 0.85);
-    }
-
-    .holo-span {
-      background: linear-gradient(120deg, #FDE68A 5%, #F8FAFC 32%, #38BDF8 68%, #22D3EE 95%);
-      background-size: 200% auto;
-      -webkit-background-clip: text;
-      background-clip: text;
-      color: transparent;
-      animation: textFlow 6s linear infinite;
-    }
-    @keyframes textFlow { to { background-position: 200% center; } }
-
-    .solar-hint {
-      font-size: 0.88rem;
-      color: var(--fg-muted);
-      max-width: 580px;
-      margin-bottom: 16px;
-      text-shadow: 0 2px 14px rgba(0, 0, 0, 0.9);
-    }
-
-    .cta-bar {
-      display: flex;
-      flex-wrap: wrap;
       align-items: center;
       justify-content: center;
+      gap: 8px;
+      font-size: 0.74rem;
+      letter-spacing: 0.03em;
+      color: var(--hero-ink);
+      border-bottom: 1px solid var(--hero-border);
+      transition: color 220ms ease, border-color 220ms ease, background-color 220ms ease;
+    }
+
+    .top-announcement:hover {
+      background: var(--hero-pill-hover);
+    }
+
+    /* 2. Minimal Transparent Navigation Bar */
+    .ocean-navbar {
+      width: 100%;
+      max-width: 1440px;
+      margin: 0 auto;
+      padding: 20px 52px;
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: center;
+      color: var(--hero-ink);
+      transition: color 220ms ease;
+    }
+
+    .brand-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 14px;
+      justify-self: start;
+    }
+
+    .brand-lmx-svg {
+      width: 68px;
+      height: 38px;
+      overflow: visible;
+      filter: drop-shadow(0 2px 12px rgba(14, 165, 233, 0.25));
+      transition: transform 260ms ease, filter 260ms ease;
+    }
+
+    .brand-link:hover .brand-lmx-svg {
+      transform: scale(1.06);
+      filter: drop-shadow(0 0 16px rgba(34, 211, 238, 0.6));
+    }
+
+    .brand-wordmark {
+      font-size: 0.84rem;
+      font-weight: 600;
+      letter-spacing: 0.32em;
+      text-transform: uppercase;
+      color: var(--hero-ink);
+      transition: color 220ms ease;
+    }
+
+    .nav-center-links {
+      display: flex;
+      align-items: center;
+      gap: 38px;
+      font-size: 0.84rem;
+      font-weight: 400;
+      letter-spacing: 0.02em;
+    }
+
+    .nav-center-links a {
+      position: relative;
+      padding: 4px 0;
+      opacity: 0.88;
+      transition: opacity 180ms ease;
+    }
+
+    .nav-center-links a::after {
+      content: '';
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: -2px;
+      height: 1.5px;
+      background: currentColor;
+      transform: scaleX(0);
+      transform-origin: right;
+      transition: transform 240ms ease;
+    }
+
+    .nav-center-links a:hover {
+      opacity: 1;
+    }
+
+    .nav-center-links a:hover::after {
+      transform: scaleX(1);
+      transform-origin: left;
+    }
+
+    .nav-right-actions {
+      justify-self: end;
+      display: flex;
+      align-items: center;
       gap: 12px;
     }
 
-    .plasma-cta {
-      position: relative;
-      display: inline-flex;
-      align-items: center;
-      gap: 9px;
-      min-height: 46px;
-      padding: 0 24px;
-      border-radius: 999px;
-      font-weight: 700;
-      font-size: 0.92rem;
-      color: #FFFFFF;
-      text-decoration: none;
-      background: linear-gradient(135deg, #1D4ED8 0%, #0284C7 58%, #0891B2 100%);
-      box-shadow: 0 0 0 1px rgba(56, 189, 248, 0.55), 0 10px 30px -6px rgba(2, 132, 199, 0.7);
-      overflow: hidden;
-      transition: transform 180ms ease, box-shadow 200ms ease;
-    }
-    .plasma-cta:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 0 0 2px #38BDF8, 0 14px 36px -4px rgba(56, 189, 248, 0.8);
-    }
-
-    .portal-search {
-      position: relative;
-      width: 275px;
-      display: flex;
-      align-items: center;
-    }
-
-    .portal-search input {
-      width: 100%;
-      height: 46px;
-      padding: 0 38px 0 38px;
-      border-radius: 999px;
-      border: 1px solid var(--border);
-      background: var(--glass-strong);
-      backdrop-filter: blur(14px);
-      color: var(--fg);
-      font-size: 0.85rem;
-    }
-    .portal-search input::placeholder { color: var(--fg-muted); }
-    .portal-search input:focus {
-      outline: none;
-      border-color: var(--accent);
-      box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.2);
-    }
-    .portal-search svg {
-      position: absolute;
-      left: 13px;
-      width: 16px;
-      height: 16px;
-      color: var(--accent);
-      pointer-events: none;
-    }
-    .portal-search kbd {
-      position: absolute;
-      right: 13px;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.7rem;
-      color: var(--fg-muted);
-      pointer-events: none;
-    }
-
-    /* Bottom Planetary Roster Dock (Auto-scales as new categories are uploaded!) */
-    .planetary-dock {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      padding: 14px 18px;
-      border-radius: 18px;
-      background: var(--glass);
-      backdrop-filter: blur(18px);
-      -webkit-backdrop-filter: blur(18px);
-      border: 1px solid var(--border);
-    }
-
-    .dock-header {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-      font-size: 0.78rem;
-      color: var(--fg-muted);
-    }
-
-    .dock-title {
-      font-family: 'JetBrains Mono', monospace;
-      font-weight: 600;
-      color: var(--fg);
+    .pill-outline-btn {
       display: inline-flex;
       align-items: center;
       gap: 8px;
+      padding: 8px 20px;
+      border-radius: 999px;
+      border: 1px solid var(--hero-border);
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: var(--hero-ink);
+      background: transparent;
+      transition: background-color 200ms ease, border-color 200ms ease, transform 200ms ease;
     }
 
-    .orbit-roster {
+    .pill-outline-btn:hover {
+      background: var(--hero-pill-hover);
+      transform: translateY(-1px);
+    }
+
+    /* 3. Main Center Split Layout: Left Editorial Typography + Right Underwater Domains */
+    .hero-main-grid {
+      width: 100%;
+      max-width: 1440px;
+      margin: 0 auto;
+      padding: 0 52px;
+      flex: 1;
+      display: grid;
+      grid-template-columns: minmax(340px, 530px) 1fr;
+      align-items: center;
+      gap: 44px;
+      position: relative;
+    }
+
+    /* Left-Edge Pagination Dots (visible during scroll dive, exact match to video) */
+    .depth-pagination {
+      position: fixed;
+      left: 20px;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 25;
       display: flex;
-      flex-wrap: nowrap;
-      overflow-x: auto;
+      flex-direction: column;
       gap: 10px;
-      padding-bottom: 2px;
-      scrollbar-width: thin;
+      pointer-events: auto;
     }
 
-    .orbit-chip {
-      flex: 0 0 auto;
+    .depth-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 999px;
+      border: none;
+      background: var(--hero-ink);
+      opacity: 0.35;
+      transition: height 260ms ease, opacity 260ms ease, background-color 220ms ease;
+    }
+
+    .depth-dot.active {
+      height: 18px;
+      opacity: 0.95;
+    }
+
+    /* Left Editorial Block (Closer to the ocean.) */
+    .editorial-column {
+      color: var(--hero-ink);
+      opacity: var(--wave-mask-opacity);
+      filter: blur(var(--wave-mask-blur));
+      transform: translate3d(0, var(--wave-mask-y), 0);
+      transition: color 200ms ease;
+      will-change: opacity, filter, transform;
+      padding-bottom: 44px;
+    }
+
+    .eyebrow-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .editorial-eyebrow {
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--hero-ink-muted);
+    }
+
+    .depth-badge-pill {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.65rem;
+      letter-spacing: 0.12em;
+      padding: 2px 9px;
+      border-radius: 999px;
+      border: 1px solid var(--hero-border);
+      color: var(--hero-ink-muted);
+    }
+
+    .editorial-headline {
+      font-family: 'Cormorant Garamond', 'Noto Serif SC', Georgia, serif;
+      font-size: clamp(3.5rem, 6.4vw, 5.7rem);
+      font-weight: 600;
+      line-height: 0.96;
+      letter-spacing: -0.02em;
+      color: var(--hero-ink);
+      margin-bottom: 22px;
+    }
+
+    .editorial-sub {
+      font-size: 1.04rem;
+      font-weight: 400;
+      line-height: 1.62;
+      color: var(--hero-ink-muted);
+      max-width: 430px;
+      margin-bottom: 32px;
+    }
+
+    .editorial-sub-cn {
+      display: block;
+      margin-top: 6px;
+      font-size: 0.87rem;
+      opacity: 0.88;
+    }
+
+    /* Dual CTA Row: Solid Navy/Deep-Blue Pill + Circular Play Button */
+    .editorial-cta-row {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .primary-ocean-btn {
       display: inline-flex;
       align-items: center;
-      gap: 9px;
-      padding: 8px 14px;
-      border-radius: 12px;
-      background: rgba(15, 25, 48, 0.72);
-      border: 1px solid var(--border);
-      color: var(--fg);
-      text-decoration: none;
-      font-size: 0.83rem;
-      transition: border-color 180ms ease, transform 180ms ease, background-color 180ms ease;
+      gap: 12px;
+      padding: 13px 26px;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      background: var(--hero-btn-bg);
+      color: var(--hero-btn-fg);
+      font-size: 0.85rem;
+      font-weight: 500;
+      letter-spacing: 0.02em;
+      box-shadow: 0 12px 28px rgba(4, 18, 38, 0.22);
+      transition: transform 220ms ease, box-shadow 220ms ease, background-color 220ms ease, color 220ms ease;
     }
 
-    .orbit-chip.active:hover,
-    .orbit-chip.active.focused {
-      border-color: var(--cyan);
-      background: rgba(29, 78, 216, 0.28);
+    .primary-ocean-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 16px 34px rgba(4, 18, 38, 0.34);
+    }
+
+    .secondary-play-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 11px;
+      background: transparent;
+      border: none;
+      color: var(--hero-ink);
+      font-size: 0.85rem;
+      font-weight: 500;
+      padding: 6px 10px 6px 4px;
+      transition: opacity 180ms ease, transform 180ms ease;
+    }
+
+    .secondary-play-btn:hover {
+      transform: translateX(3px);
+    }
+
+    .play-circle-icon {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      border: 1px solid var(--hero-border);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: border-color 200ms ease, background-color 200ms ease;
+    }
+
+    .secondary-play-btn:hover .play-circle-icon {
+      background: var(--hero-pill-hover);
+    }
+
+    /* 4. Right Column: Underwater Knowledge Domain Matrix (Appears when submerged in God Rays) */
+    .underwater-domains-panel {
+      opacity: var(--underwater-ui-opacity);
+      transform: translate3d(0, var(--underwater-ui-y), 0);
+      pointer-events: var(--underwater-pointer);
+      transition: opacity 240ms ease, transform 240ms ease;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      max-width: 670px;
+      justify-self: end;
+      width: 100%;
+    }
+
+    .domains-header-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid rgba(186, 230, 253, 0.24);
+    }
+
+    .domains-header-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.75rem;
+      font-family: 'JetBrains Mono', monospace;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: rgba(240, 249, 255, 0.94);
+    }
+
+    .biolum-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #38bdf8;
+      box-shadow: 0 0 12px #38bdf8;
+    }
+
+    /* Inline Quick Search in Underwater Matrix */
+    .underwater-search-form {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 14px;
+      border-radius: 999px;
+      background: rgba(5, 25, 48, 0.52);
+      border: 1px solid rgba(125, 211, 252, 0.32);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+    }
+
+    .underwater-search-form input {
+      background: transparent;
+      border: none;
+      outline: none;
+      color: #f8fafc;
+      font-size: 0.78rem;
+      width: 175px;
+    }
+
+    .underwater-search-form input::placeholder {
+      color: rgba(186, 230, 253, 0.68);
+    }
+
+    /* Major Knowledge Realm Glass Cards */
+    .domain-cards-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .domain-sea-card {
+      position: relative;
+      padding: 20px 22px;
+      border-radius: 18px;
+      background: linear-gradient(145deg, rgba(10, 42, 74, 0.62), rgba(4, 20, 40, 0.78));
+      border: 1px solid rgba(125, 211, 252, 0.3);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      box-shadow: 0 18px 40px rgba(2, 12, 27, 0.48), inset 0 1px 0 rgba(255, 255, 255, 0.18);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 14px;
+      overflow: hidden;
+      transition: transform 240ms ease, border-color 240ms ease, box-shadow 240ms ease;
+    }
+
+    .domain-sea-card::before {
+      content: '';
+      position: absolute;
+      top: -40%;
+      left: -20%;
+      width: 140%;
+      height: 140%;
+      background: radial-gradient(circle at 80% 15%, rgba(56, 189, 248, 0.24), transparent 55%);
+      pointer-events: none;
+    }
+
+    .domain-sea-card:hover {
+      transform: translateY(-4px);
+      border-color: rgba(125, 211, 252, 0.75);
+      box-shadow: 0 22px 48px rgba(2, 12, 27, 0.65), 0 0 28px rgba(56, 189, 248, 0.32);
+    }
+
+    .domain-card-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .domain-depth-tag {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.68rem;
+      letter-spacing: 0.1em;
+      color: #7dd3fc;
+      padding: 3px 9px;
+      border-radius: 999px;
+      background: rgba(14, 116, 144, 0.36);
+      border: 1px solid rgba(125, 211, 252, 0.28);
+    }
+
+    .domain-count-badge {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      color: rgba(224, 242, 254, 0.9);
+    }
+
+    .domain-card-title {
+      font-family: 'Noto Serif SC', 'Cormorant Garamond', serif;
+      font-size: 1.36rem;
+      font-weight: 600;
+      color: #ffffff;
+      letter-spacing: 0.02em;
+      margin-bottom: 6px;
+    }
+
+    .domain-card-desc {
+      font-size: 0.8rem;
+      line-height: 1.56;
+      color: rgba(224, 242, 254, 0.82);
+    }
+
+    .domain-card-action {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.78rem;
+      font-weight: 500;
+      color: #38bdf8;
+    }
+
+    /* Quick Sub-Topic Capsules in the Sunbeams */
+    .subtopic-capsules-wrap {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      padding-top: 2px;
+    }
+
+    .subtopic-capsule {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 14px;
+      border-radius: 999px;
+      background: rgba(6, 30, 56, 0.62);
+      border: 1px solid rgba(125, 211, 252, 0.28);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      color: #f0f9ff;
+      font-size: 0.76rem;
+      font-weight: 500;
+      transition: background-color 180ms ease, border-color 180ms ease, transform 180ms ease;
+    }
+
+    .subtopic-capsule:hover {
+      background: rgba(14, 116, 144, 0.58);
+      border-color: #7dd3fc;
       transform: translateY(-2px);
     }
 
-    .orbit-chip.unclaimed {
-      opacity: 0.52;
-      border-style: dashed;
-      cursor: default;
-    }
-
-    .orbit-sphere-icon {
-      width: 12px;
-      height: 12px;
-      border-radius: 50%;
-      flex-shrink: 0;
-    }
-
-    .orbit-meta {
-      display: flex;
-      flex-direction: column;
-      line-height: 1.25;
-    }
-
-    .orbit-planet-name {
+    .subtopic-capsule span.cap-cat {
       font-family: 'JetBrains Mono', monospace;
-      font-size: 0.68rem;
-      color: var(--fg-muted);
+      font-size: 0.65rem;
+      color: #7dd3fc;
+      opacity: 0.9;
     }
 
-    .orbit-cat-name {
-      font-weight: 700;
-      font-size: 0.84rem;
+    /* 5. Bottom Status Bar (Exact match to video bottom-left LIVE AT SEA & bottom-right SCROLL TO EXPLORE) */
+    .ocean-bottom-bar {
+      width: 100%;
+      max-width: 1440px;
+      margin: 0 auto;
+      padding: 18px 52px 26px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      color: #f8fafc;
+      font-size: 0.72rem;
+      font-weight: 500;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
     }
 
-    @media (prefers-reduced-motion: reduce) {
-      *, *::before, *::after {
-        animation-duration: 0.01ms !important;
-        animation-iteration-count: 1 !important;
-        transition-duration: 0.01ms !important;
+    .live-sea-control {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      background: transparent;
+      border: none;
+      color: #f8fafc;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      font-size: 0.72rem;
+      text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+    }
+
+    .pause-circle-btn {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      border: 1px solid rgba(255, 255, 255, 0.45);
+      background: rgba(5, 20, 40, 0.28);
+      backdrop-filter: blur(6px);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: border-color 180ms ease, background-color 180ms ease, transform 180ms ease;
+    }
+
+    .live-sea-control:hover .pause-circle-btn {
+      border-color: #ffffff;
+      background: rgba(14, 116, 144, 0.45);
+      transform: scale(1.06);
+    }
+
+    .scroll-explore-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: transparent;
+      border: none;
+      color: #f8fafc;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      font-size: 0.72rem;
+      text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+      transition: transform 200ms ease, opacity 200ms ease;
+    }
+
+    .scroll-explore-btn:hover {
+      transform: translateY(2px);
+    }
+
+    .scroll-arrow-anim {
+      display: inline-block;
+      animation: floatArrow 2.2s ease-in-out infinite;
+    }
+
+    @keyframes floatArrow {
+      0%, 100% { transform: translateY(-2px); }
+      50% { transform: translateY(3px); }
+    }
+
+    @media (max-width: 1024px) {
+      .ocean-navbar {
+        padding: 14px 24px;
+        grid-template-columns: 1fr auto;
       }
-      .lmx-stroke-draw { stroke-dashoffset: 0 !important; }
-      .lmx-plasma-pulse { display: none !important; }
+      .nav-center-links {
+        display: none;
+      }
+      .hero-main-grid {
+        padding: 0 24px;
+        grid-template-columns: 1fr;
+        align-content: center;
+        gap: 22px;
+      }
+      .editorial-headline {
+        font-size: clamp(2.5rem, 9vw, 3.6rem);
+      }
+      .editorial-sub {
+        margin-bottom: 18px;
+      }
+      .underwater-domains-panel {
+        justify-self: stretch;
+      }
+      .ocean-bottom-bar {
+        padding: 14px 24px 18px;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .domain-cards-grid {
+        grid-template-columns: 1fr;
+      }
+      .top-announcement {
+        font-size: 0.66rem;
+        padding: 0 12px;
+      }
     }
   </style>
 </head>
 <body>
-  <div class="solar-stage">
-    <canvas id="solarCanvas"></canvas>
-  </div>
-  <div class="space-vignette" aria-hidden="true"></div>
-  <div class="planet-labels-layer" id="planetLabelsLayer"></div>
-  <div class="warp-curtain" id="warpCurtain" aria-hidden="true"></div>
-
-  <!-- SVG Gradients for Frameless LMX Mark -->
-  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <!-- Shared SVG Gradient Defs for Frameless LMX Single-Stroke Connected Logo -->
+  <svg width="0" height="0" style="position:absolute;pointer-events:none;" aria-hidden="true">
     <defs>
-      <linearGradient id="lmxBrandGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-        <stop offset="0%" stop-color="#60A5FA" />
-        <stop offset="52%" stop-color="#38BDF8" />
-        <stop offset="100%" stop-color="#22D3EE" />
-      </linearGradient>
-      <linearGradient id="lmxPlasmaGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-        <stop offset="0%" stop-color="#38BDF8" stop-opacity="0" />
-        <stop offset="50%" stop-color="#FFFFFF" stop-opacity="1" />
-        <stop offset="100%" stop-color="#22D3EE" stop-opacity="0" />
+      <linearGradient id="lmxOceanGrad" x1="0%" y1="100%" x2="100%" y2="0%">
+        <stop id="lmxStop0" offset="0%" stop-color="#0b2240" />
+        <stop id="lmxStop1" offset="52%" stop-color="#0284c7" />
+        <stop id="lmxStop2" offset="100%" stop-color="#22d3ee" />
       </linearGradient>
     </defs>
   </svg>
 
-  <div class="portal-shell">
-    <!-- Top Glass Bar (No Light Mode Toggle) -->
-    <header class="portal-nav ui-interactive">
-      <a href="./index.html" class="nav-brand" aria-label="TheMando 太阳系门户">
-        <svg class="nav-logo-mini" viewBox="0 0 310 172" fill="none" stroke="url(#lmxBrandGrad)" stroke-width="17" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <path d="M 88 22 L 30 114 Q 24 123 35 123 L 96 123 Q 105 123 108 114 L 119 62 Q 123 47 132 60 L 160 112 Q 167 124 171 110 L 182 62 Q 186 46 198 58 L 268 122 Q 280 132 280 116 L 280 62 Q 280 45 268 57 L 168 154" />
-        </svg>
-        <span class="nav-brand-text">THEMANDO SOLAR</span>
+  <!-- Full-Screen WebGL Ocean Surface -> Waterline Crossing -> Underwater Tyndall God Rays -->
+  <div class="ocean-stage" aria-hidden="true">
+    <canvas id="oceanCanvas"></canvas>
+  </div>
+
+  <!-- Left Vertical Depth Pagination Dots (Matching 00:07-00:10 in video) -->
+  <nav class="depth-pagination" aria-label="深海下潜深度切换">
+    <button type="button" class="depth-dot active" data-target-dive="0" title="海平面日落 (0m)" aria-label="回到海平面"></button>
+    <button type="button" class="depth-dot" data-target-dive="0.40" title="穿越水气交界面 (-2m)" aria-label="水气交界面"></button>
+    <button type="button" class="depth-dot" data-target-dive="1" title="深海丁达尔光束与知识领域 (-30m)" aria-label="潜入深海知识领域"></button>
+  </nav>
+
+  <!-- Fixed Cinematic UI Viewport -->
+  <div class="cinema-viewport">
+    <div>
+      <!-- 1. Top Announcement Bar -->
+      <a href="./hub.html" class="top-announcement ui-interactive">
+        <span>A new perspective on research &amp; learning begins here</span>
+        <span style="opacity:0.65;">·</span>
+        <span id="topSyncNotice">随滚动潜入知识深海</span>
+        <span aria-hidden="true">→</span>
       </a>
 
-      <div class="nav-telemetry" id="solarTelemetry">
-        <span>SOLAR KNOWLEDGE SYSTEM</span>
-        <span>·</span>
-        <span id="activePlanetsStat">已点亮 2 / 8 颗知识行星</span>
-      </div>
-
-      <div class="nav-actions">
-        <a href="./hub.html" class="hud-btn warp-link" style="border-color:var(--border-strong);color:var(--accent);">
-          <span>全部资源推送舱</span>
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
-        </a>
-        <a href="https://github.com/gohmadein/themando" target="_blank" rel="noopener noreferrer" class="hud-btn" aria-label="访问 GitHub 源仓库">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-            <path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0 1 12 6.844a9.59 9.59 0 0 1 2.504.337c1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.02 10.02 0 0 0 22 12.017C22 6.484 17.522 2 12 2Z"></path>
+      <!-- 2. Minimal Transparent Header Navbar (With Frameless LMX Connected Logo) -->
+      <header class="ocean-navbar ui-interactive">
+        <a href="./index.html" class="brand-link" aria-label="LMX Ocean 首页">
+          <svg class="brand-lmx-svg" viewBox="0 0 310 172" fill="none" stroke="url(#lmxOceanGrad)" stroke-width="18" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M 88 22 L 30 114 Q 24 123 35 123 L 96 123 Q 105 123 108 114 L 119 62 Q 123 47 132 60 L 160 112 Q 167 124 171 110 L 182 62 Q 186 46 198 58 L 268 122 Q 280 132 280 116 L 280 62 Q 280 45 268 57 L 168 154" />
           </svg>
-        </a>
-      </div>
-    </header>
-
-    <!-- Frameless Floating LMX Mark + Title -->
-    <main class="hero-top-overlay">
-      <div class="frameless-lmx-wrap">
-        <svg class="frameless-lmx-svg" viewBox="0 0 310 172" fill="none" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="LMX 标志">
-          <path class="lmx-glow-under" stroke="url(#lmxBrandGrad)" stroke-width="19" d="M 88 22 L 30 114 Q 24 123 35 123 L 96 123 Q 105 123 108 114 L 119 62 Q 123 47 132 60 L 160 112 Q 167 124 171 110 L 182 62 Q 186 46 198 58 L 268 122 Q 280 132 280 116 L 280 62 Q 280 45 268 57 L 168 154" />
-          <path class="lmx-stroke-draw" stroke="url(#lmxBrandGrad)" stroke-width="15.5" d="M 88 22 L 30 114 Q 24 123 35 123 L 96 123 Q 105 123 108 114 L 119 62 Q 123 47 132 60 L 160 112 Q 167 124 171 110 L 182 62 Q 186 46 198 58 L 268 122 Q 280 132 280 116 L 280 62 Q 280 45 268 57 L 168 154" />
-          <path class="lmx-plasma-pulse" stroke="url(#lmxPlasmaGrad)" stroke-width="6" d="M 88 22 L 30 114 Q 24 123 35 123 L 96 123 Q 105 123 108 114 L 119 62 Q 123 47 132 60 L 160 112 Q 167 124 171 110 L 182 62 Q 186 46 198 58 L 268 122 Q 280 132 280 116 L 280 62 Q 280 45 268 57 L 168 154" />
-        </svg>
-      </div>
-
-      <h1 class="portal-title">
-        每一类知识 · <span class="holo-span">点亮一颗专属行星</span>
-      </h1>
-      <p class="solar-hint">
-        直接点击轨道上运行的行星（或下方星轨导航）即可跃迁至对应知识板块；未来向仓库新建更多顶层类别文件夹，外围待命行星将自动点亮归属。
-      </p>
-
-      <div class="cta-bar ui-interactive">
-        <a href="./hub.html" class="plasma-cta warp-link">
-          <span>进入太阳系资源总舱</span>
-          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+          <span class="brand-wordmark">O C E A N</span>
         </a>
 
-        <form class="portal-search" id="portalSearchForm" role="search">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path>
-          </svg>
-          <input type="search" id="portalSearchInput" placeholder="搜索资源直达 (Beamer, uv, 六级)..." aria-label="搜索全部资源" autocomplete="off" />
-          <kbd aria-hidden="true">/</kbd>
-        </form>
-      </div>
+        <nav class="nav-center-links" aria-label="主导航">
+          <a href="#dive-domains" id="navDiveTrigger">Discover</a>
+          <a href="./hub.html?channel=CAT:%E7%A7%91%E7%A0%94">Research · 科研</a>
+          <a href="./hub.html?channel=CAT:%E5%AD%A6%E4%B9%A0">Learning · 学习</a>
+          <a href="./hub.html">Journal · 资源舱</a>
+        </nav>
+
+        <div class="nav-right-actions">
+          <a href="./hub.html" class="pill-outline-btn">
+            <span>Explore now</span>
+            <span aria-hidden="true">↗</span>
+          </a>
+        </div>
+      </header>
+    </div>
+
+    <!-- 3. Center Editorial Hero + Underwater Knowledge Domains -->
+    <main class="hero-main-grid">
+      <!-- Left Editorial Column (Exact typography & layout from video) -->
+      <section class="editorial-column ui-interactive" aria-label="主视觉导览">
+        <div class="eyebrow-row">
+          <p class="editorial-eyebrow" id="heroEyebrow">FEEL THE WORLD SLOW DOWN.</p>
+          <span class="depth-badge-pill" id="depthReadout">0.0m · SURFACE</span>
+        </div>
+
+        <h1 class="editorial-headline">
+          Closer to<br />the ocean.
+        </h1>
+
+        <p class="editorial-sub">
+          A moment of stillness.<br />
+          An endless sense of possibility.
+          <span class="editorial-sub-cn" id="heroSubCn">随滚轮潜入深海丁达尔光束，探索科研与学习的各个知识领域。</span>
+        </p>
+
+        <div class="editorial-cta-row">
+          <button type="button" class="primary-ocean-btn" id="primaryExploreBtn">
+            <span id="primaryExploreText">Explore the ocean</span>
+            <span aria-hidden="true">→</span>
+          </button>
+
+          <a href="./hub.html" class="secondary-play-btn">
+            <span class="play-circle-icon" aria-hidden="true">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><polygon points="6,4 20,12 6,20" /></svg>
+            </span>
+            <span>Enter Resource Hub</span>
+          </a>
+        </div>
+      </section>
+
+      <!-- Right Submerged Knowledge Domain Entrance Matrix (Emerges in Underwater God Rays) -->
+      <section class="underwater-domains-panel ui-interactive" id="underwaterDomainsPanel" aria-label="深海知识领域矩阵">
+        <div class="domains-header-bar">
+          <div class="domains-header-title">
+            <span class="biolum-dot"></span>
+            <span>DEEP SEA KNOWLEDGE DOMAINS · 知识深海领域</span>
+          </div>
+
+          <form class="underwater-search-form" id="underwaterSearchForm" role="search">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#7dd3fc" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path>
+            </svg>
+            <input type="search" id="underwaterSearchInput" placeholder="搜索深海资源 (AI, 论文, uv)..." aria-label="搜索深海知识资源" autocomplete="off" />
+          </form>
+        </div>
+
+        <!-- Dynamically populated top-level category cards (科研, 学习, + future repo folders) -->
+        <div class="domain-cards-grid" id="domainCardsGrid">
+          <a href="./hub.html?channel=CAT:%E7%A7%91%E7%A0%94" class="domain-sea-card">
+            <div class="domain-card-top">
+              <span class="domain-depth-tag">DEPTH -120m · RESEARCH</span>
+              <span class="domain-count-badge">9 篇核心资源</span>
+            </div>
+            <div>
+              <h2 class="domain-card-title">科研深海 · Research</h2>
+              <p class="domain-card-desc">涵盖 AI 科研工作流、英文论文 Anti-Defensive 写作、审稿回复、深度学习调参、Beamer 学术演示与 uv 工具链。</p>
+            </div>
+            <span class="domain-card-action">潜入科研资源舱 →</span>
+          </a>
+
+          <a href="./hub.html?channel=CAT:%E5%AD%A6%E4%B9%A0" class="domain-sea-card">
+            <div class="domain-card-top">
+              <span class="domain-depth-tag">DEPTH -85m · LEARNING</span>
+              <span class="domain-count-badge">3 篇核心资源</span>
+            </div>
+            <div>
+              <h2 class="domain-card-title">学习海域 · Learning</h2>
+              <p class="domain-card-desc">英语四六级高分备考指南、专业课程笔记沉淀与系统化进阶学习资料，随仓库更新自动实时推送。</p>
+            </div>
+            <span class="domain-card-action">潜入学习资源舱 →</span>
+          </a>
+        </div>
+
+        <!-- Direct Sub-Topic Quick Capsules -->
+        <div class="subtopic-capsules-wrap" id="subtopicCapsules">
+          <a href="./hub.html?q=AI" class="subtopic-capsule"><span class="cap-cat">01</span><span>AI 科研利器</span></a>
+          <a href="./hub.html?q=anti-defensive" class="subtopic-capsule"><span class="cap-cat">02</span><span>论文写作 Anti-Defensive</span></a>
+          <a href="./hub.html?q=PPT" class="subtopic-capsule"><span class="cap-cat">03</span><span>Beamer 学术 PPT</span></a>
+          <a href="./hub.html?q=uv" class="subtopic-capsule"><span class="cap-cat">04</span><span>uv 极速 Python 教程</span></a>
+          <a href="./hub.html?q=%E5%AE%A1%E7%A8%BF" class="subtopic-capsule"><span class="cap-cat">05</span><span>审稿与 Rebuttal</span></a>
+          <a href="./hub.html?q=%E8%B0%83%E5%8F%82" class="subtopic-capsule"><span class="cap-cat">06</span><span>深度学习调参</span></a>
+          <a href="./hub.html?q=%E5%85%AD%E7%BA%A7" class="subtopic-capsule"><span class="cap-cat">07</span><span>四六级高分指南</span></a>
+          <a href="./hub.html" class="subtopic-capsule" style="border-color:rgba(56,189,248,0.55);color:#7dd3fc;"><span>全部资源流总舱 ↗</span></a>
+        </div>
+      </section>
     </main>
 
-    <!-- Spacer so central Solar System shines unobstructed in the middle -->
-    <div style="flex:1;min-height:180px;pointer-events:none;"></div>
-
-    <!-- Bottom Planetary Orbit Roster -->
-    <footer class="planetary-dock ui-interactive" aria-label="太阳系八大行星知识轨道">
-      <div class="dock-header">
-        <span class="dock-title">
-          <span style="width:8px;height:8px;border-radius:50%;background:#F59E0B;box-shadow:0 0 10px #F59E0B;"></span>
-          <span>行星轨道映射表 (PLANETARY KNOWLEDGE ORBITS)</span>
+    <!-- 4. Bottom Status Bar (LIVE AT SEA + SCROLL TO EXPLORE) -->
+    <footer class="ocean-bottom-bar ui-interactive">
+      <button type="button" class="live-sea-control" id="liveSeaToggle" aria-label="暂停或恢复海浪动态">
+        <span class="pause-circle-btn" id="pauseIconBox" aria-hidden="true">
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor" id="pauseSvgIcon">
+            <rect x="6" y="5" width="3.5" height="14" rx="1" />
+            <rect x="14.5" y="5" width="3.5" height="14" rx="1" />
+          </svg>
         </span>
-        <span id="latestPushHint">正在同步 GitHub 仓库轨道数据...</span>
-      </div>
-      <div class="orbit-roster" id="orbitRoster"></div>
+        <span id="liveSeaLabel">LIVE AT SEA</span>
+      </button>
+
+      <button type="button" class="scroll-explore-btn" id="scrollExploreBtn">
+        <span id="scrollExploreLabel">SCROLL TO EXPLORE</span>
+        <span class="scroll-arrow-anim" id="scrollExploreArrow" aria-hidden="true">↓</span>
+      </button>
     </footer>
   </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
   <script>
+    /* =========================================================================
+       1. WebGL GLSL Shader: Sunset Ocean Surface -> Meniscus Bokeh -> Underwater God Rays
+       ========================================================================= */
+    const canvas = document.getElementById('oceanCanvas');
+    const gl = canvas.getContext('webgl', { antialias: false, alpha: false, powerPreference: 'high-performance' });
+
+    let targetDive = 0;
+    let currentDive = 0;
+    let isWavePaused = false;
+    let accumulatedTime = 1.8;
+    let lastFrameTime = performance.now();
+    let mouseX = 0.5;
+    let mouseY = 0.5;
+
+    const VERTEX_SHADER = `
+      attribute vec2 aPos;
+      varying vec2 vUv;
+      void main() {
+        vUv = aPos * 0.5 + 0.5;
+        gl_Position = vec4(aPos, 0.0, 1.0);
+      }
+    `;
+
+    const FRAGMENT_SHADER = `
+      precision highp float;
+      varying vec2 vUv;
+      uniform vec2 uRes;
+      uniform float uTime;
+      uniform float uDive;
+      uniform vec2 uMouse;
+
+      float hash(vec2 p) {
+        return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453123);
+      }
+
+      float noise(vec2 p) {
+        vec2 i = floor(p);
+        vec2 f = fract(p);
+        vec2 u = f * f * (3.0 - 2.0 * f);
+        return mix(
+          mix(hash(i + vec2(0.0, 0.0)), hash(i + vec2(1.0, 0.0)), u.x),
+          mix(hash(i + vec2(0.0, 1.0)), hash(i + vec2(1.0, 1.0)), u.x),
+          u.y
+        );
+      }
+
+      float fbm(vec2 p) {
+        float v = 0.0;
+        float a = 0.5;
+        mat2 rot = mat2(0.80, 0.60, -0.60, 0.80);
+        for (int i = 0; i < 5; i++) {
+          v += a * noise(p);
+          p = rot * p * 2.03;
+          a *= 0.5;
+        }
+        return v;
+      }
+
+      /* Animated multi-swell wave height field for ocean surface & caustics */
+      float waveHeight(vec2 p, float t) {
+        float w = 0.0;
+        w += sin(p.x * 1.15 + t * 1.35) * cos(p.y * 0.85 + t * 1.05) * 0.48;
+        w += sin(p.x * 2.45 - t * 1.85 + p.y * 1.55) * 0.26;
+        w += sin(p.y * 3.6 - t * 2.4 - p.x * 0.9) * 0.16;
+        w += (fbm(p * 1.75 + vec2(t * 0.45, -t * 0.65)) - 0.5) * 0.65;
+        return w;
+      }
+
+      /* Above-water sunset sky + golden sun + sculpted clouds + rolling ocean waves */
+      vec3 renderAboveWater(vec2 uv, float aspect, float t, float horizonY) {
+        vec2 sunPos = vec2(0.76 + (uMouse.x - 0.5) * 0.03, horizonY + 0.038);
+
+        if (uv.y >= horizonY) {
+          /* Sunset Sky & Dramatic Golden-Lit Clouds */
+          float skyH = clamp((uv.y - horizonY) / max(0.001, 1.0 - horizonY), 0.0, 1.0);
+          vec3 zenithCol = vec3(0.41, 0.56, 0.78);
+          vec3 midSkyCol = vec3(0.66, 0.76, 0.88);
+          vec3 horizonCol = vec3(0.99, 0.78, 0.56);
+
+          vec3 sky = mix(horizonCol, midSkyCol, smoothstep(0.0, 0.34, skyH));
+          sky = mix(sky, zenithCol, smoothstep(0.26, 1.0, skyH));
+
+          vec2 dSun = vec2((uv.x - sunPos.x) * aspect, uv.y - sunPos.y);
+          float sunDist = length(dSun);
+
+          /* Warm golden solar atmospheric glow & disk */
+          sky += vec3(1.0, 0.62, 0.22) * exp(-sunDist * 3.8) * 0.75;
+          sky += vec3(1.0, 0.95, 0.82) * smoothstep(0.058, 0.010, sunDist);
+
+          /* Perspective cloud deck with golden bottom-rim lighting (like 00:00-00:05 in video) */
+          float persp = 1.0 / (skyH + 0.11);
+          vec2 cloudUv = vec2((uv.x - 0.42) * aspect * persp * 0.45, persp * 0.55);
+          float cBase = fbm(cloudUv + vec2(t * 0.018, 0.0));
+          float cDetail = fbm(cloudUv * 2.3 - vec2(t * 0.03, 0.15));
+          float cShape = cBase * 0.68 + cDetail * 0.32;
+
+          float cloudAlpha = smoothstep(0.47, 0.72, cShape) * smoothstep(0.01, 0.14, skyH) * (1.0 - smoothstep(0.75, 0.98, skyH));
+
+          /* Cloud self-shadowing vs golden sun rim */
+          float cUpper = fbm(cloudUv + vec2(0.0, 0.08) + vec2(t * 0.018, 0.0));
+          float bottomLight = clamp((cShape - cUpper) * 3.5 + 0.45, 0.0, 1.0);
+          float sunGlowMask = exp(-sunDist * 2.2);
+
+          vec3 cloudShadowCol = vec3(0.46, 0.56, 0.71);
+          vec3 cloudMidCol = vec3(0.76, 0.79, 0.85);
+          vec3 cloudGoldCol = vec3(1.0, 0.74, 0.45);
+
+          vec3 cloudCol = mix(cloudShadowCol, cloudMidCol, smoothstep(0.48, 0.75, cShape));
+          cloudCol = mix(cloudCol, cloudGoldCol, clamp(bottomLight * sunGlowMask * 1.45 + (1.0 - skyH) * 0.38, 0.0, 1.0));
+
+          sky = mix(sky, cloudCol, cloudAlpha * 0.85);
+          return sky;
+        } else {
+          /* 3D Perspective Rolling Ocean Surface */
+          float depth = clamp((horizonY - uv.y) / max(0.001, horizonY), 0.002, 1.0);
+          float z = 1.0 / pow(depth, 0.86);
+          float x = (uv.x - 0.5) * aspect * z;
+
+          vec2 wp = vec2(x * 0.88, z * 1.15 - t * 2.1);
+          float eps = 0.04;
+          float hC = waveHeight(wp, t);
+          float hX = waveHeight(wp + vec2(eps, 0.0), t);
+          float hZ = waveHeight(wp + vec2(0.0, eps), t);
+
+          vec3 normal = normalize(vec3((hC - hX) / eps * 0.32, 1.0, (hC - hZ) / eps * 0.38));
+          vec3 viewDir = normalize(vec3((uv.x - 0.5) * aspect, -depth * 0.85 - 0.06, 1.0));
+
+          float fresnel = pow(1.0 - clamp(dot(normal, -viewDir), 0.0, 1.0), 3.2);
+
+          /* Reflected sunset sky vs dark ocean trough */
+          vec3 reflSky = mix(vec3(0.96, 0.74, 0.50), vec3(0.42, 0.58, 0.76), clamp(normal.y * 0.78, 0.0, 1.0));
+          vec3 deepTrough = mix(vec3(0.03, 0.13, 0.24), vec3(0.07, 0.26, 0.38), smoothstep(0.0, 0.85, depth));
+
+          vec3 water = mix(deepTrough, reflSky, clamp(fresnel * 0.80 + 0.10, 0.0, 1.0));
+
+          /* Golden sunset reflection path & sparkling wave facets */
+          float sunPath = exp(-pow((uv.x - sunPos.x + normal.x * 0.24) * aspect * 3.6, 2.0));
+          float facetNoise = fbm(wp * vec2(2.8, 4.2) + t * 1.6);
+          float sparkle = smoothstep(0.53, 0.80, facetNoise + normal.z * 0.38) * sunPath;
+
+          water += vec3(1.0, 0.70, 0.30) * sunPath * (0.34 + 0.36 * (1.0 - depth));
+          water += vec3(1.0, 0.95, 0.80) * pow(sparkle, 1.4) * 1.65;
+
+          return water;
+        }
+      }
+
+      /* Submerged Underwater View Looking Up at Shimmering Surface + Tyndall God Rays */
+      vec3 renderUnderwater(vec2 uv, float aspect, float t, float meniscusY) {
+        float subUvY = clamp(uv.y / max(0.35, min(1.0, meniscusY)), 0.0, 1.0);
+        vec2 sunSurface = vec2(0.75 + (uMouse.x - 0.5) * 0.04, 0.91);
+
+        /* Deep ocean blue-teal gradient matching 00:09-00:14 in video */
+        vec3 abyssCol = vec3(0.012, 0.09, 0.20);
+        vec3 midSeaCol = vec3(0.025, 0.26, 0.45);
+        vec3 upperSeaCol = vec3(0.09, 0.49, 0.66);
+
+        vec3 sea = mix(abyssCol, midSeaCol, smoothstep(0.0, 0.64, subUvY));
+        sea = mix(sea, upperSeaCol, smoothstep(0.55, 1.0, subUvY));
+
+        /* Overhead rippled water surface ceiling (looking up at the underside of waves) */
+        if (subUvY > 0.46) {
+          float ceilMask = smoothstep(0.46, 0.98, subUvY);
+          float invCeil = 1.0 / max(0.035, 1.035 - subUvY);
+          vec2 ceilCoord = vec2((uv.x - 0.5) * aspect * invCeil * 0.85, invCeil * 1.2 + t * 0.85);
+
+          float r1 = fbm(ceilCoord * 1.45 + vec2(t * 0.42, -t * 0.32));
+          float r2 = fbm(ceilCoord * 3.1 - vec2(t * 0.75, t * 0.52));
+          float wavePattern = r1 * 0.58 + r2 * 0.42;
+
+          float sunDistCeil = length(vec2((uv.x - sunSurface.x) * aspect, (subUvY - 0.89) * 1.25));
+          float snellSun = exp(-sunDistCeil * 2.3);
+
+          float causticFacets = smoothstep(0.45, 0.76, wavePattern + snellSun * 0.25);
+          vec3 ceilingTint = mix(vec3(0.22, 0.64, 0.80), vec3(0.95, 0.88, 0.68), clamp(snellSun * 1.15, 0.0, 1.0));
+
+          /* Keep top navbar zone legible with a gentle deep-water upper vignette */
+          float topNavGuard = 1.0 - smoothstep(0.84, 0.99, subUvY) * 0.52;
+          sea = mix(sea, ceilingTint, causticFacets * ceilMask * 0.76 * topNavGuard);
+          sea += vec3(0.96, 0.90, 0.74) * pow(causticFacets, 2.6) * snellSun * ceilMask * 0.85 * topNavGuard;
+        }
+
+        /* Volumetric Tyndall God Rays (丁达尔水下光束) streaming diagonally down-left from sunSurface */
+        vec2 toPix = vec2((uv.x - sunSurface.x) * aspect, subUvY - 1.05);
+        float angle = atan(toPix.x, -toPix.y);
+        float rayDist = length(toPix);
+
+        float ray1 = fbm(vec2(angle * 8.0 + t * 0.24, rayDist * 1.1 - t * 0.35));
+        float ray2 = fbm(vec2(angle * 18.0 - t * 0.40, rayDist * 1.8 - t * 0.50));
+        float ray3 = sin(angle * 32.0 + t * 0.85) * 0.5 + 0.5;
+
+        float shafts = smoothstep(0.35, 0.77, ray1 * 0.55 + ray2 * 0.33 + ray3 * 0.12);
+        float mainCone = exp(-pow(angle - 0.24, 2.0) * 1.55) * exp(-rayDist * 0.68);
+        float wideCone = exp(-pow(angle + 0.18, 2.0) * 1.95) * exp(-rayDist * 0.88) * 0.6;
+
+        float rayIntensity = shafts * (mainCone + wideCone);
+        vec3 rayColor = mix(vec3(0.25, 0.80, 0.90), vec3(1.0, 0.93, 0.75), exp(-rayDist * 1.35));
+        sea += rayColor * rayIntensity * 0.78;
+
+        /* Suspended underwater micro-particles illuminated by the sunbeams */
+        vec2 pGrid = uv * vec2(aspect * 28.0, 28.0) + vec2(sin(t * 0.25), -t * 0.4);
+        vec2 pId = floor(pGrid);
+        vec2 pF = fract(pGrid) - 0.5;
+        float pRand = hash(pId);
+        if (pRand > 0.76) {
+          vec2 pOffset = vec2(fract(pRand * 13.7) - 0.5, fract(pRand * 29.3) - 0.5) * 0.52;
+          float dPart = length(pF - pOffset);
+          float spark = smoothstep(0.085, 0.012, dPart) * (0.3 + rayIntensity * 1.35);
+          sea += vec3(0.78, 0.96, 1.0) * spark * 0.6;
+        }
+
+        return sea;
+      }
+
+      void main() {
+        float aspect = uRes.x / max(1.0, uRes.y);
+        vec2 uv = vUv;
+        float t = uTime;
+
+        float swellWave = (
+          sin(uv.x * 5.2 + t * 1.7) * 0.024 +
+          sin(uv.x * 11.5 - t * 2.3) * 0.010 +
+          (noise(vec2(uv.x * 3.8 + t * 0.65, t * 0.45)) - 0.5) * 0.028
+        );
+
+        float baseMeniscus = mix(-0.18, 1.24, smoothstep(0.02, 0.72, uDive));
+        float meniscusY = baseMeniscus + swellWave;
+        float horizonY = 0.255 + uDive * 0.40;
+
+        vec3 aboveCol = renderAboveWater(uv, aspect, t, horizonY);
+        vec3 underCol = renderUnderwater(uv, aspect, t, max(0.65, meniscusY));
+
+        float underMask = 1.0 - smoothstep(meniscusY - 0.028, meniscusY + 0.022, uv.y);
+        vec3 col = mix(aboveCol, underCol, underMask);
+
+        /* Waterline meniscus refractive band & lens droplet bokeh (00:06-00:08 in video) */
+        float diveActive = smoothstep(0.03, 0.16, uDive) * (1.0 - smoothstep(0.64, 0.76, uDive));
+        if (diveActive > 0.001) {
+          float distToLine = abs(uv.y - meniscusY);
+          float darkBand = exp(-distToLine * 36.0);
+          col = mix(col, vec3(0.015, 0.09, 0.19), darkBand * 0.68 * diveActive);
+
+          float foamRim = exp(-distToLine * 105.0);
+          col += vec3(0.68, 0.93, 1.0) * foamRim * 0.58 * diveActive;
+
+          for (int i = 0; i < 8; i++) {
+            float fi = float(i);
+            float bx = fract(fi * 0.163 + 0.08 + sin(t * 0.25 + fi) * 0.025);
+            float by = meniscusY + sin(fi * 2.3 + t * 0.85) * 0.075;
+            float br = 0.016 + fract(fi * 0.37) * 0.026;
+            float bDist = length(vec2((uv.x - bx) * aspect, uv.y - by));
+            float bokehDisk = smoothstep(br, br * 0.62, bDist);
+            float bokehEdge = smoothstep(br * 0.48, br * 0.92, bDist) * bokehDisk;
+            vec3 bokehCol = mix(vec3(0.58, 0.90, 1.0), vec3(1.0, 0.82, 0.44), step(0.42, bx));
+            col += bokehCol * (bokehDisk * 0.22 + bokehEdge * 0.45) * diveActive;
+          }
+        }
+
+        gl_FragColor = vec4(col, 1.0);
+      }
+    `;
+
+    function compileShader(type, source) {
+      const s = gl.createShader(type);
+      gl.shaderSource(s, source);
+      gl.compileShader(s);
+      if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) {
+        console.error('Shader error:', gl.getShaderInfoLog(s));
+      }
+      return s;
+    }
+
+    let program = null;
+    let uResLoc, uTimeLoc, uDiveLoc, uMouseLoc;
+
+    if (gl) {
+      program = gl.createProgram();
+      gl.attachShader(program, compileShader(gl.VERTEX_SHADER, VERTEX_SHADER));
+      gl.attachShader(program, compileShader(gl.FRAGMENT_SHADER, FRAGMENT_SHADER));
+      gl.linkProgram(program);
+      gl.useProgram(program);
+
+      const buf = gl.createBuffer();
+      gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+      gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 1, -1, -1, 1, -1, 1, 1, -1, 1, 1]), gl.STATIC_DRAW);
+
+      const aPos = gl.getAttribLocation(program, 'aPos');
+      gl.enableVertexAttribArray(aPos);
+      gl.vertexAttribPointer(aPos, 2, gl.FLOAT, false, 0, 0);
+
+      uResLoc = gl.getUniformLocation(program, 'uRes');
+      uTimeLoc = gl.getUniformLocation(program, 'uTime');
+      uDiveLoc = gl.getUniformLocation(program, 'uDive');
+      uMouseLoc = gl.getUniformLocation(program, 'uMouse');
+    }
+
+    function resizeCanvas() {
+      const dpr = Math.min(window.devicePixelRatio || 1, 1.75);
+      canvas.width = Math.floor(window.innerWidth * dpr);
+      canvas.height = Math.floor(window.innerHeight * dpr);
+      if (gl) gl.viewport(0, 0, canvas.width, canvas.height);
+    }
+
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    window.addEventListener('pointermove', (e) => {
+      mouseX = e.clientX / Math.max(1, window.innerWidth);
+      mouseY = 1.0 - (e.clientY / Math.max(1, window.innerHeight));
+    });
+
+    /* =========================================================================
+       2. Full-Screen Virtual Scroll Dive Choreography (No Browser Scrollbar!)
+       ========================================================================= */
+    const rootStyle = document.documentElement.style;
+    const depthReadout = document.getElementById('depthReadout');
+    const primaryExploreText = document.getElementById('primaryExploreText');
+    const scrollExploreLabel = document.getElementById('scrollExploreLabel');
+    const scrollExploreArrow = document.getElementById('scrollExploreArrow');
+    const lmxStop0 = document.getElementById('lmxStop0');
+    const lmxStop1 = document.getElementById('lmxStop1');
+    const lmxStop2 = document.getElementById('lmxStop2');
+    const depthDots = Array.from(document.querySelectorAll('.depth-dot'));
+
+    function setTargetDive(val) {
+      targetDive = Math.min(1, Math.max(0, val));
+    }
+
+    /* Support mouse wheel / trackpad smooth diving */
+    window.addEventListener('wheel', (e) => {
+      e.preventDefault();
+      const delta = e.deltaY * 0.00075;
+      setTargetDive(targetDive + delta);
+    }, { passive: false });
+
+    /* Support mobile touch swipe diving */
+    let touchStartY = null;
+    window.addEventListener('touchstart', (e) => {
+      if (e.touches && e.touches.length) {
+        touchStartY = e.touches[0].clientY;
+      }
+    }, { passive: true });
+
+    window.addEventListener('touchmove', (e) => {
+      if (touchStartY === null || !e.touches || !e.touches.length) return;
+      const dy = touchStartY - e.touches[0].clientY;
+      touchStartY = e.touches[0].clientY;
+      setTargetDive(targetDive + dy * 0.0022);
+    }, { passive: true });
+
+    /* Support keyboard navigation (ArrowDown / ArrowUp / PageDown / PageUp / Space) */
+    window.addEventListener('keydown', (e) => {
+      if (document.activeElement && document.activeElement.tagName === 'INPUT') return;
+      if (e.key === 'ArrowDown' || e.key === 'PageDown' || e.key === ' ') {
+        e.preventDefault();
+        setTargetDive(targetDive < 0.4 ? 0.4 : 1.0);
+      } else if (e.key === 'ArrowUp' || e.key === 'PageUp') {
+        e.preventDefault();
+        setTargetDive(targetDive > 0.6 ? 0.4 : 0.0);
+      } else if (e.key === '/') {
+        e.preventDefault();
+        setTargetDive(1.0);
+        setTimeout(() => document.getElementById('underwaterSearchInput').focus(), 250);
+      }
+    });
+
+    function applyAdaptiveUI(d) {
+      /* 1. Wave meniscus masking effect on the left editorial column (0.26 < d < 0.52) */
+      const crossingDist = Math.abs(d - 0.38);
+      const crossingFactor = Math.max(0, 1.0 - crossingDist / 0.16);
+      const maskOpacity = (1.0 - crossingFactor * 0.58).toFixed(3);
+      const maskBlur = (crossingFactor * 3.8).toFixed(2) + 'px';
+      const maskY = (Math.sin(d * Math.PI) * -5).toFixed(1) + 'px';
+
+      rootStyle.setProperty('--wave-mask-opacity', maskOpacity);
+      rootStyle.setProperty('--wave-mask-blur', maskBlur);
+      rootStyle.setProperty('--wave-mask-y', maskY);
+
+      /* 2. Adaptive Color Inversion: Deep Navy on Surface -> Luminous White Underwater */
+      if (d < 0.38) {
+        rootStyle.setProperty('--hero-ink', '#0b2240');
+        rootStyle.setProperty('--hero-ink-muted', 'rgba(11, 34, 64, 0.78)');
+        rootStyle.setProperty('--hero-border', 'rgba(11, 34, 64, 0.24)');
+        rootStyle.setProperty('--hero-btn-bg', '#0b2240');
+        rootStyle.setProperty('--hero-btn-fg', '#f8fafc');
+        rootStyle.setProperty('--hero-pill-hover', 'rgba(11, 34, 64, 0.08)');
+        lmxStop0.setAttribute('stop-color', '#0b2240');
+        lmxStop1.setAttribute('stop-color', '#0284c7');
+        lmxStop2.setAttribute('stop-color', '#06b6d4');
+      } else {
+        rootStyle.setProperty('--hero-ink', '#f8fafc');
+        rootStyle.setProperty('--hero-ink-muted', 'rgba(224, 242, 254, 0.86)');
+        rootStyle.setProperty('--hero-border', 'rgba(224, 242, 254, 0.36)');
+        rootStyle.setProperty('--hero-btn-bg', '#0a2546');
+        rootStyle.setProperty('--hero-btn-fg', '#f8fafc');
+        rootStyle.setProperty('--hero-pill-hover', 'rgba(56, 189, 248, 0.20)');
+        lmxStop0.setAttribute('stop-color', '#7dd3fc');
+        lmxStop1.setAttribute('stop-color', '#38bdf8');
+        lmxStop2.setAttribute('stop-color', '#ffffff');
+      }
+
+      /* 3. Underwater Knowledge Domains Panel reveal when submerged (d > 0.50) */
+      const panelProgress = Math.min(1, Math.max(0, (d - 0.50) / 0.32));
+      rootStyle.setProperty('--underwater-ui-opacity', panelProgress.toFixed(3));
+      rootStyle.setProperty('--underwater-ui-y', ((1 - panelProgress) * 32).toFixed(1) + 'px');
+      rootStyle.setProperty('--underwater-pointer', panelProgress > 0.25 ? 'auto' : 'none');
+
+      /* 4. Depth readout & buttons */
+      const depthMeters = (d * 30).toFixed(1);
+      if (d < 0.22) {
+        depthReadout.textContent = `0.0m · SURFACE`;
+        primaryExploreText.textContent = 'Explore the ocean';
+        scrollExploreLabel.textContent = 'SCROLL TO EXPLORE';
+        scrollExploreArrow.textContent = '↓';
+      } else if (d < 0.58) {
+        depthReadout.textContent = `-${depthMeters}m · WATERLINE`;
+        primaryExploreText.textContent = 'Dive into domains';
+        scrollExploreLabel.textContent = 'DIVING UNDERWATER';
+        scrollExploreArrow.textContent = '↓';
+      } else {
+        depthReadout.textContent = `-${depthMeters}m · TYNDALL ZONE`;
+        primaryExploreText.textContent = 'Explore Resource Hub';
+        scrollExploreLabel.textContent = 'BACK TO SURFACE';
+        scrollExploreArrow.textContent = '↑';
+      }
+
+      /* 5. Update active left pagination dot */
+      const activeIdx = d < 0.24 ? 0 : (d < 0.62 ? 1 : 2);
+      depthDots.forEach((dot, idx) => {
+        dot.classList.toggle('active', idx === activeIdx);
+      });
+    }
+
+    /* Check URL ?dive= parameter or #dive-domains hash on startup */
+    const initDiveParam = new URLSearchParams(location.search).get('dive');
+    if (initDiveParam !== null && !isNaN(parseFloat(initDiveParam))) {
+      targetDive = Math.min(1, Math.max(0, parseFloat(initDiveParam)));
+      currentDive = targetDive;
+    } else if (location.hash === '#dive-domains') {
+      targetDive = 1;
+      currentDive = 1;
+    }
+
+    applyAdaptiveUI(currentDive);
+
+    depthDots.forEach((dot) => {
+      dot.addEventListener('click', () => {
+        setTargetDive(parseFloat(dot.getAttribute('data-target-dive') || '0'));
+      });
+    });
+
+    document.getElementById('navDiveTrigger').addEventListener('click', (e) => {
+      e.preventDefault();
+      setTargetDive(1.0);
+    });
+
+    document.getElementById('primaryExploreBtn').addEventListener('click', () => {
+      if (currentDive < 0.62) {
+        setTargetDive(1.0);
+      } else {
+        window.location.href = './hub.html';
+      }
+    });
+
+    document.getElementById('scrollExploreBtn').addEventListener('click', () => {
+      if (currentDive < 0.62) {
+        setTargetDive(1.0);
+      } else {
+        setTargetDive(0.0);
+      }
+    });
+
+    document.getElementById('underwaterSearchForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const q = document.getElementById('underwaterSearchInput').value.trim();
+      window.location.href = q ? `./hub.html?q=${encodeURIComponent(q)}` : './hub.html';
+    });
+
+    /* LIVE AT SEA pause/play wave motion control */
+    document.getElementById('liveSeaToggle').addEventListener('click', () => {
+      isWavePaused = !isWavePaused;
+      const label = document.getElementById('liveSeaLabel');
+      const icon = document.getElementById('pauseSvgIcon');
+      if (isWavePaused) {
+        label.textContent = 'PAUSED AT SEA';
+        icon.innerHTML = '<polygon points="7,5 19,12 7,19" />';
+      } else {
+        label.textContent = 'LIVE AT SEA';
+        icon.innerHTML = '<rect x="6" y="5" width="3.5" height="14" rx="1" /><rect x="14.5" y="5" width="3.5" height="14" rx="1" />';
+      }
+    });
+
+    function drawFrame() {
+      if (gl && program) {
+        gl.uniform2f(uResLoc, canvas.width, canvas.height);
+        gl.uniform1f(uTimeLoc, accumulatedTime);
+        gl.uniform1f(uDiveLoc, currentDive);
+        gl.uniform2f(uMouseLoc, mouseX, mouseY);
+        gl.drawArrays(gl.TRIANGLES, 0, 6);
+      }
+    }
+
+    /* Draw initial frame immediately */
+    drawFrame();
+
+    /* Main 60FPS Render Loop */
+    function renderLoop(now) {
+      const dt = Math.min(0.05, (now - lastFrameTime) / 1000);
+      lastFrameTime = now;
+
+      if (!isWavePaused) {
+        accumulatedTime += dt;
+      }
+
+      /* Smooth damping for scroll dive transition */
+      currentDive += (targetDive - currentDive) * Math.min(1, dt * 8.5);
+      applyAdaptiveUI(currentDive);
+      drawFrame();
+
+      requestAnimationFrame(renderLoop);
+    }
+
+    requestAnimationFrame(renderLoop);
+
+    /* =========================================================================
+       3. Dynamic GitHub Repository Category Discovery (gohmadein/themando)
+       ========================================================================= */
     const REPO_OWNER = 'gohmadein';
     const REPO_NAME = 'themando';
     const BRANCH = 'main';
@@ -595,467 +1395,73 @@
       '.gitignore', '.nojekyll', 'index.html', 'hub.html', 'logo.svg', 'favicon.svg', 'CNAME', 'LICENSE'
     ]);
 
-    localStorage.removeItem('themando_theme');
-    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
-    let warpMultiplier = 1;
-
-    // 8 Solar System Planets — Categories map dynamically in order (Earth & Jupiter prioritized first for visual beauty, or sequential!)
-    // Ordered inner-to-outer orbits; active categories claim planets starting from rich inner/mid worlds!
-    const PLANET_DEFS = [
-      { id: 'mercury', cnName: '水星轨道 · Mercury', radius: 7.5,  size: 0.52, speed: 0.42, angle: 0.8,  color: '#38BDF8', emissive: '#0284C7', bands: ['#7DD3FC', '#0284C7', '#1E3A8A'] },
-      { id: 'venus',   cnName: '金星轨道 · Venus',   radius: 10.6, size: 0.68, speed: 0.31, angle: 2.4,  color: '#F59E0B', emissive: '#B45309', bands: ['#FDE68A', '#F59E0B', '#92400E'] },
-      { id: 'earth',   cnName: '地球轨道 · Earth',   radius: 14.0, size: 0.76, speed: 0.24, angle: 4.1,  color: '#22C55E', emissive: '#0EA5E9', bands: ['#38BDF8', '#10B981', '#1D4ED8'], hasMoon: true },
-      { id: 'mars',    cnName: '火星轨道 · Mars',    radius: 17.5, size: 0.60, speed: 0.19, angle: 5.5,  color: '#F97316', emissive: '#C2410C', bands: ['#FDBA74', '#EA580C', '#7C2D12'] },
-      { id: 'jupiter', cnName: '木星轨道 · Jupiter', radius: 22.2, size: 1.18, speed: 0.13, angle: 1.6,  color: '#EAB308', emissive: '#A16207', bands: ['#FEF3C7', '#D97706', '#92400E', '#FDE68A'] },
-      { id: 'saturn',  cnName: '土星轨道 · Saturn',  radius: 27.5, size: 0.98, speed: 0.095, angle: 3.6, color: '#FACC15', emissive: '#CA8A04', bands: ['#FEF08A', '#CA8A04', '#713F12'], hasRing: true },
-      { id: 'uranus',  cnName: '天王星 · Uranus',    radius: 32.6, size: 0.78, speed: 0.07, angle: 0.3,  color: '#22D3EE', emissive: '#0891B2', bands: ['#A5F3FC', '#06B6D4', '#164E63'] },
-      { id: 'neptune', cnName: '海王星 · Neptune',   radius: 37.4, size: 0.76, speed: 0.052, angle: 4.9, color: '#60A5FA', emissive: '#1D4ED8', bands: ['#93C5FD', '#2563EB', '#172554'] }
-    ];
-
-    // Default initial categories before GitHub sync completes (instant zero-flicker render)
-    let planetAssignments = [
-      { category: '学习', count: 3, url: './hub.html?channel=CAT:%E5%AD%A6%E4%B9%A0' },
-      { category: '科研', count: 9, url: './hub.html?channel=CAT:%E7%A7%91%E7%A0%94' }
-    ];
-
-    let hoveredPlanetIndex = -1;
-    const planetRuntime = [];
-
-    function triggerWarp(url) {
-      if (!url) return;
-      if (reducedMotion.matches) {
-        window.location.href = url;
-        return;
+    const CATEGORY_META = {
+      '科研': {
+        depth: 'DEPTH -120m · RESEARCH',
+        title: '科研深海 · Research',
+        desc: '涵盖 AI 科研工作流、英文论文 Anti-Defensive 写作、审稿回复、深度学习调参、Beamer 学术演示与 uv 工具链。'
+      },
+      '学习': {
+        depth: 'DEPTH -85m · LEARNING',
+        title: '学习海域 · Learning',
+        desc: '英语四六级高分备考指南、专业课程笔记沉淀与系统化进阶学习资料，随仓库更新自动实时推送。'
       }
-      warpMultiplier = 14;
-      document.getElementById('warpCurtain').classList.add('active');
-      setTimeout(() => { window.location.href = url; }, 310);
-    }
+    };
 
-    document.querySelectorAll('.warp-link').forEach(el => {
-      el.addEventListener('click', (e) => {
-        if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
-        e.preventDefault();
-        triggerWarp(el.getAttribute('href'));
+    function renderDynamicCategories(posts) {
+      if (!posts || !posts.length) return;
+      const counts = new Map();
+      posts.forEach((p) => {
+        const cat = p.topCategory || (p.path ? p.path.split('/')[0] : '');
+        if (cat) counts.set(cat, (counts.get(cat) || 0) + 1);
       });
-    });
+      if (!counts.size) return;
 
-    document.getElementById('portalSearchForm').addEventListener('submit', (e) => {
-      e.preventDefault();
-      const q = document.getElementById('portalSearchInput').value.trim();
-      triggerWarp(q ? `./hub.html?q=${encodeURIComponent(q)}` : './hub.html');
-    });
+      const grid = document.getElementById('domainCardsGrid');
+      grid.innerHTML = '';
 
-    window.addEventListener('keydown', (e) => {
-      if (e.key === '/' && document.activeElement.tagName !== 'INPUT') {
-        e.preventDefault();
-        document.getElementById('portalSearchInput').focus();
-      }
-    });
-
-    /* Build procedural banded planet texture */
-    function makePlanetTexture(bands) {
-      const c = document.createElement('canvas');
-      c.width = 256;
-      c.height = 128;
-      const ctx = c.getContext('2d');
-      const g = ctx.createLinearGradient(0, 0, 0, 128);
-      bands.forEach((col, i) => g.addColorStop(i / (bands.length - 1), col));
-      ctx.fillStyle = g;
-      ctx.fillRect(0, 0, 256, 128);
-      for (let i = 0; i < 26; i++) {
-        ctx.fillStyle = `rgba(255,255,255,${Math.random() * 0.08})`;
-        ctx.fillRect(0, Math.random() * 128, 256, Math.random() * 6 + 1);
-      }
-      return new THREE.CanvasTexture(c);
-    }
-
-    function makeGlowSpriteTexture(innerCol, outerCol) {
-      const c = document.createElement('canvas');
-      c.width = 128;
-      c.height = 128;
-      const ctx = c.getContext('2d');
-      const g = ctx.createRadialGradient(64, 64, 4, 64, 64, 64);
-      g.addColorStop(0, innerCol);
-      g.addColorStop(0.35, outerCol);
-      g.addColorStop(1, 'rgba(0,0,0,0)');
-      ctx.fillStyle = g;
-      ctx.fillRect(0, 0, 128, 128);
-      return new THREE.CanvasTexture(c);
-    }
-
-    /* Render floating HTML planet tags + bottom roster */
-    function rebuildPlanetDomOverlays() {
-      const layer = document.getElementById('planetLabelsLayer');
-      const roster = document.getElementById('orbitRoster');
-      layer.innerHTML = '';
-      roster.innerHTML = '';
-
-      const activeTotal = Math.min(planetAssignments.length, PLANET_DEFS.length);
-      document.getElementById('activePlanetsStat').textContent =
-        `已点亮 ${activeTotal} / ${PLANET_DEFS.length} 颗知识行星`;
-
-      PLANET_DEFS.forEach((def, idx) => {
-        const assigned = planetAssignments[idx] || null;
-
-        // 1. Floating 3D-tracked anchor label
-        const tag = document.createElement(assigned ? 'a' : 'div');
-        tag.className = `planet-tag ${assigned ? 'active' : 'dormant'}`;
-        if (assigned) {
-          tag.href = assigned.url;
-          tag.innerHTML = `
-            <span class="planet-dot" style="background:${def.color};color:${def.color}"></span>
-            <span>${assigned.category}星球</span>
-            <span class="planet-count">${assigned.count} 专栏</span>
-          `;
-          tag.addEventListener('click', (e) => {
-            if (e.metaKey || e.ctrlKey) return;
-            e.preventDefault();
-            triggerWarp(assigned.url);
-          });
-          tag.addEventListener('pointerenter', () => { hoveredPlanetIndex = idx; });
-          tag.addEventListener('pointerleave', () => { hoveredPlanetIndex = -1; });
-        } else {
-          tag.innerHTML = `<span>${def.cnName.split(' ')[0]} · 待开拓</span>`;
-        }
-        layer.appendChild(tag);
-
-        if (planetRuntime[idx]) {
-          planetRuntime[idx].labelEl = tag;
-          planetRuntime[idx].assigned = assigned;
-          if (planetRuntime[idx].mesh && planetRuntime[idx].mesh.material) {
-            planetRuntime[idx].mesh.material.opacity = assigned ? 1.0 : 0.36;
-            planetRuntime[idx].mesh.material.emissiveIntensity = assigned ? 0.55 : 0.08;
-          }
-          if (planetRuntime[idx].orbitLine) {
-            planetRuntime[idx].orbitLine.material.opacity = assigned ? 0.34 : 0.11;
-            planetRuntime[idx].orbitLine.material.color.set(assigned ? def.color : '#475569');
-          }
-          if (planetRuntime[idx].halo) {
-            planetRuntime[idx].halo.visible = Boolean(assigned);
-          }
-        }
-
-        // 2. Bottom Planetary Roster Card
-        const chip = document.createElement(assigned ? 'a' : 'div');
-        chip.className = `orbit-chip ${assigned ? 'active' : 'unclaimed'}`;
-        if (assigned) {
-          chip.href = assigned.url;
-          chip.addEventListener('click', (e) => {
-            if (e.metaKey || e.ctrlKey) return;
-            e.preventDefault();
-            triggerWarp(assigned.url);
-          });
-          chip.addEventListener('pointerenter', () => { hoveredPlanetIndex = idx; });
-          chip.addEventListener('pointerleave', () => { hoveredPlanetIndex = -1; });
-        }
-        chip.innerHTML = `
-          <span class="orbit-sphere-icon" style="background:${def.color};box-shadow:${assigned ? '0 0 10px ' + def.color : 'none'}"></span>
-          <span class="orbit-meta">
-            <span class="orbit-planet-name">0${idx + 1} · ${def.cnName}</span>
-            <span class="orbit-cat-name">${assigned ? `${assigned.category}频道 (${assigned.count})` : '待接入新类别'}</span>
-          </span>
+      let totalCount = 0;
+      Array.from(counts.entries()).forEach(([cat, count], idx) => {
+        totalCount += count;
+        const meta = CATEGORY_META[cat] || {
+          depth: `DEPTH -${95 + idx * 35}m · DOMAIN`,
+          title: `${cat}领域 · Domain`,
+          desc: `来自 GitHub 仓库 ${cat}/ 目录的最新知识沉淀与专题推送流。`
+        };
+        const card = document.createElement('a');
+        card.href = `./hub.html?channel=${encodeURIComponent('CAT:' + cat)}`;
+        card.className = 'domain-sea-card';
+        card.innerHTML = `
+          <div class="domain-card-top">
+            <span class="domain-depth-tag">${meta.depth}</span>
+            <span class="domain-count-badge">${count} 篇核心资源</span>
+          </div>
+          <div>
+            <h2 class="domain-card-title">${meta.title}</h2>
+            <p class="domain-card-desc">${meta.desc}</p>
+          </div>
+          <span class="domain-card-action">潜入${cat}资源舱 →</span>
         `;
-        roster.appendChild(chip);
+        grid.appendChild(card);
       });
+
+      document.getElementById('topSyncNotice').textContent =
+        `已同步 ${counts.size} 大深海知识领域 · ${totalCount} 篇专题资源`;
     }
 
-    /* Boot 3D Three.js Interactive Solar System */
-    function initSolarSystem3D() {
-      const canvas = document.getElementById('solarCanvas');
-      if (!canvas || !window.THREE) {
-        rebuildPlanetDomOverlays();
-        return;
-      }
-
-      const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true, powerPreference: 'high-performance' });
-      renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
-      renderer.setSize(window.innerWidth, window.innerHeight);
-
-      const scene = new THREE.Scene();
-      const camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 1000);
-      camera.position.set(0, 21, 44);
-
-      const solarGroup = new THREE.Group();
-      solarGroup.rotation.x = 0.12;
-      scene.add(solarGroup);
-
-      // Lighting: Blazing Central Sun PointLight + Soft Ambient Space Fill
-      const ambient = new THREE.AmbientLight(0x93c5fd, 0.45);
-      scene.add(ambient);
-      const sunLight = new THREE.PointLight(0xffedd5, 2.8, 160, 0.45);
-      solarGroup.add(sunLight);
-
-      // Background Starfield
-      const starGeo = new THREE.BufferGeometry();
-      const starPos = new Float32Array(2200 * 3);
-      for (let i = 0; i < 2200 * 3; i += 3) {
-        starPos[i] = (Math.random() - 0.5) * 260;
-        starPos[i + 1] = (Math.random() - 0.5) * 180;
-        starPos[i + 2] = (Math.random() - 0.5) * 220 - 30;
-      }
-      starGeo.setAttribute('position', new THREE.BufferAttribute(starPos, 3));
-      const stars = new THREE.Points(starGeo, new THREE.PointsMaterial({ color: 0xbae6fd, size: 0.35, transparent: true, opacity: 0.78 }));
-      scene.add(stars);
-
-      // Blazing Central Sun + Multi-layer Corona Glow
-      const sunTex = makePlanetTexture(['#FFFBEB', '#FDE047', '#F59E0B', '#EA580C', '#F59E0B']);
-      const sunMesh = new THREE.Mesh(
-        new THREE.SphereGeometry(3.25, 40, 40),
-        new THREE.MeshBasicMaterial({ map: sunTex })
-      );
-      solarGroup.add(sunMesh);
-
-      const sunCorona = new THREE.Sprite(new THREE.SpriteMaterial({
-        map: makeGlowSpriteTexture('rgba(254,240,138,0.95)', 'rgba(245,158,11,0.34)'),
-        blending: THREE.AdditiveBlending,
-        transparent: true,
-        depthWrite: false
-      }));
-      sunCorona.scale.set(14.5, 14.5, 1);
-      solarGroup.add(sunCorona);
-
-      // Asteroid Belt between Mars (17.5) and Jupiter (22.2)
-      const beltCount = 420;
-      const beltPos = new Float32Array(beltCount * 3);
-      for (let i = 0; i < beltCount; i++) {
-        const r = 19.3 + Math.random() * 1.4;
-        const a = Math.random() * Math.PI * 2;
-        beltPos[i * 3] = Math.cos(a) * r;
-        beltPos[i * 3 + 1] = (Math.random() - 0.5) * 0.45;
-        beltPos[i * 3 + 2] = Math.sin(a) * r;
-      }
-      const beltGeo = new THREE.BufferGeometry();
-      beltGeo.setAttribute('position', new THREE.BufferAttribute(beltPos, 3));
-      const asteroidBelt = new THREE.Points(beltGeo, new THREE.PointsMaterial({ color: 0x94a3b8, size: 0.16, transparent: true, opacity: 0.45 }));
-      solarGroup.add(asteroidBelt);
-
-      // Create the 8 Planets & Orbit Rings
-      const clickableMeshes = [];
-
-      PLANET_DEFS.forEach((def, idx) => {
-        // Orbit path circle
-        const pts = [];
-        for (let s = 0; s <= 128; s++) {
-          const theta = (s / 128) * Math.PI * 2;
-          pts.push(new THREE.Vector3(Math.cos(theta) * def.radius, 0, Math.sin(theta) * def.radius));
-        }
-        const orbitGeo = new THREE.BufferGeometry().setFromPoints(pts);
-        const orbitMat = new THREE.LineBasicMaterial({ color: def.color, transparent: true, opacity: 0.25 });
-        const orbitLine = new THREE.Line(orbitGeo, orbitMat);
-        solarGroup.add(orbitLine);
-
-        // Planet pivot & sphere
-        const holder = new THREE.Group();
-        solarGroup.add(holder);
-
-        const pMat = new THREE.MeshStandardMaterial({
-          map: makePlanetTexture(def.bands),
-          emissive: new THREE.Color(def.emissive),
-          emissiveIntensity: 0.4,
-          roughness: 0.55,
-          metalness: 0.1,
-          transparent: true,
-          opacity: 1
-        });
-        const mesh = new THREE.Mesh(new THREE.SphereGeometry(def.size, 32, 32), pMat);
-        mesh.userData = { planetIndex: idx };
-        holder.add(mesh);
-        clickableMeshes.push(mesh);
-
-        // Active beacon halo sprite
-        const halo = new THREE.Sprite(new THREE.SpriteMaterial({
-          map: makeGlowSpriteTexture('#FFFFFF', def.color),
-          blending: THREE.AdditiveBlending,
-          transparent: true,
-          opacity: 0.68,
-          depthWrite: false
-        }));
-        halo.scale.set(def.size * 4.2, def.size * 4.2, 1);
-        holder.add(halo);
-
-        // Saturn's iconic rings
-        if (def.hasRing) {
-          const ringGeo = new THREE.RingGeometry(def.size * 1.45, def.size * 2.35, 64);
-          const ringMat = new THREE.MeshBasicMaterial({ color: 0xfde047, side: THREE.DoubleSide, transparent: true, opacity: 0.48 });
-          const saturnRing = new THREE.Mesh(ringGeo, ringMat);
-          saturnRing.rotation.x = Math.PI * 0.42;
-          holder.add(saturnRing);
-        }
-
-        // Earth's orbiting moon
-        let moonPivot = null;
-        if (def.hasMoon) {
-          moonPivot = new THREE.Group();
-          const moon = new THREE.Mesh(
-            new THREE.SphereGeometry(0.18, 16, 16),
-            new THREE.MeshStandardMaterial({ color: 0xe2e8f0, roughness: 0.8 })
-          );
-          moon.position.set(def.size * 1.9, 0.15, 0);
-          moonPivot.add(moon);
-          holder.add(moonPivot);
-        }
-
-        planetRuntime.push({
-          def,
-          holder,
-          mesh,
-          halo,
-          orbitLine,
-          moonPivot,
-          angle: def.angle,
-          assigned: null,
-          labelEl: null
-        });
-      });
-
-      rebuildPlanetDomOverlays();
-
-      // Pointer Parallax, Drag Rotation & Planet Raycasting
-      const pointer = { nx: 0, ny: 0 };
-      const raycaster = new THREE.Raycaster();
-      const ndc = new THREE.Vector2();
-      let isDragging = false, dragMoved = false, prevX = 0, manualAzimuth = 0;
-
-      canvas.addEventListener('pointerdown', (e) => {
-        isDragging = true;
-        dragMoved = false;
-        prevX = e.clientX;
-      });
-
-      window.addEventListener('pointerup', () => { isDragging = false; });
-
-      window.addEventListener('pointermove', (e) => {
-        pointer.nx = (e.clientX / window.innerWidth) * 2 - 1;
-        pointer.ny = -(e.clientY / window.innerHeight) * 2 + 1;
-
-        if (isDragging) {
-          const dx = e.clientX - prevX;
-          if (Math.abs(dx) > 3) dragMoved = true;
-          manualAzimuth += dx * 0.005;
-          prevX = e.clientX;
-        }
-
-        ndc.set(pointer.nx, pointer.ny);
-        raycaster.setFromCamera(ndc, camera);
-        const hits = raycaster.intersectObjects(clickableMeshes, false);
-        if (hits.length > 0) {
-          const pIdx = hits[0].object.userData.planetIndex;
-          if (planetRuntime[pIdx] && planetRuntime[pIdx].assigned) {
-            hoveredPlanetIndex = pIdx;
-            canvas.classList.add('hovering-planet');
-            return;
-          }
-        }
-        if (e.target === canvas) {
-          hoveredPlanetIndex = -1;
-          canvas.classList.remove('hovering-planet');
-        }
-      }, { passive: true });
-
-      canvas.addEventListener('click', () => {
-        if (dragMoved) return;
-        if (hoveredPlanetIndex >= 0 && planetRuntime[hoveredPlanetIndex]?.assigned) {
-          triggerWarp(planetRuntime[hoveredPlanetIndex].assigned.url);
-        }
-      });
-
-      window.addEventListener('resize', () => {
-        camera.aspect = window.innerWidth / window.innerHeight;
-        camera.updateProjectionMatrix();
-        renderer.setSize(window.innerWidth, window.innerHeight);
-      }, { passive: true });
-
-      const projVec = new THREE.Vector3();
-      let prevTime = performance.now();
-
-      function animate(now) {
-        requestAnimationFrame(animate);
-        if (document.hidden) return;
-        const dt = Math.min(0.05, (now - prevTime) / 1000);
-        prevTime = now;
-
-        if (!reducedMotion.matches) {
-          sunMesh.rotation.y += dt * 0.25;
-          asteroidBelt.rotation.y += dt * 0.04 * warpMultiplier;
-          const pulse = 14.3 + Math.sin(now * 0.0025) * 0.6;
-          sunCorona.scale.set(pulse, pulse, 1);
-
-          solarGroup.rotation.y = manualAzimuth + pointer.nx * 0.22;
-          const targetCamY = 20.5 - pointer.ny * 4.2;
-          const targetCamZ = warpMultiplier > 1 ? 14 : 44;
-          camera.position.y += (targetCamY - camera.position.y) * 0.05;
-          camera.position.z += (targetCamZ - camera.position.z) * (warpMultiplier > 1 ? 0.1 : 0.05);
-        }
-
-        camera.lookAt(0, -1.5, 0);
-        solarGroup.updateMatrixWorld();
-
-        const halfW = window.innerWidth / 2;
-        const halfH = window.innerHeight / 2;
-
-        planetRuntime.forEach((rt, idx) => {
-          const isHovered = hoveredPlanetIndex === idx;
-          if (!reducedMotion.matches) {
-            const speedFactor = isHovered ? 0.12 : 1;
-            rt.angle += dt * rt.def.speed * speedFactor * warpMultiplier;
-            rt.mesh.rotation.y += dt * 0.9;
-            if (rt.moonPivot) rt.moonPivot.rotation.y += dt * 1.8;
-          }
-
-          rt.holder.position.set(
-            Math.cos(rt.angle) * rt.def.radius,
-            0,
-            Math.sin(rt.angle) * rt.def.radius
-          );
-
-          const targetScale = isHovered ? 1.38 : (rt.assigned ? 1.08 : 0.85);
-          rt.mesh.scale.lerp(new THREE.Vector3(targetScale, targetScale, targetScale), 0.14);
-
-          // Project 3D planet world position to 2D screen anchor for floating label
-          if (rt.labelEl) {
-            rt.holder.getWorldPosition(projVec);
-            projVec.y += rt.def.size * 1.45 + 0.55;
-            projVec.project(camera);
-
-            if (projVec.z > 1) {
-              rt.labelEl.style.opacity = '0';
-            } else {
-              const sx = (projVec.x * halfW) + halfW;
-              const sy = -(projVec.y * halfH) + halfH;
-              const inBounds = sx > 40 && sx < window.innerWidth - 40 && sy > 75 && sy < window.innerHeight - 85;
-              rt.labelEl.style.transform = `translate3d(${sx.toFixed(1)}px, ${sy.toFixed(1)}px, 0) translate(-50%, -100%)`;
-              rt.labelEl.style.opacity = inBounds ? (rt.assigned ? '1' : '0.48') : '0';
-              rt.labelEl.style.zIndex = rt.assigned ? '4' : '2';
-            }
-          }
-        });
-
-        renderer.render(scene, camera);
-      }
-
-      requestAnimationFrame(animate);
-    }
-
-    /* Live GitHub Category Discovery -> Automatically assigns new folders to waiting planets! */
-    async function syncCategoriesToPlanets() {
+    async function syncOceanDomains() {
       try {
         const cached = JSON.parse(localStorage.getItem(CACHE_KEY) || 'null');
-        if (cached && cached.data && (Date.now() - cached.savedAt < CACHE_TTL_MS)) {
-          applyRepoData(cached.data.posts, cached.data.commits);
+        if (cached && cached.data && cached.data.posts && (Date.now() - cached.savedAt < CACHE_TTL_MS)) {
+          renderDynamicCategories(cached.data.posts);
           return;
         }
       } catch (_) {}
 
       try {
-        const [treeRes, commitsRes] = await Promise.all([
-          fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/git/trees/${BRANCH}?recursive=1`),
-          fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/commits?sha=${BRANCH}&per_page=5`)
-        ]);
+        const treeRes = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/git/trees/${BRANCH}?recursive=1`);
         if (!treeRes.ok) return;
         const treeJson = await treeRes.json();
-        const commitsJson = commitsRes.ok ? await commitsRes.json() : [];
-
         const readmes = (treeJson.tree || []).filter(item =>
           item.type === 'blob' &&
           !IGNORED_ROOT_FILES.has(item.path) &&
@@ -1063,39 +1469,11 @@
           item.path.endsWith('/README.md') &&
           !item.path.startsWith('.github/')
         );
-
-        const syntheticPosts = readmes.map(r => ({
-          topCategory: r.path.split('/')[0]
-        }));
-        const commits = commitsJson.map(c => ({
-          sha: c.sha.slice(0, 7),
-          message: c.commit.message.split('\n')[0]
-        }));
-        applyRepoData(syntheticPosts, commits);
+        renderDynamicCategories(readmes.map(r => ({ topCategory: r.path.split('/')[0] })));
       } catch (_) {}
     }
 
-    function applyRepoData(posts, commits) {
-      if (posts && posts.length) {
-        const counts = new Map();
-        posts.forEach(p => {
-          counts.set(p.topCategory, (counts.get(p.topCategory) || 0) + 1);
-        });
-        planetAssignments = Array.from(counts.entries()).map(([cat, count]) => ({
-          category: cat,
-          count,
-          url: `./hub.html?channel=${encodeURIComponent('CAT:' + cat)}`
-        }));
-        rebuildPlanetDomOverlays();
-      }
-      if (commits && commits[0]) {
-        document.getElementById('latestPushHint').textContent =
-          `最新仓库信号：[${commits[0].sha}] ${commits[0].message}`;
-      }
-    }
-
-    initSolarSystem3D();
-    syncCategoriesToPlanets();
+    syncOceanDomains();
   </script>
 </body>
 </html>
