@@ -65,46 +65,46 @@
     }
 
     [data-theme="dark"] {
-      --bg: #060B16;
-      --bg-subtle: #0C1426;
-      --surface: rgba(15, 24, 42, 0.72);
-      --surface-solid: #0F182A;
-      --surface-elevated: rgba(21, 33, 56, 0.88);
-      --surface-hover: rgba(30, 41, 59, 0.82);
+      --bg: #031326;
+      --bg-subtle: #051c36;
+      --surface: rgba(7, 29, 54, 0.64);
+      --surface-solid: #071e38;
+      --surface-elevated: rgba(10, 38, 70, 0.82);
+      --surface-hover: rgba(14, 49, 88, 0.78);
       --fg: #F8FAFC;
       --fg-secondary: #E2E8F0;
-      --fg-muted: #94A3B8;
-      --border: rgba(148, 163, 184, 0.15);
-      --border-strong: rgba(148, 163, 184, 0.28);
+      --fg-muted: #93B4D1;
+      --border: rgba(103, 232, 249, 0.16);
+      --border-strong: rgba(103, 232, 249, 0.32);
       --primary: #0284C7;
       --primary-hover: #0EA5E9;
       --on-primary: #FFFFFF;
       --accent: #38BDF8;
       --accent-cyan: #22D3EE;
-      --accent-soft: rgba(56, 189, 248, 0.12);
-      --accent-border: rgba(56, 189, 248, 0.34);
-      --spotlight-fill: rgba(56, 189, 248, 0.11);
-      --spotlight-border: rgba(56, 189, 248, 0.55);
-      --grid-line: rgba(56, 189, 248, 0.055);
-      --orb-1: rgba(29, 78, 216, 0.28);
-      --orb-2: rgba(2, 132, 199, 0.22);
-      --orb-3: rgba(34, 211, 238, 0.16);
-      --particle-rgb: 56, 189, 248;
+      --accent-soft: rgba(34, 211, 238, 0.13);
+      --accent-border: rgba(56, 189, 248, 0.38);
+      --spotlight-fill: rgba(34, 211, 238, 0.13);
+      --spotlight-border: rgba(56, 189, 248, 0.6);
+      --grid-line: rgba(56, 189, 248, 0.06);
+      --orb-1: rgba(14, 165, 233, 0.30);
+      --orb-2: rgba(34, 211, 238, 0.24);
+      --orb-3: rgba(2, 132, 199, 0.22);
+      --particle-rgb: 103, 232, 249;
       --badge-new-bg: rgba(34, 197, 94, 0.16);
       --badge-new-fg: #4ADE80;
       --badge-study-bg: rgba(96, 165, 250, 0.16);
       --badge-study-fg: #93C5FD;
-      --badge-research-bg: rgba(34, 211, 238, 0.15);
+      --badge-research-bg: rgba(34, 211, 238, 0.16);
       --badge-research-fg: #67E8F9;
       --ring: #38BDF8;
-      --code-bg: #050811;
+      --code-bg: #020c1a;
       --code-fg: #E2E8F0;
-      --inline-code-bg: #1E293B;
+      --inline-code-bg: #0b2545;
       --inline-code-fg: #7DD3FC;
-      --overlay: rgba(2, 6, 23, 0.76);
-      --shadow-sm: 0 2px 10px rgba(0, 0, 0, 0.35);
-      --shadow-md: 0 14px 34px -8px rgba(0, 0, 0, 0.55);
-      --shadow-lg: 0 28px 64px -12px rgba(0, 0, 0, 0.78);
+      --overlay: rgba(2, 10, 24, 0.78);
+      --shadow-sm: 0 2px 10px rgba(1, 8, 20, 0.42);
+      --shadow-md: 0 14px 34px -8px rgba(1, 8, 20, 0.62);
+      --shadow-lg: 0 28px 64px -12px rgba(1, 8, 20, 0.82);
     }
 
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -135,7 +135,7 @@
     }
 
     /* ==========================================================================
-       Ambient Dynamic Background: Perspective Grid + Floating Aurora + Canvas
+       Ambient Seabed Background: Underwater Depth Gradient + Tyndall Sunbeams + Bubbles Canvas
        ========================================================================== */
     .ambient-stage {
       position: fixed;
@@ -143,49 +143,67 @@
       z-index: -1;
       pointer-events: none;
       overflow: hidden;
+      background:
+        radial-gradient(ellipse 95% 48% at 72% -6%, rgba(56, 189, 248, 0.28) 0%, rgba(14, 165, 233, 0.11) 45%, transparent 78%),
+        radial-gradient(ellipse 80% 40% at 22% 104%, rgba(34, 211, 238, 0.16) 0%, rgba(2, 132, 199, 0.08) 52%, transparent 80%),
+        linear-gradient(180deg, #072a4c 0%, #041b35 38%, #031225 74%, #020b18 100%);
     }
 
     .ambient-grid {
       position: absolute;
-      inset: -10% 0 0 0;
-      background-image:
-        linear-gradient(to right, var(--grid-line) 1px, transparent 1px),
-        linear-gradient(to bottom, var(--grid-line) 1px, transparent 1px);
-      background-size: 52px 52px;
-      mask-image: radial-gradient(ellipse 85% 65% at 50% 18%, #000 25%, transparent 80%);
-      -webkit-mask-image: radial-gradient(ellipse 85% 65% at 50% 18%, #000 25%, transparent 80%);
+      inset: -15% -10% 0 -10%;
+      background:
+        repeating-linear-gradient(
+          -28deg,
+          transparent 0%,
+          transparent 5.5%,
+          rgba(125, 211, 252, 0.045) 7.5%,
+          rgba(186, 230, 253, 0.095) 9.2%,
+          rgba(125, 211, 252, 0.035) 11%,
+          transparent 15%
+        );
+      filter: blur(18px);
+      transform-origin: 75% 0%;
+      animation: tyndallSway 14s ease-in-out infinite alternate;
+      mask-image: radial-gradient(ellipse 95% 78% at 62% 8%, #000 22%, transparent 85%);
+      -webkit-mask-image: radial-gradient(ellipse 95% 78% at 62% 8%, #000 22%, transparent 85%);
+    }
+
+    @keyframes tyndallSway {
+      0% { transform: rotate(-2deg) scaleX(1); opacity: 0.82; }
+      100% { transform: rotate(2.5deg) scaleX(1.08); opacity: 1; }
     }
 
     .aurora-orb {
       position: absolute;
       border-radius: 50%;
-      filter: blur(88px);
+      filter: blur(92px);
       will-change: transform;
     }
 
     .orb-one {
-      width: 560px;
-      height: 560px;
+      width: 620px;
+      height: 520px;
       left: -120px;
-      top: -160px;
+      top: -150px;
       background: var(--orb-1);
       animation: floatOrbA 18s ease-in-out infinite alternate;
     }
 
     .orb-two {
-      width: 500px;
-      height: 500px;
-      right: -100px;
-      top: 40px;
+      width: 560px;
+      height: 540px;
+      right: -90px;
+      top: 10px;
       background: var(--orb-2);
       animation: floatOrbB 22s ease-in-out infinite alternate;
     }
 
     .orb-three {
-      width: 440px;
-      height: 440px;
-      left: 36%;
-      top: 42%;
+      width: 580px;
+      height: 360px;
+      left: 26%;
+      bottom: -110px;
       background: var(--orb-3);
       animation: floatOrbC 25s ease-in-out infinite alternate;
     }
@@ -202,7 +220,7 @@
 
     @keyframes floatOrbC {
       0% { transform: translate3d(0, 0, 0) scale(0.95); }
-      100% { transform: translate3d(70px, -80px, 0) scale(1.1); }
+      100% { transform: translate3d(70px, -60px, 0) scale(1.12); }
     }
 
     #constellationCanvas {
@@ -210,7 +228,7 @@
       inset: 0;
       width: 100%;
       height: 100%;
-      opacity: 0.72;
+      opacity: 0.94;
     }
 
     /* Top Scroll Reading Progress Laser Bar */
@@ -2035,85 +2053,236 @@
     };
 
     /* ========================================================================
-       1. Dynamic Constellation Particle Network + Scroll Laser + Spotlight
+       1. Underwater Seabed Light Rays + Rising Air Bubbles + Marine Snow Canvas
        ======================================================================== */
     function initConstellationCanvas() {
       const canvas = document.getElementById('constellationCanvas');
-      if (!canvas || prefersReducedMotion.matches) return;
+      if (!canvas) return;
       const ctx = canvas.getContext('2d');
-      let w = 0, h = 0, particles = [], rafId = null;
+      let w = 0, h = 0, bubbles = [], marineSnow = [], lightShafts = [];
+      let lastPointerSpawn = 0;
       const mouse = { x: -9999, y: -9999 };
+
+      function createBubble(atBottom = false, customX = null, customY = null, customR = null) {
+        const isLarge = Math.random() < 0.22;
+        const r = customR || (isLarge ? Math.random() * 8.5 + 6.5 : Math.random() * 4.8 + 1.8);
+        return {
+          x: customX !== null ? customX : Math.random() * w,
+          y: customY !== null ? customY : (atBottom ? h + r + Math.random() * 60 : Math.random() * h),
+          r,
+          vy: -(0.55 + r * 0.14 + Math.random() * 0.45),
+          vx: (Math.random() - 0.5) * 0.25,
+          wobbleAmp: 0.35 + Math.random() * 0.85,
+          wobbleFreq: 0.018 + Math.random() * 0.024,
+          phase: Math.random() * Math.PI * 2,
+          alpha: 0.38 + Math.random() * 0.44,
+          squash: 0.92 + Math.random() * 0.08
+        };
+      }
 
       function resize() {
         w = canvas.width = window.innerWidth;
         h = canvas.height = window.innerHeight;
-        const count = Math.min(46, Math.max(18, Math.floor((w * h) / 36000)));
-        particles = Array.from({ length: count }, () => ({
+        const bubbleCount = Math.min(82, Math.max(38, Math.floor((w * h) / 21000)));
+        bubbles = Array.from({ length: bubbleCount }, () => createBubble(false));
+
+        const snowCount = Math.min(55, Math.max(24, Math.floor((w * h) / 30000)));
+        marineSnow = Array.from({ length: snowCount }, () => ({
           x: Math.random() * w,
           y: Math.random() * h,
-          vx: (Math.random() - 0.5) * 0.34,
-          vy: (Math.random() - 0.5) * 0.34,
-          r: Math.random() * 1.6 + 0.8
+          r: Math.random() * 1.4 + 0.5,
+          vy: -(0.12 + Math.random() * 0.22),
+          vx: (Math.random() - 0.5) * 0.18,
+          alpha: Math.random() * 0.38 + 0.12,
+          phase: Math.random() * Math.PI * 2
         }));
+
+        lightShafts = [
+          { xRatio: 0.16, widthRatio: 0.13, angle: -0.24, alpha: 0.075, speed: 0.0005, phase: 0.4 },
+          { xRatio: 0.42, widthRatio: 0.18, angle: -0.21, alpha: 0.095, speed: 0.0007, phase: 1.7 },
+          { xRatio: 0.68, widthRatio: 0.22, angle: -0.19, alpha: 0.115, speed: 0.0006, phase: 3.1 },
+          { xRatio: 0.88, widthRatio: 0.15, angle: -0.22, alpha: 0.085, speed: 0.0008, phase: 4.5 }
+        ];
       }
 
       window.addEventListener('resize', resize, { passive: true });
       window.addEventListener('pointermove', (e) => {
         mouse.x = e.clientX;
         mouse.y = e.clientY;
+        const now = performance.now();
+        if (now - lastPointerSpawn > 75 && bubbles.length < 135) {
+          lastPointerSpawn = now;
+          bubbles.push(createBubble(
+            false,
+            e.clientX + (Math.random() - 0.5) * 20,
+            e.clientY + (Math.random() - 0.5) * 14,
+            Math.random() * 4.5 + 2.0
+          ));
+        }
       }, { passive: true });
+
+      window.addEventListener('pointerdown', (e) => {
+        for (let k = 0; k < 6; k++) {
+          if (bubbles.length < 150) {
+            bubbles.push(createBubble(
+              false,
+              e.clientX + (Math.random() - 0.5) * 34,
+              e.clientY + (Math.random() - 0.5) * 24,
+              Math.random() * 6.5 + 2.5
+            ));
+          }
+        }
+      }, { passive: true });
+
       window.addEventListener('pointerleave', () => {
         mouse.x = -9999;
         mouse.y = -9999;
       });
 
-      function step() {
+      function drawBubble(b, t) {
+        const wobbleX = Math.sin(t * b.wobbleFreq + b.phase) * b.wobbleAmp * (b.r * 0.35);
+        const bx = b.x + wobbleX;
+        const by = b.y;
+        const r = b.r;
+
+        // Depth fade near very top and bottom
+        const topFade = Math.min(1, Math.max(0, by / 90));
+        const bottomFade = Math.min(1, Math.max(0, (h + 40 - by) / 80));
+        const a = b.alpha * topFade * bottomFade;
+        if (a <= 0.01) return;
+
+        ctx.save();
+        ctx.translate(bx, by);
+        // Subtle hydrodynamic oval deformation as bubble rises
+        const stretchX = 1 + Math.sin(t * 0.05 + b.phase) * 0.045;
+        const stretchY = b.squash - Math.sin(t * 0.05 + b.phase) * 0.035;
+        ctx.scale(stretchX, stretchY);
+
+        // 1. Translucent refractive bubble body gradient
+        const grad = ctx.createRadialGradient(-r * 0.32, -r * 0.34, r * 0.08, 0, 0, r);
+        grad.addColorStop(0, `rgba(224, 242, 254, ${a * 0.52})`);
+        grad.addColorStop(0.35, `rgba(125, 211, 252, ${a * 0.14})`);
+        grad.addColorStop(0.78, `rgba(56, 189, 248, ${a * 0.22})`);
+        grad.addColorStop(1, `rgba(186, 230, 253, ${a * 0.72})`);
+
+        ctx.beginPath();
+        ctx.arc(0, 0, r, 0, Math.PI * 2);
+        ctx.fillStyle = grad;
+        ctx.fill();
+
+        // 2. Crisp glass outer rim
+        ctx.lineWidth = Math.max(0.75, r * 0.11);
+        ctx.strokeStyle = `rgba(186, 230, 253, ${a * 0.78})`;
+        ctx.stroke();
+
+        // 3. Primary specular highlight dot (top-left)
+        if (r > 2.4) {
+          ctx.beginPath();
+          ctx.arc(-r * 0.36, -r * 0.36, Math.max(0.9, r * 0.21), 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(255, 255, 255, ${Math.min(0.96, a * 1.25)})`;
+          ctx.fill();
+        }
+
+        // 4. Secondary bottom-right internal reflection arc for larger bubbles
+        if (r > 5.0) {
+          ctx.beginPath();
+          ctx.arc(0, 0, r * 0.74, 0.25 * Math.PI, 0.72 * Math.PI);
+          ctx.strokeStyle = `rgba(224, 242, 254, ${a * 0.48})`;
+          ctx.lineWidth = Math.max(0.8, r * 0.09);
+          ctx.lineCap = 'round';
+          ctx.stroke();
+        }
+
+        ctx.restore();
+      }
+
+      let frameTick = 0;
+      function step(now = 0) {
         if (document.hidden) {
-          rafId = requestAnimationFrame(step);
+          requestAnimationFrame(step);
           return;
         }
+        frameTick++;
         ctx.clearRect(0, 0, w, h);
-        const rgb = appState.theme === 'dark' ? '56, 189, 248' : '29, 78, 216';
 
-        for (let i = 0; i < particles.length; i++) {
-          const p = particles[i];
-          p.x += p.vx;
-          p.y += p.vy;
-          if (p.x < 0 || p.x > w) p.vx *= -1;
-          if (p.y < 0 || p.y > h) p.vy *= -1;
+        // 1. Render soft underwater Tyndall sunbeam shafts from upper ocean surface
+        for (let i = 0; i < lightShafts.length; i++) {
+          const s = lightShafts[i];
+          const pulse = 0.75 + 0.25 * Math.sin(now * s.speed + s.phase);
+          const topX = w * s.xRatio + Math.sin(now * 0.0003 + s.phase) * 35;
+          const beamW = w * s.widthRatio;
+          const bottomX = topX + Math.tan(s.angle) * h;
 
-          // Gentle attraction/interaction near pointer
-          const mdx = mouse.x - p.x;
-          const mdy = mouse.y - p.y;
-          const mDist = Math.hypot(mdx, mdy);
-          if (mDist < 170) {
-            ctx.beginPath();
-            ctx.moveTo(p.x, p.y);
-            ctx.lineTo(mouse.x, mouse.y);
-            ctx.strokeStyle = `rgba(${rgb}, ${(1 - mDist / 170) * 0.24})`;
-            ctx.lineWidth = 0.9;
-            ctx.stroke();
-          }
+          const beamGrad = ctx.createLinearGradient(topX, 0, bottomX, h * 0.88);
+          beamGrad.addColorStop(0, `rgba(125, 211, 252, ${s.alpha * pulse})`);
+          beamGrad.addColorStop(0.45, `rgba(56, 189, 248, ${s.alpha * 0.48 * pulse})`);
+          beamGrad.addColorStop(1, 'rgba(14, 165, 233, 0)');
 
           ctx.beginPath();
-          ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-          ctx.fillStyle = `rgba(${rgb}, 0.42)`;
+          ctx.moveTo(topX - beamW * 0.42, -20);
+          ctx.lineTo(topX + beamW * 0.42, -20);
+          ctx.lineTo(bottomX + beamW * 1.15, h * 0.92);
+          ctx.lineTo(bottomX - beamW * 1.15, h * 0.92);
+          ctx.closePath();
+          ctx.fillStyle = beamGrad;
           ctx.fill();
+        }
 
-          for (let j = i + 1; j < particles.length; j++) {
-            const q = particles[j];
-            const dist = Math.hypot(p.x - q.x, p.y - q.y);
-            if (dist < 135) {
-              ctx.beginPath();
-              ctx.moveTo(p.x, p.y);
-              ctx.lineTo(q.x, q.y);
-              ctx.strokeStyle = `rgba(${rgb}, ${(1 - dist / 135) * 0.14})`;
-              ctx.lineWidth = 0.75;
-              ctx.stroke();
+        // 2. Render bioluminescent marine snow particles
+        for (let i = 0; i < marineSnow.length; i++) {
+          const p = marineSnow[i];
+          p.y += p.vy;
+          p.x += p.vx + Math.sin(frameTick * 0.015 + p.phase) * 0.12;
+          if (p.y < -10) {
+            p.y = h + 10;
+            p.x = Math.random() * w;
+          }
+          if (p.x < 0) p.x = w;
+          if (p.x > w) p.x = 0;
+
+          const twinkle = 0.65 + 0.35 * Math.sin(frameTick * 0.03 + p.phase);
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(165, 243, 252, ${p.alpha * twinkle})`;
+          ctx.fill();
+        }
+
+        // 3. Periodically emit natural seabed bubble plumes from vents at bottom
+        if (frameTick % 55 === 0 && bubbles.length < 96) {
+          const ventX = (0.15 + 0.7 * Math.random()) * w;
+          for (let k = 0; k < 3; k++) {
+            bubbles.push(createBubble(true, ventX + (Math.random() - 0.5) * 28, h + 12 + k * 14));
+          }
+        }
+
+        // 4. Update and draw rising air bubbles
+        for (let i = bubbles.length - 1; i >= 0; i--) {
+          const b = bubbles[i];
+          b.y += b.vy;
+          b.x += b.vx;
+
+          // Gentle water current push near pointer
+          const mdx = b.x - mouse.x;
+          const mdy = b.y - mouse.y;
+          const mDist = Math.hypot(mdx, mdy);
+          if (mDist < 120 && mDist > 1) {
+            b.x += (mdx / mDist) * 0.55;
+            b.y -= 0.25;
+          }
+
+          drawBubble(b, frameTick);
+
+          if (b.y < -b.r * 2 - 20) {
+            // Keep baseline bubble count replenished from seabed, remove extra interactive ones
+            if (bubbles.length > 82) {
+              bubbles.splice(i, 1);
+            } else {
+              Object.assign(b, createBubble(true));
             }
           }
         }
-        rafId = requestAnimationFrame(step);
+
+        requestAnimationFrame(step);
       }
 
       resize();
