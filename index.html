@@ -39,13 +39,16 @@
 
     html, body {
       width: 100%;
-      height: 100%;
+      height: 100vh;
+      height: 100dvh;
       overflow: hidden;
       background: #041527;
       color: #f8fafc;
       font-family: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
       user-select: none;
       overscroll-behavior: none;
+      touch-action: none;
+      -webkit-tap-highlight-color: transparent;
     }
 
     a, button, input {
@@ -649,41 +652,217 @@
       50% { transform: translateY(3px); }
     }
 
+    /* Mobile Quick Navigation Pill Bar (Visible on <= 1024px) */
+    .mobile-quick-nav {
+      display: none;
+    }
+
     @media (max-width: 1024px) {
       .ocean-navbar {
-        padding: 14px 24px;
+        padding: 10px 16px 8px;
         grid-template-columns: 1fr auto;
+        gap: 10px;
+      }
+      .brand-lmx-svg {
+        width: 52px;
+        height: 29px;
+      }
+      .brand-wordmark {
+        font-size: 0.75rem;
+        letter-spacing: 0.22em;
       }
       .nav-center-links {
         display: none;
       }
+      .mobile-quick-nav {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        padding: 0 16px 8px;
+        overflow-x: auto;
+        scrollbar-width: none;
+      }
+      .mobile-quick-nav::-webkit-scrollbar {
+        display: none;
+      }
+      .mobile-q-pill {
+        flex: 1;
+        text-align: center;
+        white-space: nowrap;
+        padding: 5px 7px;
+        border-radius: 999px;
+        border: 1px solid var(--hero-border);
+        font-size: 0.69rem;
+        font-weight: 500;
+        color: var(--hero-ink);
+        background: rgba(255, 255, 255, 0.08);
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+      }
+      body.is-submerged .mobile-q-pill,
+      body.is-submerged .pill-outline-btn {
+        background: rgba(6, 28, 54, 0.58);
+        border-color: rgba(125, 211, 252, 0.38);
+      }
+      .pill-outline-btn {
+        padding: 6px 13px;
+        font-size: 0.74rem;
+      }
+      .depth-pagination {
+        left: 7px;
+      }
       .hero-main-grid {
-        padding: 0 24px;
-        grid-template-columns: 1fr;
+        padding: 0 18px 0 22px;
+        grid-template-columns: minmax(0, 1fr);
         align-content: center;
-        gap: 22px;
+        gap: 12px;
+        overflow: hidden;
       }
-      .editorial-headline {
-        font-size: clamp(2.5rem, 9vw, 3.6rem);
+      .editorial-column {
+        padding-bottom: 10vh;
+        max-width: 100%;
+        transition: opacity 240ms ease, transform 240ms ease;
       }
-      .editorial-sub {
-        margin-bottom: 18px;
+      /* When submerged on mobile/tablet, compact the giant hero text so the underwater knowledge domains fit cleanly in viewport */
+      body.is-submerged .editorial-column {
+        padding-bottom: 0;
       }
-      .underwater-domains-panel {
+      body.is-submerged .editorial-headline {
+        font-size: 1.55rem;
+        margin-bottom: 4px;
+      }
+      body.is-submerged .editorial-headline br {
+        display: none;
+      }
+      body.is-submerged .editorial-sub,
+      body.is-submerged .editorial-cta-row {
+        display: none;
+      }
+      body.is-submerged .eyebrow-row {
+        margin-bottom: 2px;
+      }
+      /* Hide underwater panel from layout flow when on surface so editorial block centers nicely above horizon */
+      body:not(.is-submerged) .underwater-domains-panel {
+        position: absolute;
+        left: 18px;
+        right: 18px;
+        bottom: 16px;
+        pointer-events: none;
+      }
+      body.is-submerged .underwater-domains-panel {
+        position: relative;
         justify-self: stretch;
+        max-height: calc(100dvh - 215px);
+        overflow-y: auto;
+        padding-right: 2px;
+        touch-action: pan-y;
+        -webkit-overflow-scrolling: touch;
       }
       .ocean-bottom-bar {
-        padding: 14px 24px 18px;
+        padding: 8px 16px max(14px, env(safe-area-inset-bottom));
+        font-size: 0.64rem;
+        letter-spacing: 0.14em;
       }
     }
 
     @media (max-width: 640px) {
+      .top-announcement {
+        font-size: 0.68rem;
+        padding: 0 12px;
+        height: 32px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .top-announcement .ann-en-text,
+      .top-announcement .ann-dot {
+        display: none;
+      }
+      .eyebrow-row {
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-bottom: 10px;
+      }
+      .editorial-eyebrow {
+        font-size: 0.65rem;
+        letter-spacing: 0.16em;
+      }
+      .editorial-headline {
+        font-size: clamp(2.6rem, 11vw, 3.4rem);
+        margin-bottom: 14px;
+      }
+      .editorial-sub {
+        font-size: 0.92rem;
+        line-height: 1.5;
+        margin-bottom: 20px;
+      }
+      .editorial-sub-cn {
+        font-size: 0.8rem;
+      }
+      .editorial-cta-row {
+        gap: 10px;
+      }
+      .primary-ocean-btn {
+        padding: 10px 18px;
+        font-size: 0.8rem;
+      }
+      .secondary-play-btn {
+        font-size: 0.78rem;
+        gap: 8px;
+      }
+      .play-circle-icon {
+        width: 32px;
+        height: 32px;
+      }
+      .domains-header-bar {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 8px;
+        padding-bottom: 8px;
+      }
+      .domains-header-title {
+        font-size: 0.68rem;
+        letter-spacing: 0.1em;
+      }
+      .underwater-search-form {
+        width: 100%;
+      }
+      .underwater-search-form input {
+        width: 100%;
+      }
       .domain-cards-grid {
         grid-template-columns: 1fr;
+        gap: 10px;
       }
-      .top-announcement {
-        font-size: 0.66rem;
-        padding: 0 12px;
+      .domain-sea-card {
+        padding: 14px 16px;
+        gap: 8px;
+        border-radius: 14px;
+      }
+      .domain-card-title {
+        font-size: 1.12rem;
+        margin-bottom: 3px;
+      }
+      .domain-card-desc {
+        font-size: 0.75rem;
+        line-height: 1.45;
+      }
+      .subtopic-capsules-wrap {
+        gap: 6px;
+      }
+      .subtopic-capsule {
+        padding: 5px 11px;
+        font-size: 0.72rem;
+      }
+      .live-sea-control,
+      .scroll-explore-btn {
+        font-size: 0.64rem;
+        letter-spacing: 0.12em;
+        gap: 8px;
+      }
+      .pause-circle-btn {
+        width: 28px;
+        height: 28px;
       }
     }
   </style>
@@ -717,8 +896,8 @@
     <div>
       <!-- 1. Top Announcement Bar -->
       <a href="./hub.html" class="top-announcement ui-interactive">
-        <span>A new perspective on research &amp; learning begins here</span>
-        <span style="opacity:0.65;">·</span>
+        <span class="ann-en-text">A new perspective on research &amp; learning begins here</span>
+        <span class="ann-dot" style="opacity:0.65;">·</span>
         <span id="topSyncNotice">随滚动潜入知识深海</span>
         <span aria-hidden="true">→</span>
       </a>
@@ -746,6 +925,14 @@
           </a>
         </div>
       </header>
+
+      <!-- Mobile Quick-Access Bar (Visible on Phones & Tablets <= 1024px) -->
+      <nav class="mobile-quick-nav ui-interactive" aria-label="移动端快捷导航">
+        <button type="button" class="mobile-q-pill" id="mobileDiveTogglePill">🌊 潜入深海 ↓</button>
+        <a href="./hub.html?channel=CAT:%E7%A7%91%E7%A0%94" class="mobile-q-pill">🔬 科研深海</a>
+        <a href="./hub.html?channel=CAT:%E5%AD%A6%E4%B9%A0" class="mobile-q-pill">📘 学习海域</a>
+        <a href="./hub.html" class="mobile-q-pill">⚡ 资源总舱</a>
+      </nav>
     </div>
 
     <!-- 3. Center Editorial Hero + Underwater Knowledge Domains -->
@@ -758,7 +945,7 @@
         </div>
 
         <h1 class="editorial-headline">
-          Closer to<br />the ocean.
+          Closer to <br />the ocean.
         </h1>
 
         <p class="editorial-sub">
@@ -929,7 +1116,8 @@
 
       /* Above-water sunset sky + golden sun + sculpted clouds + rolling ocean waves */
       vec3 renderAboveWater(vec2 uv, float aspect, float t, float horizonY) {
-        vec2 sunPos = vec2(0.76 + (uMouse.x - 0.5) * 0.03, horizonY + 0.038);
+        float sunBaseX = aspect < 0.85 ? 0.68 : 0.76;
+        vec2 sunPos = vec2(sunBaseX + (uMouse.x - 0.5) * 0.03, horizonY + 0.038);
 
         if (uv.y >= horizonY) {
           /* Sunset Sky & Dramatic Golden-Lit Clouds */
@@ -1194,8 +1382,10 @@
       setTargetDive(targetDive + delta);
     }, { passive: false });
 
-    /* Support mobile touch swipe diving */
+    /* Support mobile touch swipe diving + inner panel scrolling when submerged */
     let touchStartY = null;
+    const underwaterPanelEl = document.getElementById('underwaterDomainsPanel');
+
     window.addEventListener('touchstart', (e) => {
       if (e.touches && e.touches.length) {
         touchStartY = e.touches[0].clientY;
@@ -1204,9 +1394,23 @@
 
     window.addEventListener('touchmove', (e) => {
       if (touchStartY === null || !e.touches || !e.touches.length) return;
-      const dy = touchStartY - e.touches[0].clientY;
-      touchStartY = e.touches[0].clientY;
-      setTargetDive(targetDive + dy * 0.0022);
+      const currentY = e.touches[0].clientY;
+      const dy = touchStartY - currentY;
+      touchStartY = currentY;
+
+      /* If user is scrolling inside the submerged knowledge domains panel on mobile */
+      if (currentDive > 0.85 && underwaterPanelEl && underwaterPanelEl.contains(e.target)) {
+        const hasOverflow = underwaterPanelEl.scrollHeight > underwaterPanelEl.clientHeight + 4;
+        if (hasOverflow) {
+          /* Only trigger ascend if pulling down at the very top of the panel */
+          if (dy < 0 && underwaterPanelEl.scrollTop <= 0) {
+            setTargetDive(targetDive + dy * 0.0025);
+          }
+          return;
+        }
+      }
+
+      setTargetDive(targetDive + dy * 0.0025);
     }, { passive: true });
 
     /* Support keyboard navigation (ArrowDown / ArrowUp / PageDown / PageUp / Space) */
@@ -1226,6 +1430,8 @@
     });
 
     function applyAdaptiveUI(d) {
+      document.body.classList.toggle('is-submerged', d >= 0.48);
+
       /* 1. Wave meniscus masking effect on the left editorial column (0.26 < d < 0.52) */
       const crossingDist = Math.abs(d - 0.38);
       const crossingFactor = Math.max(0, 1.0 - crossingDist / 0.16);
@@ -1267,22 +1473,26 @@
       rootStyle.setProperty('--underwater-pointer', panelProgress > 0.25 ? 'auto' : 'none');
 
       /* 4. Depth readout & buttons */
+      const mobileDivePill = document.getElementById('mobileDiveTogglePill');
       const depthMeters = (d * 30).toFixed(1);
       if (d < 0.22) {
         depthReadout.textContent = `0.0m · SURFACE`;
         primaryExploreText.textContent = 'Explore the ocean';
         scrollExploreLabel.textContent = 'SCROLL TO EXPLORE';
         scrollExploreArrow.textContent = '↓';
+        if (mobileDivePill) mobileDivePill.textContent = '🌊 潜入知识深海 ↓';
       } else if (d < 0.58) {
         depthReadout.textContent = `-${depthMeters}m · WATERLINE`;
         primaryExploreText.textContent = 'Dive into domains';
         scrollExploreLabel.textContent = 'DIVING UNDERWATER';
         scrollExploreArrow.textContent = '↓';
+        if (mobileDivePill) mobileDivePill.textContent = '🌊 正在下潜 ↓';
       } else {
         depthReadout.textContent = `-${depthMeters}m · TYNDALL ZONE`;
         primaryExploreText.textContent = 'Explore Resource Hub';
         scrollExploreLabel.textContent = 'BACK TO SURFACE';
         scrollExploreArrow.textContent = '↑';
+        if (mobileDivePill) mobileDivePill.textContent = '☀️ 回到海平面 ↑';
       }
 
       /* 5. Update active left pagination dot */
@@ -1314,6 +1524,13 @@
       e.preventDefault();
       setTargetDive(1.0);
     });
+
+    const mobileDiveToggleEl = document.getElementById('mobileDiveTogglePill');
+    if (mobileDiveToggleEl) {
+      mobileDiveToggleEl.addEventListener('click', () => {
+        setTargetDive(currentDive < 0.62 ? 1.0 : 0.0);
+      });
+    }
 
     document.getElementById('primaryExploreBtn').addEventListener('click', () => {
       if (currentDive < 0.62) {
