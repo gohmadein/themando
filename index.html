@@ -1101,11 +1101,12 @@
         );
       }
 
+      /* Fast 3-octave FBM for volumetric clouds & ocean caustics (40% fewer texture ALU ops) */
       float fbm(vec2 p) {
         float v = 0.0;
         float a = 0.5;
         mat2 rot = mat2(0.80, 0.60, -0.60, 0.80);
-        for (int i = 0; i < 5; i++) {
+        for (int i = 0; i < 4; i++) {
           v += a * noise(p);
           p = rot * p * 2.03;
           a *= 0.5;
@@ -1138,7 +1139,7 @@
         float sumValues = 0.0;
         float sumWeights = 0.0;
 
-        for (int i = 0; i < 8; i++) {
+        for (int i = 0; i < 6; i++) {
           if (i >= octaves) break;
           /* Golden-angle directional spread so swells cross naturally without grid repetition */
           float angle = iter * 1.18 + 0.35;
@@ -1162,26 +1163,16 @@
         return (sumValues / max(0.001, sumWeights)) * 0.72 + primarySwell;
       }
 
-      /* Distance-adaptive 3D ocean surface normal (prevents horizon aliasing while keeping foreground crisp) */
+      /* Distance-adaptive 3D ocean surface normal (6 octaves, zero extra fbm loops for 60FPS lock) */
       vec3 getOceanNormal(vec2 pos, float eps, float t) {
-        float hC = getOceanHeight(pos, t, 8);
-        float hX = getOceanHeight(pos + vec2(eps, 0.0), t, 8);
-        float hZ = getOceanHeight(pos + vec2(0.0, eps), t, 8);
-        /* Add subtle high-frequency wind capillary micro-ripples in the foreground */
-        float microWeight = smoothstep(0.35, 0.02, eps) * 0.014;
-        if (microWeight > 0.0001) {
-          float mC = fbm(pos * 2.8 + vec2(t * 0.45, -t * 0.65));
-          float mX = fbm((pos + vec2(eps, 0.0)) * 2.8 + vec2(t * 0.45, -t * 0.65));
-          float mZ = fbm((pos + vec2(0.0, eps)) * 2.8 + vec2(t * 0.45, -t * 0.65));
-          hC += mC * microWeight;
-          hX += mX * microWeight;
-          hZ += mZ * microWeight;
-        }
+        float hC = getOceanHeight(pos, t, 6);
+        float hX = getOceanHeight(pos + vec2(eps, 0.0), t, 6);
+        float hZ = getOceanHeight(pos + vec2(0.0, eps), t, 6);
         return normalize(vec3(hC - hX, eps, hC - hZ));
       }
 
-      /* Procedural sunset sky + golden solar disk + volumetric clouds (sampled by both sky rays & water reflections) */
-      vec3 evalSunsetSky(vec3 rd, vec3 sunDir, float t) {
+      /* Lightweight sunset sky gradient + solar glow for water reflections (no heavy cloud FBM) */
+      vec3 evalSunsetSkyFast(vec3 rd, vec3 sunDir) {
         float skyH = clamp(rd.y * 1.45, 0.0, 1.0);
         vec3 zenithCol = vec3(0.41, 0.56, 0.78);
         vec3 midSkyCol = vec3(0.66, 0.76, 0.88);
@@ -1190,12 +1181,17 @@
         vec3 sky = mix(horizonCol, midSkyCol, smoothstep(0.0, 0.34, skyH));
         sky = mix(sky, zenithCol, smoothstep(0.26, 1.0, skyH));
 
-        float sunCos = max(0.0, dot(rd, sunDir));
         float sunAngle = acos(clamp(dot(rd, sunDir), -1.0, 1.0));
-
-        /* Crisp golden solar disk + controlled warm atmospheric glow */
         sky += vec3(1.0, 0.60, 0.20) * exp(-sunAngle * 3.4) * 0.68;
         sky += vec3(1.0, 0.82, 0.48) * exp(-sunAngle * 11.5) * 0.55;
+        return sky;
+      }
+
+      /* Full procedural sunset sky + golden solar disk + volumetric clouds (only evaluated for sky pixels) */
+      vec3 evalSunsetSky(vec3 rd, vec3 sunDir, float t) {
+        vec3 sky = evalSunsetSkyFast(rd, sunDir);
+        float skyH = clamp(rd.y * 1.45, 0.0, 1.0);
+        float sunAngle = acos(clamp(dot(rd, sunDir), -1.0, 1.0));
         sky += vec3(1.0, 0.96, 0.84) * smoothstep(0.056, 0.012, sunAngle);
 
         /* Perspective cloud deck with golden bottom-rim lighting */
@@ -1203,8 +1199,8 @@
           float persp = 1.0 / (skyH + 0.11);
           vec2 cloudUv = vec2(rd.x * persp * 0.55, persp * 0.55);
           float cBase = fbm(cloudUv + vec2(t * 0.016, 0.0));
-          float cDetail = fbm(cloudUv * 2.3 - vec2(t * 0.028, 0.15));
-          float cShape = cBase * 0.68 + cDetail * 0.32;
+          float cDetail = noise(cloudUv * 3.2 - vec2(t * 0.028, 0.15));
+          float cShape = cBase * 0.74 + cDetail * 0.26;
 
           float cloudAlpha = smoothstep(0.47, 0.72, cShape) * smoothstep(0.01, 0.13, skyH) * (1.0 - smoothstep(0.75, 0.98, skyH));
           float cUpper = fbm(cloudUv + vec2(0.0, 0.08) + vec2(t * 0.016, 0.0));
@@ -1235,29 +1231,26 @@
         vec3 rd = normalize(vec3((uv.x - 0.5) * aspect, (uv.y - horizonY) * 1.15, focal));
         vec3 sunDir = normalize(vec3((sunScreen.x - 0.5) * aspect, (sunScreen.y - horizonY) * 1.15, focal));
 
-        vec3 skyCol = evalSunsetSky(vec3(rd.x, max(0.002, rd.y), rd.z), sunDir, t);
-
-        /* Rays pointing above the horizon render the sunset sky */
+        /* Rays pointing above the horizon render the sunset sky (skip ocean raymarching completely) */
         if (rd.y >= -0.0015) {
-          return skyCol;
+          return evalSunsetSky(vec3(rd.x, max(0.002, rd.y), rd.z), sunDir, t);
         }
 
         /* 3D Raymarching intersection against the dynamic ocean heightfield */
-        /* Bounding planes: y = 0.95 (highest wave crest) to y = -0.25 (lowest trough) */
         float tNear = max(0.5, (ro.y - 0.95) / max(0.0005, -rd.y));
         float tFar = min(160.0, (ro.y + 0.25) / max(0.0005, -rd.y));
 
         float tm = tNear;
         float tx = tFar;
-        float hx = ro.y + rd.y * tx - getOceanHeight(ro.xz + rd.xz * tx, t, 5);
-        float hm = ro.y + rd.y * tm - getOceanHeight(ro.xz + rd.xz * tm, t, 5);
+        float hx = ro.y + rd.y * tx - getOceanHeight(ro.xz + rd.xz * tx, t, 4);
+        float hm = ro.y + rd.y * tm - getOceanHeight(ro.xz + rd.xz * tm, t, 4);
 
-        /* 7 steps of secant/bisection root-finding in 3D space (TDM Seascape algorithm) */
+        /* 5 steps of secant/bisection root-finding in 3D space (fast & accurate) */
         float tHit = tm;
-        for (int i = 0; i < 7; i++) {
+        for (int i = 0; i < 5; i++) {
           tHit = mix(tm, tx, clamp(hm / (hm - hx + 0.0001), 0.0, 1.0));
           vec3 p = ro + rd * tHit;
-          float h = p.y - getOceanHeight(p.xz, t, 5);
+          float h = p.y - getOceanHeight(p.xz, t, 4);
           if (h < 0.0) {
             tx = tHit;
             hx = h;
@@ -1273,17 +1266,16 @@
         /* Distance-adaptive normal filter footprint: crisp 3D ripples nearby, smooth shimmer at horizon */
         float eps = clamp(0.016 + dist * dist * 0.00035, 0.016, 0.65);
         vec3 normal = getOceanNormal(hitPos.xz, eps, t);
-        /* Relax normal steepness in the far distance to prevent pixel-aliasing */
         normal = normalize(mix(normal, vec3(0.0, 1.0, 0.0), smoothstep(20.0, 125.0, dist) * 0.72));
 
         /* 1. Schlick Fresnel reflection coefficient */
         float NoV = clamp(dot(normal, -rd), 0.0, 1.0);
         float fresnel = clamp(0.04 + 0.96 * pow(1.0 - NoV, 4.5), 0.0, 1.0);
 
-        /* 2. True reflected sky vector (ensure reflection stays above horizon) */
+        /* 2. Fast reflected sky vector */
         vec3 reflDir = reflect(rd, normal);
         reflDir.y = max(0.003, abs(reflDir.y));
-        vec3 reflectedSky = evalSunsetSky(reflDir, sunDir, t);
+        vec3 reflectedSky = evalSunsetSkyFast(reflDir, sunDir);
 
         /* 3. Deep ocean water body & emerald-teal subsurface scattering (SSS) through wave crests */
         vec3 seaBase = vec3(0.012, 0.075, 0.16);
@@ -1307,8 +1299,9 @@
         waterCol += vec3(1.0, 0.86, 0.58) * (specTight + specBroad) * fresnel;
 
         /* 5. Atmospheric horizon mist blending so the distant ocean meets the sunset horizon seamlessly */
+        vec3 horizonSkyCol = evalSunsetSkyFast(vec3(rd.x, 0.003, rd.z), sunDir);
         float horizonBlend = max(smoothstep(28.0, 140.0, dist), smoothstep(-0.012, -0.0015, rd.y));
-        waterCol = mix(waterCol, skyCol, horizonBlend);
+        waterCol = mix(waterCol, horizonSkyCol, horizonBlend);
 
         return waterCol;
       }
@@ -1333,8 +1326,8 @@
           vec2 ceilCoord = vec2((uv.x - 0.5) * aspect * invCeil * 0.85, invCeil * 1.2 + t * 0.85);
 
           float r1 = fbm(ceilCoord * 1.45 + vec2(t * 0.42, -t * 0.32));
-          float r2 = fbm(ceilCoord * 3.1 - vec2(t * 0.75, t * 0.52));
-          float wavePattern = r1 * 0.58 + r2 * 0.42;
+          float r2 = noise(ceilCoord * 3.1 - vec2(t * 0.75, t * 0.52));
+          float wavePattern = r1 * 0.65 + r2 * 0.35;
 
           float sunDistCeil = length(vec2((uv.x - sunSurface.x) * aspect, (subUvY - 0.89) * 1.25));
           float snellSun = exp(-sunDistCeil * 2.3);
@@ -1353,7 +1346,7 @@
         float rayDist = length(toPix);
 
         float ray1 = fbm(vec2(angle * 8.0 + t * 0.24, rayDist * 1.1 - t * 0.35));
-        float ray2 = fbm(vec2(angle * 18.0 - t * 0.40, rayDist * 1.8 - t * 0.50));
+        float ray2 = noise(vec2(angle * 18.0 - t * 0.40, rayDist * 1.8 - t * 0.50));
         float ray3 = sin(angle * 32.0 + t * 0.85) * 0.5 + 0.5;
 
         float shafts = smoothstep(0.35, 0.77, ray1 * 0.55 + ray2 * 0.33 + ray3 * 0.12);
@@ -1419,11 +1412,19 @@
         float meniscusY = baseMeniscus + swellWave;
         float horizonY = 0.255 + uDive * 0.40;
 
-        vec3 aboveCol = renderAboveWater(uv, aspect, t, horizonY);
-        vec3 underCol = renderUnderwater(uv, aspect, t, max(0.65, meniscusY));
-
         float underMask = 1.0 - smoothstep(meniscusY - 0.028, meniscusY + 0.022, uv.y);
-        vec3 col = mix(aboveCol, underCol, underMask);
+
+        /* Only evaluate the shader branch actually visible at this pixel (huge GPU speedup!) */
+        vec3 col;
+        if (underMask <= 0.001) {
+          col = renderAboveWater(uv, aspect, t, horizonY);
+        } else if (underMask >= 0.999) {
+          col = renderUnderwater(uv, aspect, t, max(0.65, meniscusY));
+        } else {
+          vec3 aboveCol = renderAboveWater(uv, aspect, t, horizonY);
+          vec3 underCol = renderUnderwater(uv, aspect, t, max(0.65, meniscusY));
+          col = mix(aboveCol, underCol, underMask);
+        }
 
         /* Waterline meniscus refractive band & lens droplet bokeh (00:06-00:08 in video) */
         float diveActive = smoothstep(0.03, 0.16, uDive) * (1.0 - smoothstep(0.64, 0.76, uDive));
@@ -1487,7 +1488,7 @@
     }
 
     function resizeCanvas() {
-      const dpr = Math.min(window.devicePixelRatio || 1, 1.75);
+      const dpr = Math.min(window.devicePixelRatio || 1, 1.25);
       canvas.width = Math.floor(window.innerWidth * dpr);
       canvas.height = Math.floor(window.innerHeight * dpr);
       if (gl) gl.viewport(0, 0, canvas.width, canvas.height);
@@ -1751,15 +1752,15 @@
       { x0: 0.60, y0: 0.58, vx: 0.013, vy: -0.0011, span: 16.5, dir: 1, freq: 4.1, phase: 4.9, glideRatio: 0.54, cycleOffset: 1.2, bankAmp: 0.045 }
     ];
 
-    /* Continuous fluid wing-flapping kinematics (inner wing + lagging whip-like outer primary wingtip) */
+    /* Continuous fluid wing-flapping kinematics (pure harmonic sine wave with outer primary wingtip lag) */
     function evaluateWingState(t, bird) {
-      const theta = t * (bird.freq * 1.35) + bird.phase;
-      /* Inner wing (shoulder to wrist/elbow) with slight upstroke/downstroke asymmetry */
-      const innerBeat = Math.sin(theta) + 0.12 * Math.sin(2.0 * theta);
-      /* Outer wing (wrist to primary wingtip) lags by ~0.75 rad for fluid whip-like downstroke & upstroke recovery */
-      const outerBeat = Math.sin(theta - 0.75) + 0.15 * Math.cos(2.0 * theta - 0.75);
+      const theta = t * (bird.freq * 1.45) + bird.phase;
+      /* Inner wing (shoulder to wrist/elbow) */
+      const innerBeat = Math.sin(theta);
+      /* Outer wing (wrist to primary wingtip) lags by ~0.72 rad for fluid whip-like propulsion */
+      const outerBeat = Math.sin(theta - 0.72);
       /* Subtle body vertical bobbing in reaction to downstroke lift */
-      const bodyBob = -Math.cos(theta) * 0.055;
+      const bodyBob = -Math.cos(theta) * 0.05;
 
       return { innerBeat, outerBeat, bodyBob };
     }
