@@ -1751,32 +1751,17 @@
       { x0: 0.60, y0: 0.58, vx: 0.013, vy: -0.0011, span: 16.5, dir: 1, freq: 4.1, phase: 4.9, glideRatio: 0.54, cycleOffset: 1.2, bankAmp: 0.045 }
     ];
 
-    /* Compute natural intermittent flap-and-glide cycle (gulls flap 3-4 times, then thermal-glide with M-curved wings) */
+    /* Continuous fluid wing-flapping kinematics (inner wing + lagging whip-like outer primary wingtip) */
     function evaluateWingState(t, bird) {
-      const cyclePeriod = 5.4;
-      const localCycle = ((t + bird.cycleOffset) % cyclePeriod + cyclePeriod) % cyclePeriod;
-      const flapWindow = cyclePeriod * (1.0 - bird.glideRatio);
-
-      let envelope = 1.0;
-      if (localCycle > flapWindow) {
-        /* Smoothly settle into thermal glide posture (wings held in a gentle M-arch) */
-        const gPhase = (localCycle - flapWindow) / (cyclePeriod - flapWindow);
-        envelope = Math.pow(Math.cos(Math.min(1, gPhase * 2.4) * Math.PI * 0.5), 2) * 0.06;
-        if (gPhase > 0.78) {
-          const wake = (gPhase - 0.78) / 0.22;
-          envelope = wake * wake;
-        }
-      }
-
-      const theta = t * bird.freq + bird.phase;
-      /* Inner wing (shoulder to wrist/elbow) */
-      const innerBeat = Math.sin(theta) * envelope;
-      /* Outer wing (wrist to primary wingtip) lags by ~0.72 rad for fluid whip-like downstroke & upstroke recovery */
-      const outerBeat = Math.sin(theta - 0.72) * envelope;
+      const theta = t * (bird.freq * 1.35) + bird.phase;
+      /* Inner wing (shoulder to wrist/elbow) with slight upstroke/downstroke asymmetry */
+      const innerBeat = Math.sin(theta) + 0.12 * Math.sin(2.0 * theta);
+      /* Outer wing (wrist to primary wingtip) lags by ~0.75 rad for fluid whip-like downstroke & upstroke recovery */
+      const outerBeat = Math.sin(theta - 0.75) + 0.15 * Math.cos(2.0 * theta - 0.75);
       /* Subtle body vertical bobbing in reaction to downstroke lift */
-      const bodyBob = -Math.cos(theta) * envelope * 0.055;
+      const bodyBob = -Math.cos(theta) * 0.055;
 
-      return { innerBeat, outerBeat, bodyBob, envelope };
+      return { innerBeat, outerBeat, bodyBob };
     }
 
     function drawSingleSeagull(ctx, bx, by, bird, t, globalAlpha) {
