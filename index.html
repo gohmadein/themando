@@ -76,6 +76,15 @@
       display: block;
     }
 
+    #seagullsCanvas {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      display: block;
+    }
+
     /* Fixed Cinematic Viewport Frame */
     .cinema-viewport {
       position: fixed;
@@ -882,6 +891,7 @@
   <!-- Full-Screen WebGL Ocean Surface -> Waterline Crossing -> Underwater Tyndall God Rays -->
   <div class="ocean-stage" aria-hidden="true">
     <canvas id="oceanCanvas"></canvas>
+    <canvas id="seagullsCanvas"></canvas>
   </div>
 
   <!-- Left Vertical Depth Pagination Dots (Matching 00:07-00:10 in video) -->
@@ -951,7 +961,6 @@
         <p class="editorial-sub">
           A moment of stillness.<br />
           An endless sense of possibility.
-          <span class="editorial-sub-cn" id="heroSubCn">随滚轮潜入深海丁达尔光束，探索科研与学习的各个知识领域。</span>
         </p>
 
         <div class="editorial-cta-row">
@@ -1708,6 +1717,199 @@
       }
     });
 
+    /* =========================================================================
+       2.5 Natural Articulated Seagulls Soaring & Flapping Across Sunset Sky
+       ========================================================================= */
+    const gullsCanvas = document.getElementById('seagullsCanvas');
+    const gCtx = gullsCanvas ? gullsCanvas.getContext('2d') : null;
+    let gW = 0, gH = 0;
+
+    function resizeGullsCanvas() {
+      if (!gullsCanvas) return;
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      gW = window.innerWidth;
+      gH = window.innerHeight;
+      gullsCanvas.width = Math.floor(gW * dpr);
+      gullsCanvas.height = Math.floor(gH * dpr);
+      if (gCtx) gCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
+    window.addEventListener('resize', resizeGullsCanvas, { passive: true });
+    resizeGullsCanvas();
+
+    /* Flock of 7 coastal seagulls at varying distances, flight speeds, and wingbeat phases */
+    const SEAGULL_FLOCK = [
+      /* Lead foreground gull gliding & flapping gracefully left-to-right across the warm sunset sky */
+      { x0: 0.54, y0: 0.43, vx: 0.022, vy: -0.0020, span: 54, dir: 1, freq: 3.0, phase: 0.35, glideRatio: 0.44, cycleOffset: 0.5, bankAmp: 0.065 },
+      /* Companion foreground gull slightly behind and lower */
+      { x0: 0.47, y0: 0.48, vx: 0.021, vy: -0.0017, span: 42, dir: 1, freq: 3.25, phase: 2.05, glideRatio: 0.38, cycleOffset: 1.8, bankAmp: 0.055 },
+      /* Mid-distance pair soaring right-to-left in the upper golden-blue sky */
+      { x0: 0.77, y0: 0.28, vx: -0.018, vy: 0.0014, span: 35, dir: -1, freq: 3.4, phase: 1.15, glideRatio: 0.48, cycleOffset: 2.3, bankAmp: 0.075 },
+      { x0: 0.83, y0: 0.32, vx: -0.017, vy: 0.0011, span: 28, dir: -1, freq: 3.6, phase: 3.85, glideRatio: 0.45, cycleOffset: 0.9, bankAmp: 0.065 },
+      /* Distant loose V-formation of 3 gulls near the warm sun horizon */
+      { x0: 0.63, y0: 0.55, vx: 0.013, vy: -0.0012, span: 23, dir: 1, freq: 3.8, phase: 0.7, glideRatio: 0.52, cycleOffset: 3.4, bankAmp: 0.045 },
+      { x0: 0.67, y0: 0.57, vx: 0.013, vy: -0.0012, span: 19, dir: 1, freq: 3.95, phase: 2.4, glideRatio: 0.50, cycleOffset: 4.1, bankAmp: 0.045 },
+      { x0: 0.60, y0: 0.58, vx: 0.013, vy: -0.0011, span: 16.5, dir: 1, freq: 4.1, phase: 4.9, glideRatio: 0.54, cycleOffset: 1.2, bankAmp: 0.045 }
+    ];
+
+    /* Compute natural intermittent flap-and-glide cycle (gulls flap 3-4 times, then thermal-glide with M-curved wings) */
+    function evaluateWingState(t, bird) {
+      const cyclePeriod = 5.4;
+      const localCycle = ((t + bird.cycleOffset) % cyclePeriod + cyclePeriod) % cyclePeriod;
+      const flapWindow = cyclePeriod * (1.0 - bird.glideRatio);
+
+      let envelope = 1.0;
+      if (localCycle > flapWindow) {
+        /* Smoothly settle into thermal glide posture (wings held in a gentle M-arch) */
+        const gPhase = (localCycle - flapWindow) / (cyclePeriod - flapWindow);
+        envelope = Math.pow(Math.cos(Math.min(1, gPhase * 2.4) * Math.PI * 0.5), 2) * 0.06;
+        if (gPhase > 0.78) {
+          const wake = (gPhase - 0.78) / 0.22;
+          envelope = wake * wake;
+        }
+      }
+
+      const theta = t * bird.freq + bird.phase;
+      /* Inner wing (shoulder to wrist/elbow) */
+      const innerBeat = Math.sin(theta) * envelope;
+      /* Outer wing (wrist to primary wingtip) lags by ~0.72 rad for fluid whip-like downstroke & upstroke recovery */
+      const outerBeat = Math.sin(theta - 0.72) * envelope;
+      /* Subtle body vertical bobbing in reaction to downstroke lift */
+      const bodyBob = -Math.cos(theta) * envelope * 0.055;
+
+      return { innerBeat, outerBeat, bodyBob, envelope };
+    }
+
+    function drawSingleSeagull(ctx, bx, by, bird, t, globalAlpha) {
+      const s = bird.span;
+      const { innerBeat, outerBeat, bodyBob } = evaluateWingState(t, bird);
+
+      /* Gentle banking roll angle */
+      const bankAngle = Math.sin(t * 0.52 + bird.phase) * bird.bankAmp;
+      /* 3/4 oblique perspective: near wing is slightly longer, far wing is slightly foreshortened */
+      const nearScale = 1.06;
+      const farScale = 0.78;
+
+      ctx.save();
+      ctx.translate(bx, by + bodyBob * s);
+      ctx.rotate(bankAngle);
+
+      const hs = s * 0.52;
+      /* Iconic M-shaped gull wing dihedral camber at the wrist/elbow joint */
+      const baseArch = -0.21 * hs;
+
+      /* Far wing (behind body in 3/4 oblique flight view) */
+      const farElbowX = -0.45 * hs * farScale * bird.dir;
+      const farElbowY = baseArch * 0.90 - innerBeat * 0.24 * hs * farScale;
+      const farTipX = -0.98 * hs * farScale * bird.dir;
+      const farTipY = baseArch * 0.22 - (innerBeat * 0.18 + outerBeat * 0.32) * hs * farScale + 0.06 * hs;
+
+      /* Near wing (foreground in 3/4 oblique flight view) */
+      const nearElbowX = 0.48 * hs * nearScale * bird.dir;
+      const nearElbowY = baseArch - innerBeat * 0.28 * hs * nearScale;
+      const nearTipX = 1.04 * hs * nearScale * bird.dir;
+      const nearTipY = baseArch * 0.18 - (innerBeat * 0.20 + outerBeat * 0.36) * hs * nearScale + 0.07 * hs;
+
+      /* Warm backlit coastal gull palette: dark slate-navy wings/tips, soft backlit body, golden sunset rim */
+      const nearWingCol = `rgba(18, 36, 60, ${0.88 * globalAlpha})`;
+      const farWingCol = `rgba(34, 56, 84, ${0.76 * globalAlpha})`;
+      const torsoCol = `rgba(24, 44, 70, ${0.90 * globalAlpha})`;
+      const rimGold = `rgba(255, 236, 192, ${0.78 * globalAlpha})`;
+
+      /* 1. Far Wing (graceful cambered airfoil tapering to a dark primary tip) */
+      ctx.beginPath();
+      ctx.moveTo(-0.04 * hs * bird.dir, -0.02 * hs);
+      /* Leading edge to wrist/elbow */
+      ctx.quadraticCurveTo(farElbowX * 0.54, farElbowY * 0.94 - 0.055 * hs, farElbowX, farElbowY);
+      /* Wrist to outer primary wingtip */
+      ctx.quadraticCurveTo((farElbowX + farTipX) * 0.52, (farElbowY + farTipY) * 0.5 - 0.032 * hs, farTipX, farTipY);
+      /* Trailing edge from wingtip back to elbow & root */
+      ctx.quadraticCurveTo((farElbowX + farTipX) * 0.50, (farElbowY + farTipY) * 0.5 + 0.048 * hs, farElbowX * 0.90, farElbowY + 0.095 * hs);
+      ctx.quadraticCurveTo(farElbowX * 0.45, farElbowY * 0.65 + 0.075 * hs, -0.06 * hs * bird.dir, 0.055 * hs);
+      ctx.closePath();
+      ctx.fillStyle = farWingCol;
+      ctx.fill();
+
+      /* 2. Streamlined Fusiform Torso + Head/Beak + Fanned Tail Feathers */
+      const d = bird.dir;
+      ctx.beginPath();
+      /* Sharp pointed beak tip at front */
+      ctx.moveTo(0.32 * hs * d, -0.025 * hs);
+      /* Forehead & crown */
+      ctx.quadraticCurveTo(0.24 * hs * d, -0.082 * hs, 0.14 * hs * d, -0.068 * hs);
+      /* Nape & dorsal back tapering to tail */
+      ctx.quadraticCurveTo(-0.04 * hs * d, -0.065 * hs, -0.26 * hs * d, -0.015 * hs);
+      /* Fanned tail notch */
+      ctx.lineTo(-0.34 * hs * d, -0.032 * hs);
+      ctx.lineTo(-0.31 * hs * d, 0.038 * hs);
+      /* Ventral belly & keel chest */
+      ctx.quadraticCurveTo(-0.05 * hs * d, 0.095 * hs, 0.18 * hs * d, 0.035 * hs);
+      /* Throat to lower beak */
+      ctx.quadraticCurveTo(0.25 * hs * d, 0.005 * hs, 0.32 * hs * d, -0.025 * hs);
+      ctx.closePath();
+      ctx.fillStyle = torsoCol;
+      ctx.fill();
+
+      /* 3. Near Wing (foreground cambered wing with distinct elbow bend and pointed outer primaries) */
+      ctx.beginPath();
+      ctx.moveTo(0.05 * hs * d, -0.015 * hs);
+      /* Leading edge to wrist/elbow */
+      ctx.quadraticCurveTo(nearElbowX * 0.54, nearElbowY * 0.95 - 0.065 * hs, nearElbowX, nearElbowY);
+      /* Wrist to outer primary wingtip */
+      ctx.quadraticCurveTo((nearElbowX + nearTipX) * 0.52, (nearElbowY + nearTipY) * 0.5 - 0.038 * hs, nearTipX, nearTipY);
+      /* Outer trailing edge returning to secondary feathers */
+      ctx.quadraticCurveTo((nearElbowX + nearTipX) * 0.48, (nearElbowY + nearTipY) * 0.5 + 0.06 * hs, nearElbowX * 0.90, nearElbowY + 0.115 * hs);
+      /* Inner trailing edge returning to body flank */
+      ctx.quadraticCurveTo(nearElbowX * 0.44, nearElbowY * 0.68 + 0.095 * hs, -0.04 * hs * d, 0.072 * hs);
+      ctx.closePath();
+      ctx.fillStyle = nearWingCol;
+      ctx.fill();
+
+      /* 4. Warm Golden Sunset Rim-Light along the upper leading edge of both wings & head */
+      ctx.beginPath();
+      ctx.moveTo(farTipX, farTipY);
+      ctx.quadraticCurveTo((farElbowX + farTipX) * 0.52, (farElbowY + farTipY) * 0.5 - 0.032 * hs, farElbowX, farElbowY);
+      ctx.quadraticCurveTo(farElbowX * 0.54, farElbowY * 0.94 - 0.055 * hs, 0, -0.035 * hs);
+      ctx.quadraticCurveTo(nearElbowX * 0.54, nearElbowY * 0.95 - 0.065 * hs, nearElbowX, nearElbowY);
+      ctx.quadraticCurveTo((nearElbowX + nearTipX) * 0.52, (nearElbowY + nearTipY) * 0.5 - 0.038 * hs, nearTipX, nearTipY);
+      ctx.strokeStyle = rimGold;
+      ctx.lineWidth = Math.max(0.9, s * 0.034);
+      ctx.lineCap = 'round';
+      ctx.stroke();
+
+      ctx.restore();
+    }
+
+    function drawSeagullsOverlay(t, dive) {
+      if (!gCtx || !gW || !gH) return;
+      gCtx.clearRect(0, 0, gW, gH);
+
+      /* Fade out and lift upward naturally as the camera dives below the ocean waterline */
+      const skyVisibility = Math.max(0, 1.0 - dive * 2.3);
+      if (skyVisibility <= 0.005) return;
+
+      const diveShiftY = -dive * gH * 0.42;
+
+      for (let i = 0; i < SEAGULL_FLOCK.length; i++) {
+        const b = SEAGULL_FLOCK[i];
+        /* Wrap horizontal coordinate seamlessly across [ -0.08, 1.08 ] */
+        const spanWrap = 1.16;
+        let normX = (b.x0 + t * b.vx) % spanWrap;
+        if (normX < 0) normX += spanWrap;
+        normX -= 0.08;
+
+        /* Gentle sinusoidal thermal altitude drift */
+        const thermalDriftY = Math.sin(t * 0.38 + b.phase) * 0.022 + Math.cos(t * 0.21 + i) * 0.012;
+        const normY = b.y0 + Math.sin(normX * Math.PI) * (b.vy * 8.0) + thermalDriftY;
+
+        /* Distance atmospheric fade for smaller distant birds */
+        const distAlpha = Math.min(1.0, Math.max(0.45, b.span / 32)) * skyVisibility;
+        const px = normX * gW + (mouseX - 0.5) * (b.span * 0.45);
+        const py = normY * gH + diveShiftY;
+
+        drawSingleSeagull(gCtx, px, py, b, t, distAlpha);
+      }
+    }
+
     function drawFrame() {
       if (gl && program) {
         gl.uniform2f(uResLoc, canvas.width, canvas.height);
@@ -1716,6 +1918,7 @@
         gl.uniform2f(uMouseLoc, mouseX, mouseY);
         gl.drawArrays(gl.TRIANGLES, 0, 6);
       }
+      drawSeagullsOverlay(accumulatedTime, currentDive);
     }
 
     /* Draw initial frame immediately */
