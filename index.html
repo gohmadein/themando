@@ -1104,242 +1104,103 @@
         return v;
       }
 
-      /* Sharp-crested Gerstner-like chop wave function for realistic rolling ocean swells */
-      float chopWave(vec2 p, vec2 dir, float freq, float speed, float t, float sharpness) {
-        float phase = dot(p, dir) * freq + t * speed;
-        float s = sin(phase) * 0.5 + 0.5;
-        return pow(s, sharpness) * 2.0 - 1.0;
+      /* =======================================================================
+         True 3D Raymarched Ocean Waves (TDM "Seascape" + afl_ext Wave Drag)
+         - Real 3D heightfield intersection (wave crests physically occlude troughs)
+         - Drag-advected multi-directional trochoidal wave octaves
+         - Distance-adaptive finite difference normals (crisp nearby, anti-aliased far)
+         - Schlick Fresnel + GGX Solar Glitter Path + Subsurface Scattering
+         ======================================================================= */
+
+      /* Single directional wave octave with horizontal crest sharpness & drag */
+      vec2 waveOctave(vec2 p, vec2 dir, float freq, float tSpeed) {
+        float x = dot(dir, p) * freq + tSpeed;
+        float wave = exp(sin(x) - 1.0);
+        float dx = wave * cos(x);
+        return vec2(wave, -dx);
       }
 
-      /* Multi-directional rolling ocean wave height field */
-      float waveHeight(vec2 p, float t) {
-        float w = 0.0;
-        /* Primary rolling swell advancing toward the camera */
-        w += chopWave(p, normalize(vec2(0.12, 1.0)), 1.35, 1.85, t, 1.75) * 0.58;
-        /* Secondary diagonal crossing swell */
-        w += chopWave(p, normalize(vec2(-0.42, 0.91)), 2.15, 2.35, t, 1.6) * 0.34;
-        /* Counter-angle wind chop */
-        w += chopWave(p, normalize(vec2(0.55, 0.83)), 3.60, 2.90, t, 1.4) * 0.20;
-        /* Fine capillary turbulent ripples */
-        w += (fbm(p * 2.3 + vec2(t * 0.55, -t * 0.85)) - 0.5) * 0.52;
-        return w;
-      }
+      /* Multi-octave trochoidal ocean heightfield with crest-advection (drag) */
+      float getOceanHeight(vec2 p, float t, int octaves) {
+        float iter = 0.0;
+        float freq = 0.55;
+        float timeMult = 1.65;
+        float weight = 1.0;
+        float sumValues = 0.0;
+        float sumWeights = 0.0;
 
-      /* 2D Signed Distance Function for a sleek leaping Bottlenose Dolphin (facing +X) */
-      float sdSegment(vec2 p, vec2 a, vec2 b) {
-        vec2 pa = p - a, ba = b - a;
-        float h = clamp(dot(pa, ba) / dot(ba, ba), 0.0, 1.0);
-        return length(pa - ba * h);
-      }
+        for (int i = 0; i < 8; i++) {
+          if (i >= octaves) break;
+          /* Golden-angle directional spread so swells cross naturally without grid repetition */
+          float angle = iter * 1.18 + 0.35;
+          vec2 dir = vec2(sin(angle), cos(angle));
+          vec2 res = waveOctave(p, dir, freq, t * timeMult);
 
-      float smin(float a, float b, float k) {
-        float h = clamp(0.5 + 0.5 * (b - a) / k, 0.0, 1.0);
-        return mix(b, a, h) - k * h * (1.0 - h);
-      }
+          /* Drag: shift sample position toward the wave crest for authentic sharp ridges & broad troughs */
+          p += dir * res.y * weight * 0.38;
 
-      float sdDolphin(vec2 p) {
-        /* Graceful arched spine curve during mid-air leap (p.x in [-1.15, 1.15]) */
-        float xClamped = clamp(p.x, -1.2, 1.2);
-        float arch = -0.22 * xClamped * xClamped + 0.04 * xClamped;
-        vec2 q = vec2(p.x, p.y - arch);
+          sumValues += res.x * weight;
+          sumWeights += weight;
 
-        /* Streamlined fusiform torso + rounded melon forehead + tapered tail peduncle */
-        float t = clamp((q.x + 1.00) / 1.82, 0.0, 1.0);
-        float profile = sin(t * 3.14159265);
-        float radius = 0.23 * pow(max(0.001, profile), 0.72) * (0.45 + 0.72 * smoothstep(0.0, 0.65, t));
-        float body = length(vec2(q.x - clamp(q.x, -0.95, 0.76), q.y)) - radius;
-
-        /* Compact Bottlenose Rostrum (short sleek beak projecting straight along spine tangent) */
-        float beakT = clamp((q.x - 0.72) / 0.28, 0.0, 1.0);
-        float beakRadius = mix(0.058, 0.022, beakT);
-        float beak = sdSegment(q, vec2(0.72, -0.015), vec2(0.98, -0.020)) - beakRadius;
-        float d = smin(body, beak, 0.042);
-
-        /* Iconic Swept-Back Falcate Dorsal Fin on top of back */
-        vec2 dp = q - vec2(-0.02, 0.16);
-        float finH = clamp(dp.y / 0.34, 0.0, 1.0);
-        /* Sweeps backward (-X) in a crescent curve as height increases */
-        float finCurveX = -0.24 * pow(finH, 1.45);
-        float finHalfW = mix(0.13, 0.014, pow(finH, 0.85));
-        float dorsal = length(vec2(dp.x - finCurveX, dp.y - clamp(dp.y, 0.0, 0.34))) - finHalfW;
-        d = smin(d, dorsal, 0.042);
-
-        /* Swept Pectoral Flipper underneath chest */
-        vec2 fp = q - vec2(0.32, -0.14);
-        float flipH = clamp(-fp.y / 0.28, 0.0, 1.0);
-        float flipCurveX = -0.18 * pow(flipH, 1.35);
-        float flipHalfW = mix(0.085, 0.012, pow(flipH, 0.85));
-        float flipper = length(vec2(fp.x - flipCurveX, fp.y - clamp(fp.y, -0.28, 0.0))) - flipHalfW;
-        d = smin(d, flipper, 0.032);
-
-        /* Distinct Crescent Tail Flukes at rear (-X) */
-        vec2 tp = q - vec2(-0.95, 0.0);
-        float flukeUp = sdSegment(tp, vec2(0.02, 0.0), vec2(-0.25, 0.23)) - mix(0.045, 0.014, clamp(-tp.x / 0.25, 0.0, 1.0));
-        float flukeDown = sdSegment(tp, vec2(0.02, 0.0), vec2(-0.21, -0.19)) - mix(0.045, 0.014, clamp(-tp.x / 0.21, 0.0, 1.0));
-        float flukes = smin(flukeUp, flukeDown, 0.025);
-        d = smin(d, flukes, 0.038);
-
-        return d;
-      }
-
-      /* Periodic Leaping Dolphin + Water Splash Crown above the sea horizon */
-      vec4 evaluateLeapingDolphin(vec2 uv, float aspect, float t, float horizonY) {
-        /* Cycle every 6.8 seconds; active leap & splash lasts ~3.4 seconds */
-        float cycleLen = 6.8;
-        float cycleIdx = floor(t / cycleLen);
-        float localT = mod(t, cycleLen);
-
-        /* Jump window: 0.4s to 3.4s within each 6.8s cycle (at t=1.85s, jumpPhase ≈ 0.48 -> mid-air apex!) */
-        float jumpDuration = 3.0;
-        float jumpPhase = (localT - 0.4) / jumpDuration;
-        if (jumpPhase < -0.15 || jumpPhase > 1.25) {
-          return vec4(0.0);
+          iter += 12.345;
+          weight *= 0.54;
+          freq *= 1.82;
+          timeMult *= 1.22;
         }
 
-        /* Alternate leap locations naturally in the golden sunset reflection zone */
-        float dir = (mod(cycleIdx, 2.0) < 0.5) ? 1.0 : -1.0;
-        float centerX = mix(0.61, 0.72, fract(cycleIdx * 0.618));
-        float waterBaseY = horizonY - 0.036;
-        float spanX = 0.22 * dir;
-        float apexH = 0.132;
-
-        vec3 accumCol = vec3(0.0);
-        float accumAlpha = 0.0;
-
-        /* 1. Entry & Exit White Water Splash Crowns + Expanding Surface Ripple Rings */
-        vec2 exitSpot = vec2(centerX - spanX * 0.5, waterBaseY);
-        vec2 entrySpot = vec2(centerX + spanX * 0.5, waterBaseY);
-
-        /* Breach splash when dolphin leaps out (jumpPhase ~ -0.05 -> 0.72) */
-        if (jumpPhase > -0.05 && jumpPhase < 0.72) {
-          float spT = clamp((jumpPhase + 0.05) / 0.77, 0.0, 1.0);
-          vec2 dExit = vec2((uv.x - exitSpot.x) * aspect, uv.y - exitSpot.y);
-          /* Expanding elliptical surface ripple rings */
-          float rDist = length(vec2(dExit.x, dExit.y * 4.2));
-          float ring1 = exp(-pow((rDist - spT * 0.095) * 135.0, 2.0)) * (1.0 - spT);
-          float ring2 = exp(-pow((rDist - spT * 0.048) * 155.0, 2.0)) * (1.0 - spT * 0.55);
-          /* Upward spray droplets fan */
-          float sprayNoise = fbm(dExit * 95.0 - vec2(0.0, t * 4.5));
-          float sprayCone = smoothstep(0.058 * (1.0 - spT * 0.30), 0.0, length(vec2(dExit.x * 1.25, max(0.0, dExit.y) - spT * 0.024))) * step(-0.005, dExit.y);
-          float splashMask = clamp((ring1 + ring2) * 0.88 + sprayCone * smoothstep(0.35, 0.72, sprayNoise) * (1.0 - spT * 0.55) * 1.65, 0.0, 1.0);
-          accumCol = mix(accumCol, vec3(1.0, 0.96, 0.86), splashMask);
-          accumAlpha = max(accumAlpha, splashMask);
-        }
-
-        /* Plunge splash when dolphin dives back in (jumpPhase ~ 0.76 -> 1.25) */
-        if (jumpPhase > 0.76 && jumpPhase < 1.25) {
-          float spT = clamp((jumpPhase - 0.76) / 0.49, 0.0, 1.0);
-          vec2 dEntry = vec2((uv.x - entrySpot.x) * aspect, uv.y - entrySpot.y);
-          float rDist = length(vec2(dEntry.x, dEntry.y * 4.0));
-          float ring1 = exp(-pow((rDist - spT * 0.095) * 130.0, 2.0)) * (1.0 - spT);
-          float ring2 = exp(-pow((rDist - spT * 0.052) * 160.0, 2.0)) * (1.0 - spT * 0.8);
-          float crownNoise = fbm(dEntry * 85.0 - vec2(0.0, t * 5.2));
-          float crown = smoothstep(0.058 * sin(spT * 3.14159), 0.0, length(vec2(dEntry.x * 1.25, max(0.0, dEntry.y) - sin(spT * 3.14159) * 0.034))) * step(-0.004, dEntry.y);
-          float splashMask = clamp((ring1 + ring2) * 0.85 + crown * smoothstep(0.36, 0.74, crownNoise) * 1.55, 0.0, 1.0);
-          accumCol = mix(accumCol, vec3(1.0, 0.97, 0.89), splashMask);
-          accumAlpha = max(accumAlpha, splashMask);
-        }
-
-        /* 2. Airborne Leaping Dolphin Body (jumpPhase 0.0 -> 1.0) */
-        if (jumpPhase >= 0.0 && jumpPhase <= 1.0) {
-          float u = jumpPhase * 2.0 - 1.0; /* -1 at launch, 0 at apex, +1 at dive */
-          float posX = centerX + u * (spanX * 0.5);
-          float posY = waterBaseY + (1.0 - u * u) * apexH - 0.012;
-
-          /* Tangent pitch angle along parabolic trajectory */
-          float dydx = (-2.0 * u * apexH) / (spanX * 0.5 * aspect);
-          float pitchAngle = atan(dydx * dir);
-
-          vec2 dp = vec2((uv.x - posX) * aspect, uv.y - posY);
-          /* Flip horizontally if jumping right-to-left */
-          dp.x *= dir;
-
-          float ca = cos(-pitchAngle), sa = sin(-pitchAngle);
-          vec2 localP = mat2(ca, -sa, sa, ca) * dp;
-
-          float scale = 0.068;
-          vec2 pScaled = localP / scale;
-          float dDolphin = sdDolphin(pScaled) * scale;
-
-          /* Clip smoothly at water entry/exit line so dolphin emerges from and dives into the waves */
-          float waterClip = smoothstep(waterBaseY - 0.006, waterBaseY + 0.005, uv.y);
-          float bodyMask = (1.0 - smoothstep(-0.0012, 0.0014, dDolphin)) * waterClip;
-
-          if (bodyMask > 0.001) {
-            /* Realistic wet slate-navy dorsal back, soft silver-blue belly, and golden sunset rim highlight */
-            float rimTop = smoothstep(-0.006, 0.0005, dDolphin) * smoothstep(-0.02, 0.10, pScaled.y);
-            vec3 dolphinBack = vec3(0.05, 0.14, 0.25);
-            vec3 dolphinMid = vec3(0.12, 0.26, 0.40);
-            vec3 dolphinBelly = vec3(0.42, 0.56, 0.68);
-            vec3 dolphinCol = mix(dolphinBack, dolphinMid, smoothstep(0.14, -0.02, pScaled.y));
-            dolphinCol = mix(dolphinCol, dolphinBelly, smoothstep(-0.04, -0.20, pScaled.y) * smoothstep(-0.4, 0.65, pScaled.x));
-
-            /* Subtle eye highlight near head */
-            float eyeDist = length(pScaled - vec2(0.64, -0.02));
-            dolphinCol = mix(dolphinCol, vec3(0.02, 0.05, 0.10), 1.0 - smoothstep(0.015, 0.032, eyeDist));
-
-            /* Warm golden sunset specular rim along the wet dorsal arch & dorsal fin */
-            dolphinCol += vec3(1.0, 0.84, 0.52) * rimTop * 0.95;
-
-            accumCol = mix(accumCol, dolphinCol, bodyMask);
-            accumAlpha = max(accumAlpha, bodyMask);
-          }
-
-          /* Sparkling water spray droplets trailing off the tail flukes & body in mid-air */
-          float tailTrailDist = length(pScaled - vec2(-0.85, -0.10));
-          float dropletNoise = fbm(dp * 280.0 - vec2(t * 3.0, t * 4.0));
-          float sprayHalo = smoothstep(0.74, 0.91, dropletNoise) * smoothstep(1.45, 0.15, tailTrailDist) * step(waterBaseY + 0.002, uv.y);
-          if (sprayHalo > 0.01) {
-            accumCol = mix(accumCol, vec3(1.0, 0.96, 0.85), sprayHalo * 0.88);
-            accumAlpha = max(accumAlpha, sprayHalo * 0.82);
-          }
-        }
-
-        return vec4(accumCol, accumAlpha);
+        /* Add a slow, long-wavelength ocean swell underneath */
+        float primarySwell = sin(p.y * 0.34 - t * 1.15 + sin(p.x * 0.18 + t * 0.4) * 0.6) * 0.24;
+        return (sumValues / max(0.001, sumWeights)) * 0.72 + primarySwell;
       }
 
-      /* Above-water sunset sky + golden sun + sculpted clouds + 3D rolling ocean waves + leaping dolphin */
-      vec3 renderAboveWater(vec2 uv, float aspect, float t, float horizonY) {
-        float sunBaseX = aspect < 0.85 ? 0.68 : 0.76;
-        vec2 sunPos = vec2(sunBaseX + (uMouse.x - 0.5) * 0.03, horizonY + 0.038);
-        vec3 col;
+      /* Distance-adaptive 3D ocean surface normal (prevents horizon aliasing while keeping foreground crisp) */
+      vec3 getOceanNormal(vec2 pos, float eps, float t) {
+        float hC = getOceanHeight(pos, t, 8);
+        float hX = getOceanHeight(pos + vec2(eps, 0.0), t, 8);
+        float hZ = getOceanHeight(pos + vec2(0.0, eps), t, 8);
+        /* Add subtle high-frequency wind capillary micro-ripples in the foreground */
+        float microWeight = smoothstep(0.35, 0.02, eps) * 0.014;
+        if (microWeight > 0.0001) {
+          float mC = fbm(pos * 2.8 + vec2(t * 0.45, -t * 0.65));
+          float mX = fbm((pos + vec2(eps, 0.0)) * 2.8 + vec2(t * 0.45, -t * 0.65));
+          float mZ = fbm((pos + vec2(0.0, eps)) * 2.8 + vec2(t * 0.45, -t * 0.65));
+          hC += mC * microWeight;
+          hX += mX * microWeight;
+          hZ += mZ * microWeight;
+        }
+        return normalize(vec3(hC - hX, eps, hC - hZ));
+      }
 
-        /* Dynamic undulating wave silhouette right along the horizon/foreground swell */
-        float horizonWaveOffset = (
-          sin(uv.x * 18.0 + t * 2.1) * 0.0022 +
-          sin(uv.x * 42.0 - t * 3.2) * 0.0010
-        );
-        float effectiveHorizon = horizonY + horizonWaveOffset;
+      /* Procedural sunset sky + golden solar disk + volumetric clouds (sampled by both sky rays & water reflections) */
+      vec3 evalSunsetSky(vec3 rd, vec3 sunDir, float t) {
+        float skyH = clamp(rd.y * 1.45, 0.0, 1.0);
+        vec3 zenithCol = vec3(0.41, 0.56, 0.78);
+        vec3 midSkyCol = vec3(0.66, 0.76, 0.88);
+        vec3 horizonCol = vec3(0.99, 0.77, 0.54);
 
-        if (uv.y >= effectiveHorizon) {
-          /* Sunset Sky & Dramatic Golden-Lit Clouds */
-          float skyH = clamp((uv.y - effectiveHorizon) / max(0.001, 1.0 - effectiveHorizon), 0.0, 1.0);
-          vec3 zenithCol = vec3(0.41, 0.56, 0.78);
-          vec3 midSkyCol = vec3(0.66, 0.76, 0.88);
-          vec3 horizonCol = vec3(0.99, 0.78, 0.56);
+        vec3 sky = mix(horizonCol, midSkyCol, smoothstep(0.0, 0.34, skyH));
+        sky = mix(sky, zenithCol, smoothstep(0.26, 1.0, skyH));
 
-          vec3 sky = mix(horizonCol, midSkyCol, smoothstep(0.0, 0.34, skyH));
-          sky = mix(sky, zenithCol, smoothstep(0.26, 1.0, skyH));
+        float sunCos = max(0.0, dot(rd, sunDir));
+        float sunAngle = acos(clamp(dot(rd, sunDir), -1.0, 1.0));
 
-          vec2 dSun = vec2((uv.x - sunPos.x) * aspect, uv.y - sunPos.y);
-          float sunDist = length(dSun);
+        /* Crisp golden solar disk + controlled warm atmospheric glow */
+        sky += vec3(1.0, 0.60, 0.20) * exp(-sunAngle * 3.4) * 0.68;
+        sky += vec3(1.0, 0.82, 0.48) * exp(-sunAngle * 11.5) * 0.55;
+        sky += vec3(1.0, 0.96, 0.84) * smoothstep(0.056, 0.012, sunAngle);
 
-          /* Warm golden solar atmospheric glow & disk */
-          sky += vec3(1.0, 0.62, 0.22) * exp(-sunDist * 3.8) * 0.75;
-          sky += vec3(1.0, 0.95, 0.82) * smoothstep(0.058, 0.010, sunDist);
-
-          /* Perspective cloud deck with golden bottom-rim lighting */
+        /* Perspective cloud deck with golden bottom-rim lighting */
+        if (rd.y > 0.002) {
           float persp = 1.0 / (skyH + 0.11);
-          vec2 cloudUv = vec2((uv.x - 0.42) * aspect * persp * 0.45, persp * 0.55);
-          float cBase = fbm(cloudUv + vec2(t * 0.018, 0.0));
-          float cDetail = fbm(cloudUv * 2.3 - vec2(t * 0.03, 0.15));
+          vec2 cloudUv = vec2(rd.x * persp * 0.55, persp * 0.55);
+          float cBase = fbm(cloudUv + vec2(t * 0.016, 0.0));
+          float cDetail = fbm(cloudUv * 2.3 - vec2(t * 0.028, 0.15));
           float cShape = cBase * 0.68 + cDetail * 0.32;
 
-          float cloudAlpha = smoothstep(0.47, 0.72, cShape) * smoothstep(0.01, 0.14, skyH) * (1.0 - smoothstep(0.75, 0.98, skyH));
-
-          float cUpper = fbm(cloudUv + vec2(0.0, 0.08) + vec2(t * 0.018, 0.0));
+          float cloudAlpha = smoothstep(0.47, 0.72, cShape) * smoothstep(0.01, 0.13, skyH) * (1.0 - smoothstep(0.75, 0.98, skyH));
+          float cUpper = fbm(cloudUv + vec2(0.0, 0.08) + vec2(t * 0.016, 0.0));
           float bottomLight = clamp((cShape - cUpper) * 3.5 + 0.45, 0.0, 1.0);
-          float sunGlowMask = exp(-sunDist * 2.2);
+          float sunGlowMask = exp(-sunAngle * 2.1);
 
           vec3 cloudShadowCol = vec3(0.46, 0.56, 0.71);
           vec3 cloudMidCol = vec3(0.76, 0.79, 0.85);
@@ -1348,64 +1209,99 @@
           vec3 cloudCol = mix(cloudShadowCol, cloudMidCol, smoothstep(0.48, 0.75, cShape));
           cloudCol = mix(cloudCol, cloudGoldCol, clamp(bottomLight * sunGlowMask * 1.45 + (1.0 - skyH) * 0.38, 0.0, 1.0));
 
-          col = mix(sky, cloudCol, cloudAlpha * 0.85);
-        } else {
-          /* 3D Perspective Rolling Ocean Waves with White Foam Crests & Subsurface Glow */
-          float depth = clamp((effectiveHorizon - uv.y) / max(0.001, effectiveHorizon), 0.002, 1.0);
-          float z = 1.0 / pow(depth, 0.84);
-          float x = (uv.x - 0.5) * aspect * z;
-
-          /* Parallax wave coordinate with lateral orbital sway */
-          vec2 wp = vec2(x * 0.92 + sin(z * 0.6 - t * 1.4) * 0.18, z * 1.25 - t * 2.35);
-          float eps = 0.035;
-          float hC = waveHeight(wp, t);
-          float hX = waveHeight(wp + vec2(eps, 0.0), t);
-          float hZ = waveHeight(wp + vec2(0.0, eps), t);
-
-          /* Pronounced 3D wave surface normals */
-          vec3 normal = normalize(vec3((hC - hX) / eps * 0.46, 1.0, (hC - hZ) / eps * 0.54));
-          vec3 viewDir = normalize(vec3((uv.x - 0.5) * aspect, -depth * 0.85 - 0.05, 1.0));
-
-          float fresnel = pow(1.0 - clamp(dot(normal, -viewDir), 0.0, 1.0), 3.0);
-
-          /* Deep ocean troughs vs golden-blue sky reflections */
-          vec3 reflSky = mix(vec3(0.98, 0.75, 0.48), vec3(0.38, 0.56, 0.76), clamp(normal.y * 0.76, 0.0, 1.0));
-          vec3 deepTrough = mix(vec3(0.02, 0.11, 0.22), vec3(0.05, 0.24, 0.37), smoothstep(0.0, 0.85, depth));
-
-          vec3 water = mix(deepTrough, reflSky, clamp(fresnel * 0.82 + 0.08, 0.0, 1.0));
-
-          /* Emerald-turquoise subsurface scattering (SSS) through thin sunlit wave crests */
-          float waveCrestHeight = smoothstep(0.12, 0.78, hC);
-          float backLight = exp(-abs(uv.x - sunPos.x) * 2.2);
-          water += vec3(0.06, 0.52, 0.58) * waveCrestHeight * (0.28 + 0.42 * backLight) * smoothstep(0.08, 0.85, depth);
-
-          /* Whitecap breaking wave foam & lacy sea-foam streaks on high wave ridges */
-          float foamNoise1 = fbm(wp * vec2(3.6, 4.8) + vec2(t * 0.8, -t * 1.1));
-          float foamNoise2 = fbm(wp * vec2(8.5, 11.0) - vec2(t * 1.3, t * 0.9));
-          float slopeSteepness = 1.0 - normal.y;
-          float breakingCrest = smoothstep(0.36, 0.84, hC * 0.75 + slopeSteepness * 0.95 + (foamNoise1 - 0.5) * 0.45);
-          float lacyTrails = smoothstep(0.58, 0.88, foamNoise1 * 0.6 + foamNoise2 * 0.4 + hC * 0.35) * smoothstep(0.12, 0.95, depth);
-
-          float totalFoam = clamp(breakingCrest * 0.85 + lacyTrails * 0.45, 0.0, 1.0) * smoothstep(0.04, 0.35, depth);
-          vec3 foamColor = mix(vec3(0.88, 0.95, 0.99), vec3(1.0, 0.92, 0.78), exp(-abs(uv.x - sunPos.x) * 3.0));
-          water = mix(water, foamColor, totalFoam * 0.78);
-
-          /* Golden sunset reflection path & crisp specular wave facets */
-          float sunPath = exp(-pow((uv.x - sunPos.x + normal.x * 0.28) * aspect * 3.5, 2.0));
-          float facetNoise = fbm(wp * vec2(3.2, 4.8) + t * 1.75);
-          float sparkle = smoothstep(0.50, 0.79, facetNoise + normal.z * 0.42) * sunPath;
-
-          water += vec3(1.0, 0.68, 0.28) * sunPath * (0.36 + 0.38 * (1.0 - depth));
-          water += vec3(1.0, 0.96, 0.82) * pow(sparkle, 1.35) * 1.75;
-
-          col = water;
+          sky = mix(sky, cloudCol, cloudAlpha * 0.85);
         }
 
-        /* Composite the periodic leaping dolphin & water splash right near the ocean surface */
-        vec4 dolphinLayer = evaluateLeapingDolphin(uv, aspect, t, effectiveHorizon);
-        col = mix(col, dolphinLayer.rgb, dolphinLayer.a);
+        return sky;
+      }
 
-        return col;
+      /* Above-water sunset sky + 3D raymarched Seascape ocean waves */
+      vec3 renderAboveWater(vec2 uv, float aspect, float t, float horizonY) {
+        float sunBaseX = aspect < 0.85 ? 0.68 : 0.76;
+        vec2 sunScreen = vec2(sunBaseX + (uMouse.x - 0.5) * 0.03, horizonY + 0.038);
+
+        /* Build 3D camera ray aligned with horizonY */
+        float focal = 1.25;
+        vec3 ro = vec3(0.0, 2.35, 0.0);
+        vec3 rd = normalize(vec3((uv.x - 0.5) * aspect, (uv.y - horizonY) * 1.15, focal));
+        vec3 sunDir = normalize(vec3((sunScreen.x - 0.5) * aspect, (sunScreen.y - horizonY) * 1.15, focal));
+
+        vec3 skyCol = evalSunsetSky(vec3(rd.x, max(0.002, rd.y), rd.z), sunDir, t);
+
+        /* Rays pointing above the horizon render the sunset sky */
+        if (rd.y >= -0.0015) {
+          return skyCol;
+        }
+
+        /* 3D Raymarching intersection against the dynamic ocean heightfield */
+        /* Bounding planes: y = 0.95 (highest wave crest) to y = -0.25 (lowest trough) */
+        float tNear = max(0.5, (ro.y - 0.95) / max(0.0005, -rd.y));
+        float tFar = min(160.0, (ro.y + 0.25) / max(0.0005, -rd.y));
+
+        float tm = tNear;
+        float tx = tFar;
+        float hx = ro.y + rd.y * tx - getOceanHeight(ro.xz + rd.xz * tx, t, 5);
+        float hm = ro.y + rd.y * tm - getOceanHeight(ro.xz + rd.xz * tm, t, 5);
+
+        /* 7 steps of secant/bisection root-finding in 3D space (TDM Seascape algorithm) */
+        float tHit = tm;
+        for (int i = 0; i < 7; i++) {
+          tHit = mix(tm, tx, clamp(hm / (hm - hx + 0.0001), 0.0, 1.0));
+          vec3 p = ro + rd * tHit;
+          float h = p.y - getOceanHeight(p.xz, t, 5);
+          if (h < 0.0) {
+            tx = tHit;
+            hx = h;
+          } else {
+            tm = tHit;
+            hm = h;
+          }
+        }
+
+        vec3 hitPos = ro + rd * tHit;
+        float dist = length(hitPos - ro);
+
+        /* Distance-adaptive normal filter footprint: crisp 3D ripples nearby, smooth shimmer at horizon */
+        float eps = clamp(0.016 + dist * dist * 0.00035, 0.016, 0.65);
+        vec3 normal = getOceanNormal(hitPos.xz, eps, t);
+        /* Relax normal steepness in the far distance to prevent pixel-aliasing */
+        normal = normalize(mix(normal, vec3(0.0, 1.0, 0.0), smoothstep(20.0, 125.0, dist) * 0.72));
+
+        /* 1. Schlick Fresnel reflection coefficient */
+        float NoV = clamp(dot(normal, -rd), 0.0, 1.0);
+        float fresnel = clamp(0.04 + 0.96 * pow(1.0 - NoV, 4.5), 0.0, 1.0);
+
+        /* 2. True reflected sky vector (ensure reflection stays above horizon) */
+        vec3 reflDir = reflect(rd, normal);
+        reflDir.y = max(0.003, abs(reflDir.y));
+        vec3 reflectedSky = evalSunsetSky(reflDir, sunDir, t);
+
+        /* 3. Deep ocean water body & emerald-teal subsurface scattering (SSS) through wave crests */
+        vec3 seaBase = vec3(0.012, 0.075, 0.16);
+        vec3 seaWaterColor = vec3(0.14, 0.44, 0.48);
+        float diffuse = pow(dot(normal, sunDir) * 0.4 + 0.6, 3.0);
+        vec3 refractedSea = seaBase + diffuse * seaWaterColor * 0.18;
+
+        /* Backlit translucent wave crest glow when sunlight pierces thin wave peaks */
+        float crestHeight = clamp((hitPos.y - 0.18) * 1.45, 0.0, 1.0);
+        float sssAlign = pow(max(0.0, dot(vec3(sunDir.x, 0.0, sunDir.z), -rd)), 2.0);
+        refractedSea += vec3(0.05, 0.48, 0.52) * crestHeight * (0.24 + 0.55 * sssAlign) * exp(-dist * 0.032);
+
+        /* Combine refracted ocean depth and reflected sunset sky via Fresnel */
+        vec3 waterCol = mix(refractedSea, reflectedSky, fresnel);
+
+        /* 4. GGX / Phong Solar Specular Glitter Path (shimmering golden sun facets on wave slopes) */
+        vec3 halfVec = normalize(sunDir - rd);
+        float NoH = max(0.0, dot(normal, halfVec));
+        float specTight = pow(NoH, 180.0) * 2.5;
+        float specBroad = pow(NoH, 26.0) * 0.32;
+        waterCol += vec3(1.0, 0.86, 0.58) * (specTight + specBroad) * fresnel;
+
+        /* 5. Atmospheric horizon mist blending so the distant ocean meets the sunset horizon seamlessly */
+        float horizonBlend = max(smoothstep(28.0, 140.0, dist), smoothstep(-0.012, -0.0015, rd.y));
+        waterCol = mix(waterCol, skyCol, horizonBlend);
+
+        return waterCol;
       }
 
       /* Submerged Underwater View Looking Up at Shimmering Surface + Tyndall God Rays + Rising Bubbles */
