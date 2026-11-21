@@ -200,6 +200,10 @@
       transform-origin: left;
     }
 
+    body.is-submerged .nav-center-links {
+      text-shadow: 0 2px 14px rgba(2, 12, 27, 0.78);
+    }
+
     .nav-right-actions {
       justify-self: end;
       display: flex;
@@ -926,6 +930,7 @@
           <a href="./hub.html?channel=CAT:%E7%A7%91%E7%A0%94">Research · 科研</a>
           <a href="./hub.html?channel=CAT:%E5%AD%A6%E4%B9%A0">Learning · 学习</a>
           <a href="./hub.html">Journal · 资源舱</a>
+          <a href="./watchlist.html">Watchlist · 追剧</a>
         </nav>
 
         <div class="nav-right-actions">
@@ -942,6 +947,7 @@
         <a href="./hub.html?channel=CAT:%E7%A7%91%E7%A0%94" class="mobile-q-pill">🔬 科研深海</a>
         <a href="./hub.html?channel=CAT:%E5%AD%A6%E4%B9%A0" class="mobile-q-pill">📘 学习海域</a>
         <a href="./hub.html" class="mobile-q-pill">⚡ 资源总舱</a>
+        <a href="./watchlist.html" class="mobile-q-pill">🎬 追剧舱</a>
       </nav>
     </div>
 
@@ -1018,6 +1024,18 @@
               <p class="domain-card-desc">英语四六级高分备考指南、专业课程笔记沉淀与系统化进阶学习资料，随仓库更新自动实时推送。</p>
             </div>
             <span class="domain-card-action">潜入学习资源舱 →</span>
+          </a>
+
+          <a href="./watchlist.html" class="domain-sea-card" style="grid-column: 1 / -1; padding: 16px 22px; gap: 10px;">
+            <div class="domain-card-top">
+              <span class="domain-depth-tag" style="color:#fcd34d;background:rgba(180,83,9,0.38);border-color:rgba(251,191,36,0.38);white-space:nowrap;">DEPTH -180m · WATCHLIST</span>
+              <span class="domain-count-badge" style="white-space:nowrap;">50 部片单</span>
+            </div>
+            <div>
+              <h2 class="domain-card-title">追剧档案馆 · Watchlist</h2>
+              <p class="domain-card-desc">收录 25 部欧美剧、5 部国产/日韩剧与 20 部动漫番剧，附豆瓣简介、官方封面海报、夸克永久分享直链与找剧看剧导航。</p>
+            </div>
+            <span class="domain-card-action" style="color:#fde68a;">潜入深海追剧档案馆 →</span>
           </a>
         </div>
 
@@ -1938,7 +1956,7 @@
     const CACHE_KEY = 'themando_feed_cache_v3';
     const CACHE_TTL_MS = 5 * 60 * 1000;
     const IGNORED_ROOT_FILES = new Set([
-      '.gitignore', '.nojekyll', 'index.html', 'hub.html', 'logo.svg', 'favicon.svg', 'CNAME', 'LICENSE'
+      '.gitignore', '.nojekyll', 'index.html', 'hub.html', 'watchlist.html', 'logo.svg', 'favicon.svg', 'CNAME', 'LICENSE'
     ]);
 
     const CATEGORY_META = {
@@ -1991,8 +2009,25 @@
         grid.appendChild(card);
       });
 
+      const watchlistCard = document.createElement('a');
+      watchlistCard.href = './watchlist.html';
+      watchlistCard.className = 'domain-sea-card';
+      watchlistCard.style.cssText = 'grid-column: 1 / -1; padding: 16px 22px; gap: 10px;';
+      watchlistCard.innerHTML = `
+        <div class="domain-card-top">
+          <span class="domain-depth-tag" style="color:#fcd34d;background:rgba(180,83,9,0.38);border-color:rgba(251,191,36,0.38);white-space:nowrap;">DEPTH -180m · WATCHLIST</span>
+          <span class="domain-count-badge" style="white-space:nowrap;">50 部片单</span>
+        </div>
+        <div>
+          <h2 class="domain-card-title">追剧档案馆 · Watchlist</h2>
+          <p class="domain-card-desc">收录 25 部欧美剧、5 部国产/日韩剧与 20 部动漫番剧，附豆瓣简介、官方封面海报、夸克永久分享直链与找剧看剧导航。</p>
+        </div>
+        <span class="domain-card-action" style="color:#fde68a;">潜入深海追剧档案馆 →</span>
+      `;
+      grid.appendChild(watchlistCard);
+
       document.getElementById('topSyncNotice').textContent =
-        `已同步 ${counts.size} 大深海知识领域 · ${totalCount} 篇专题资源`;
+        `已同步 ${counts.size} 大深海知识领域 · ${totalCount} 篇专题资源 · 追剧馆 50 部`;
     }
 
     async function syncOceanDomains() {
