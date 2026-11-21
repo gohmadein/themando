@@ -1,0 +1,2096 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="LMX · 追剧档案馆 Watchlist — 收录 50 部高分欧美剧、国产日韩剧与动漫番剧，附豆瓣简介、官方海报封面与夸克网盘永久直存链接。" />
+  <title>LMX · 追剧档案馆 | Watchlist</title>
+  <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=IBM+Plex+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Noto+Serif+SC:wght@600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --header-height: 70px;
+      --bg: #031326;
+      --bg-deep: #020c1b;
+      --surface: rgba(7, 29, 54, 0.68);
+      --surface-solid: #071e38;
+      --surface-elevated: rgba(11, 41, 75, 0.84);
+      --surface-hover: rgba(16, 56, 100, 0.82);
+      --fg: #F8FAFC;
+      --fg-secondary: #E2E8F0;
+      --fg-muted: #93B4D1;
+      --border: rgba(103, 232, 249, 0.16);
+      --border-strong: rgba(103, 232, 249, 0.36);
+      --accent: #38BDF8;
+      --accent-cyan: #22D3EE;
+      --accent-soft: rgba(34, 211, 238, 0.12);
+      --gold: #FBBF24;
+      --gold-soft: rgba(251, 191, 36, 0.14);
+      --emerald: #34D399;
+      --emerald-soft: rgba(52, 211, 153, 0.14);
+      --shadow-md: 0 14px 36px -10px rgba(1, 8, 20, 0.65);
+      --shadow-lg: 0 28px 64px -12px rgba(1, 8, 20, 0.85);
+      --radius-md: 14px;
+      --radius-lg: 20px;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      min-height: 100vh;
+      background: var(--bg);
+      color: var(--fg);
+      font-family: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+
+    a, button, input, select { font: inherit; color: inherit; }
+    a, button { cursor: pointer; text-decoration: none; }
+
+    /* Deep Sea Ambient Backdrop */
+    .ocean-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      overflow: hidden;
+      background:
+        radial-gradient(ellipse 85% 55% at 50% -10%, rgba(56, 189, 248, 0.22) 0%, transparent 65%),
+        radial-gradient(circle at 14% 28%, rgba(14, 165, 233, 0.14) 0%, transparent 45%),
+        radial-gradient(circle at 86% 74%, rgba(34, 211, 238, 0.12) 0%, transparent 48%),
+        linear-gradient(180deg, #041932 0%, #031326 45%, #020b18 100%);
+    }
+
+    .ocean-grid {
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(to right, rgba(56, 189, 248, 0.045) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(56, 189, 248, 0.045) 1px, transparent 1px);
+      background-size: 48px 48px;
+      mask-image: radial-gradient(ellipse 90% 70% at 50% 25%, #000 30%, transparent 100%);
+    }
+
+    .tyndall-beam {
+      position: absolute;
+      top: -15%;
+      width: 24vw;
+      height: 115vh;
+      background: linear-gradient(180deg, rgba(125, 211, 252, 0.14) 0%, rgba(34, 211, 238, 0.03) 60%, transparent 100%);
+      filter: blur(28px);
+      transform-origin: top center;
+      animation: beamSway 14s ease-in-out infinite alternate;
+    }
+    .beam-1 { left: 12%; transform: rotate(10deg); }
+    .beam-2 { left: 46%; width: 28vw; animation-delay: -5s; transform: rotate(4deg); }
+    .beam-3 { right: 8%; animation-delay: -9s; transform: rotate(-8deg); }
+
+    @keyframes beamSway {
+      0% { opacity: 0.45; transform: translateX(-18px) rotate(6deg); }
+      100% { opacity: 0.85; transform: translateX(18px) rotate(11deg); }
+    }
+
+    /* Sticky Top Header */
+    .site-header {
+      position: sticky;
+      top: 0;
+      z-index: 40;
+      height: var(--header-height);
+      background: rgba(3, 19, 38, 0.78);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .header-inner {
+      max-width: 1400px;
+      height: 100%;
+      margin: 0 auto;
+      padding: 0 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .brand-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      flex-shrink: 0;
+    }
+
+    .brand-logo-svg {
+      width: 44px;
+      height: 25px;
+      filter: drop-shadow(0 2px 10px rgba(56, 189, 248, 0.35));
+    }
+
+    .brand-meta { display: flex; flex-direction: column; }
+    .brand-title {
+      font-weight: 700;
+      font-size: 1rem;
+      letter-spacing: -0.01em;
+      color: var(--fg);
+      line-height: 1.2;
+    }
+    .brand-subtitle {
+      font-size: 0.72rem;
+      color: var(--fg-muted);
+      line-height: 1.2;
+    }
+
+    .search-box {
+      flex: 1;
+      max-width: 440px;
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 14px;
+      width: 16px;
+      height: 16px;
+      color: var(--fg-muted);
+      pointer-events: none;
+    }
+
+    .search-input {
+      width: 100%;
+      height: 40px;
+      padding: 0 42px 0 40px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: rgba(5, 25, 48, 0.75);
+      color: var(--fg);
+      font-size: 0.88rem;
+      outline: none;
+      transition: border-color 180ms ease, box-shadow 180ms ease;
+    }
+
+    .search-input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.16);
+    }
+
+    .search-input::placeholder { color: var(--fg-muted); }
+
+    .search-kbd {
+      position: absolute;
+      right: 12px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.7rem;
+      padding: 2px 6px;
+      border-radius: 5px;
+      background: rgba(148, 163, 184, 0.14);
+      color: var(--fg-muted);
+      border: 1px solid rgba(148, 163, 184, 0.22);
+      pointer-events: none;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+
+    .nav-pill-btn {
+      height: 38px;
+      padding: 0 14px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: rgba(7, 30, 56, 0.65);
+      color: var(--fg-secondary);
+      font-size: 0.84rem;
+      font-weight: 500;
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      transition: border-color 180ms ease, color 180ms ease, background-color 180ms ease, transform 180ms ease;
+    }
+
+    .nav-pill-btn:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+      background: rgba(14, 52, 92, 0.75);
+      transform: translateY(-1px);
+    }
+
+    /* Main Container */
+    .page-shell {
+      position: relative;
+      z-index: 2;
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 28px 24px 72px;
+    }
+
+    /* Hero + External Resource Sites Dock */
+    .hero-panel {
+      display: grid;
+      grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
+      gap: 20px;
+      margin-bottom: 26px;
+    }
+
+    .hero-card {
+      background: var(--surface);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 26px 28px;
+      box-shadow: var(--shadow-md);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at 85% 15%, rgba(56, 189, 248, 0.16), transparent 55%);
+      pointer-events: none;
+    }
+
+    .hero-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 4px 12px;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      border: 1px solid var(--border-strong);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.74rem;
+      color: var(--accent-cyan);
+      margin-bottom: 14px;
+    }
+
+    .live-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #22D3EE;
+      box-shadow: 0 0 10px #22D3EE;
+    }
+
+    .hero-title {
+      font-family: 'Noto Serif SC', 'Cormorant Garamond', serif;
+      font-size: clamp(1.75rem, 3vw, 2.35rem);
+      font-weight: 700;
+      line-height: 1.22;
+      margin-bottom: 10px;
+      letter-spacing: -0.01em;
+    }
+
+    .hero-title .highlight {
+      background: linear-gradient(95deg, #38BDF8 0%, #67E8F9 55%, #A5F3FC 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .hero-desc {
+      color: var(--fg-muted);
+      font-size: 0.93rem;
+      max-width: 640px;
+      margin-bottom: 18px;
+    }
+
+    .hero-stats {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .stat-chip {
+      padding: 8px 14px;
+      border-radius: 12px;
+      background: rgba(4, 21, 41, 0.72);
+      border: 1px solid var(--border);
+      display: inline-flex;
+      align-items: baseline;
+      gap: 7px;
+      font-size: 0.82rem;
+      color: var(--fg-muted);
+    }
+
+    .stat-chip strong {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 1.05rem;
+      color: var(--accent);
+      font-weight: 700;
+    }
+
+    /* External Sites Dock (找资源网站 + 看剧网站 + 豆瓣) */
+    .sites-dock {
+      background: var(--surface);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 22px 24px;
+      box-shadow: var(--shadow-md);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 14px;
+    }
+
+    .dock-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .dock-title {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--accent);
+    }
+
+    .dock-hint {
+      font-size: 0.74rem;
+      color: var(--fg-muted);
+    }
+
+    .site-links-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .external-site-card {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      padding: 13px 16px;
+      border-radius: 14px;
+      background: rgba(4, 21, 41, 0.78);
+      border: 1px solid var(--border);
+      transition: transform 200ms ease, border-color 200ms ease, background-color 200ms ease, box-shadow 200ms ease;
+    }
+
+    .external-site-card:hover {
+      transform: translateY(-2px);
+      border-color: var(--accent);
+      background: rgba(11, 45, 82, 0.85);
+      box-shadow: 0 10px 26px -6px rgba(2, 132, 199, 0.35);
+    }
+
+    .ext-site-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .ext-icon {
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.15rem;
+      flex-shrink: 0;
+    }
+    .ext-icon.search-site { background: rgba(56, 189, 248, 0.16); border: 1px solid rgba(56, 189, 248, 0.35); }
+    .ext-icon.watch-site { background: rgba(52, 211, 153, 0.16); border: 1px solid rgba(52, 211, 153, 0.35); }
+    .ext-icon.douban-site { background: rgba(251, 191, 36, 0.14); border: 1px solid rgba(251, 191, 36, 0.32); }
+
+    .ext-meta { min-width: 0; }
+    .ext-name {
+      font-size: 0.94rem;
+      font-weight: 600;
+      color: var(--fg);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .ext-badge {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.66rem;
+      padding: 1px 6px;
+      border-radius: 5px;
+      background: rgba(56, 189, 248, 0.14);
+      color: #7DD3FC;
+    }
+    .ext-url {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.74rem;
+      color: var(--fg-muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin-top: 2px;
+    }
+
+    .ext-arrow {
+      font-size: 0.85rem;
+      color: var(--accent);
+      font-weight: 600;
+      flex-shrink: 0;
+    }
+
+    /* Filter & Sort Toolbar */
+    .filter-toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      margin-bottom: 24px;
+      padding: 14px 18px;
+      border-radius: 16px;
+      background: var(--surface);
+      backdrop-filter: blur(14px);
+      border: 1px solid var(--border);
+    }
+
+    .category-tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .cat-tab {
+      height: 36px;
+      padding: 0 14px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: rgba(4, 21, 41, 0.6);
+      color: var(--fg-muted);
+      font-size: 0.84rem;
+      font-weight: 500;
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      transition: all 180ms ease;
+    }
+
+    .cat-tab:hover {
+      color: var(--fg);
+      border-color: var(--border-strong);
+    }
+
+    .cat-tab.active {
+      background: linear-gradient(135deg, rgba(2, 132, 199, 0.42), rgba(34, 211, 238, 0.25));
+      border-color: var(--accent);
+      color: #FFFFFF;
+      font-weight: 600;
+      box-shadow: 0 4px 14px rgba(2, 132, 199, 0.28);
+    }
+
+    .cat-count {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      padding: 1px 7px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .toolbar-right {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .result-counter {
+      font-size: 0.82rem;
+      color: var(--fg-muted);
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .sort-select {
+      height: 36px;
+      padding: 0 12px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: #051c36;
+      color: var(--fg-secondary);
+      font-size: 0.82rem;
+      outline: none;
+      cursor: pointer;
+    }
+
+    .sort-select:focus { border-color: var(--accent); }
+
+    /* Shows Poster Card Grid */
+    .shows-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(238px, 1fr));
+      gap: 20px;
+    }
+
+    .show-card {
+      background: var(--surface);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      box-shadow: var(--shadow-md);
+      transition: transform 240ms cubic-bezier(0.22, 1, 0.36, 1), border-color 240ms ease, box-shadow 240ms ease;
+    }
+
+    .show-card:hover {
+      transform: translateY(-5px);
+      border-color: rgba(56, 189, 248, 0.65);
+      box-shadow: 0 22px 44px -10px rgba(1, 8, 20, 0.85), 0 0 24px rgba(56, 189, 248, 0.18);
+    }
+
+    .poster-wrap {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 2 / 3;
+      background: linear-gradient(145deg, #072240, #031224);
+      overflow: hidden;
+      cursor: pointer;
+    }
+
+    .poster-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform 380ms cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .show-card:hover .poster-img {
+      transform: scale(1.045);
+    }
+
+    .poster-gradient {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(2, 12, 27, 0.45) 0%, transparent 32%, transparent 58%, rgba(3, 16, 34, 0.92) 100%);
+      pointer-events: none;
+    }
+
+    .poster-top-badges {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      right: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+      pointer-events: none;
+    }
+
+    .cat-pill {
+      padding: 3px 9px;
+      border-radius: 999px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+    }
+    .cat-western { background: rgba(14, 116, 144, 0.78); color: #E0F2FE; }
+    .cat-asian { background: rgba(180, 83, 9, 0.8); color: #FEF3C7; }
+    .cat-anime { background: rgba(109, 40, 217, 0.8); color: #EDE9FE; }
+
+    .douban-badge {
+      padding: 3px 8px;
+      border-radius: 8px;
+      background: rgba(2, 12, 27, 0.84);
+      border: 1px solid rgba(251, 191, 36, 0.42);
+      color: var(--gold);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.74rem;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      backdrop-filter: blur(8px);
+    }
+
+    .poster-bottom-meta {
+      position: absolute;
+      left: 12px;
+      right: 12px;
+      bottom: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+      pointer-events: none;
+    }
+
+    .edition-tag {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.7rem;
+      color: #BAE6FD;
+      background: rgba(3, 19, 38, 0.78);
+      border: 1px solid rgba(125, 211, 252, 0.25);
+      padding: 2px 8px;
+      border-radius: 6px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 100%;
+    }
+
+    .card-body {
+      padding: 14px 15px 15px;
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      gap: 8px;
+    }
+
+    .card-title-wrap { cursor: pointer; }
+
+    .show-title {
+      font-size: 1.03rem;
+      font-weight: 700;
+      color: var(--fg);
+      line-height: 1.32;
+      transition: color 180ms ease;
+    }
+
+    .show-card:hover .show-title { color: var(--accent); }
+
+    .show-orig {
+      font-size: 0.74rem;
+      color: var(--fg-muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin-top: 2px;
+    }
+
+    .show-summary {
+      font-size: 0.81rem;
+      line-height: 1.54;
+      color: #B4CBE0;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      flex: 1;
+      cursor: pointer;
+    }
+
+    .card-actions {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      padding-top: 10px;
+      border-top: 1px solid rgba(103, 232, 249, 0.12);
+      margin-top: auto;
+    }
+
+    .btn-quark {
+      flex: 1;
+      height: 36px;
+      padding: 0 12px;
+      border-radius: 9px;
+      background: linear-gradient(135deg, #0284C7, #0EA5E9);
+      color: #FFFFFF;
+      font-size: 0.81rem;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      border: 1px solid rgba(125, 211, 252, 0.35);
+      transition: filter 180ms ease, transform 180ms ease, box-shadow 180ms ease;
+    }
+
+    .btn-quark:hover {
+      filter: brightness(1.1);
+      transform: translateY(-1px);
+      box-shadow: 0 6px 18px -4px rgba(14, 165, 233, 0.55);
+    }
+
+    .btn-icon-action {
+      width: 36px;
+      height: 36px;
+      border-radius: 9px;
+      border: 1px solid var(--border);
+      background: rgba(4, 21, 41, 0.75);
+      color: var(--fg-muted);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: color 180ms ease, border-color 180ms ease, background-color 180ms ease;
+    }
+
+    .btn-icon-action:hover {
+      color: var(--accent);
+      border-color: var(--accent);
+      background: rgba(14, 52, 92, 0.75);
+    }
+
+    /* Empty Search State */
+    .empty-box {
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: 56px 24px;
+      border-radius: var(--radius-lg);
+      background: var(--surface);
+      border: 1px dashed var(--border-strong);
+      color: var(--fg-muted);
+    }
+
+    /* Detail Modal */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 90;
+      background: rgba(2, 10, 22, 0.8);
+      backdrop-filter: blur(8px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 220ms ease;
+    }
+
+    .modal-backdrop.open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .modal-dialog {
+      width: min(760px, 100%);
+      max-height: 90vh;
+      overflow-y: auto;
+      background: #071e38;
+      border: 1px solid var(--border-strong);
+      border-radius: 22px;
+      box-shadow: var(--shadow-lg);
+      padding: 26px;
+      display: grid;
+      grid-template-columns: 220px minmax(0, 1fr);
+      gap: 24px;
+      position: relative;
+      transform: translateY(12px) scale(0.98);
+      transition: transform 240ms cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .modal-backdrop.open .modal-dialog {
+      transform: translateY(0) scale(1);
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      border: 1px solid var(--border);
+      background: rgba(3, 19, 38, 0.8);
+      color: var(--fg-muted);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .modal-close:hover { color: #fff; border-color: var(--accent); }
+
+    .modal-poster {
+      width: 100%;
+      aspect-ratio: 2 / 3;
+      object-fit: cover;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      background: #041527;
+    }
+
+    .modal-content {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      padding-right: 14px;
+    }
+
+    .modal-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .modal-title {
+      font-family: 'Noto Serif SC', serif;
+      font-size: 1.55rem;
+      font-weight: 700;
+      line-height: 1.28;
+    }
+
+    .modal-subtitle {
+      font-size: 0.88rem;
+      color: var(--fg-muted);
+    }
+
+    .modal-synopsis-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.74rem;
+      letter-spacing: 0.08em;
+      color: var(--accent);
+      text-transform: uppercase;
+      margin-top: 4px;
+    }
+
+    .modal-synopsis {
+      font-size: 0.92rem;
+      line-height: 1.72;
+      color: var(--fg-secondary);
+    }
+
+    .modal-cta-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: auto;
+      padding-top: 12px;
+    }
+
+    .modal-btn-primary {
+      height: 42px;
+      padding: 0 20px;
+      border-radius: 11px;
+      background: linear-gradient(135deg, #0284C7, #0EA5E9);
+      color: #fff;
+      font-weight: 600;
+      font-size: 0.9rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .modal-btn-secondary {
+      height: 42px;
+      padding: 0 16px;
+      border-radius: 11px;
+      border: 1px solid var(--border-strong);
+      background: rgba(4, 21, 41, 0.72);
+      color: var(--fg-secondary);
+      font-weight: 500;
+      font-size: 0.86rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+    }
+    .modal-btn-secondary:hover { border-color: var(--accent); color: var(--accent); }
+
+    /* Toast Notification */
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      z-index: 120;
+      background: #F8FAFC;
+      color: #031326;
+      padding: 10px 16px;
+      border-radius: 10px;
+      font-size: 0.86rem;
+      font-weight: 600;
+      box-shadow: var(--shadow-lg);
+      opacity: 0;
+      transform: translateY(8px);
+      pointer-events: none;
+      transition: opacity 180ms ease, transform 180ms ease;
+    }
+    .toast.show { opacity: 1; transform: translateY(0); }
+
+    /* Footer */
+    .site-footer {
+      position: relative;
+      z-index: 2;
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 22px 24px 44px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      font-size: 0.82rem;
+      color: var(--fg-muted);
+    }
+
+    /* Responsive Breakpoints */
+    @media (max-width: 980px) {
+      .hero-panel { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 720px) {
+      .header-inner { padding: 0 14px; gap: 10px; }
+      .brand-subtitle, .search-kbd, .btn-label-desktop { display: none; }
+      .nav-pill-btn { padding: 0 10px; }
+      .page-shell { padding: 18px 14px 56px; }
+      .hero-card, .sites-dock { padding: 18px; }
+      .shows-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+      }
+      .card-body { padding: 11px 11px 12px; }
+      .show-title { font-size: 0.94rem; }
+      .show-summary { font-size: 0.76rem; -webkit-line-clamp: 2; }
+      .modal-dialog { grid-template-columns: 1fr; padding: 20px; }
+      .modal-poster { width: 150px; margin: 0 auto; }
+      .modal-content { padding-right: 0; }
+    }
+
+    @media (max-width: 400px) {
+      .shows-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="ocean-backdrop" aria-hidden="true">
+    <div class="ocean-grid"></div>
+    <div class="tyndall-beam beam-1"></div>
+    <div class="tyndall-beam beam-2"></div>
+    <div class="tyndall-beam beam-3"></div>
+  </div>
+
+  <!-- Sticky Header -->
+  <header class="site-header">
+    <div class="header-inner">
+      <a href="./index.html" class="brand-link" aria-label="返回 LMX Ocean 门户主页">
+        <svg class="brand-logo-svg" viewBox="0 0 310 172" fill="none" stroke="url(#lmxWatchGrad)" stroke-width="18" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <defs>
+            <linearGradient id="lmxWatchGrad" x1="0%" y1="100%" x2="100%" y2="0%">
+              <stop offset="0%" stop-color="#60A5FA" />
+              <stop offset="52%" stop-color="#38BDF8" />
+              <stop offset="100%" stop-color="#22D3EE" />
+            </linearGradient>
+          </defs>
+          <path d="M 88 22 L 30 114 Q 24 123 35 123 L 96 123 Q 105 123 108 114 L 119 62 Q 123 47 132 60 L 160 112 Q 167 124 171 110 L 182 62 Q 186 46 198 58 L 268 122 Q 280 132 280 116 L 280 62 Q 280 45 268 57 L 168 154" />
+        </svg>
+        <div class="brand-meta">
+          <span class="brand-title">LMX · 追剧档案馆</span>
+          <span class="brand-subtitle">Watchlist · 夸克网盘直存片单</span>
+        </div>
+      </a>
+
+      <div class="search-box" role="search">
+        <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="11" cy="11" r="8"></circle>
+          <path d="m21 21-4.3-4.3"></path>
+        </svg>
+        <input type="search" id="searchInput" class="search-input" placeholder="搜索剧名、英文名、简介关键词..." aria-label="搜索追剧片单" autocomplete="off" />
+        <kbd class="search-kbd" aria-hidden="true">/</kbd>
+      </div>
+
+      <div class="header-actions">
+        <a href="./index.html" class="nav-pill-btn" title="返回 3D 海洋门户主页">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+            <polyline points="9 22 9 12 15 12 15 22"></polyline>
+          </svg>
+          <span class="btn-label-desktop">门户主页</span>
+        </a>
+        <a href="./hub.html" class="nav-pill-btn" title="进入学习与科研资源舱">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+            <polyline points="2 17 12 22 22 17"></polyline>
+            <polyline points="2 12 12 17 22 12"></polyline>
+          </svg>
+          <span class="btn-label-desktop">资源总舱</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <main class="page-shell">
+    <!-- Hero + External Resource / Watch Sites Dock -->
+    <section class="hero-panel" aria-label="追剧档案馆概览与快捷工具站">
+      <div class="hero-card">
+        <div class="hero-eyebrow">
+          <span class="live-dot" aria-hidden="true"></span>
+          <span>PERSONAL WATCHLIST · 50 部私藏剧集与番剧</span>
+        </div>
+        <h1 class="hero-title">
+          深海放映厅 · <span class="highlight">追剧清单与夸克直存</span>
+        </h1>
+        <p class="hero-desc">
+          完整收录个人夸克网盘「来自：分享」中追过与精选的全部欧美高分美剧、国产/日韩口碑好剧及高燃动漫番剧。每部剧集均配有官方封面海报、豆瓣评分、剧情简介及公开永久有效夸克网盘分享链接。
+        </p>
+        <div class="hero-stats">
+          <div class="stat-chip"><strong>50</strong><span>全部收录剧集</span></div>
+          <div class="stat-chip"><strong>25</strong><span>欧美剧集</span></div>
+          <div class="stat-chip"><strong>5</strong><span>国产 / 日韩剧</span></div>
+          <div class="stat-chip"><strong>20</strong><span>动漫 / 动画剧集</span></div>
+        </div>
+      </div>
+
+      <aside class="sites-dock" aria-label="找资源与在线看剧快捷站点">
+        <div class="dock-header">
+          <span class="dock-title">🎬 追剧实用传送门</span>
+          <span class="dock-hint">新标签页直达</span>
+        </div>
+
+        <div class="site-links-stack">
+          <a href="http://110.42.237.125:60401/" target="_blank" rel="noopener noreferrer" class="external-site-card">
+            <div class="ext-site-left">
+              <span class="ext-icon search-site" aria-hidden="true">🔍</span>
+              <div class="ext-meta">
+                <div class="ext-name">
+                  <span>找资源网站</span>
+                  <span class="ext-badge">资源搜索</span>
+                </div>
+                <div class="ext-url">http://110.42.237.125:60401/</div>
+              </div>
+            </div>
+            <span class="ext-arrow" aria-hidden="true">访问 ↗</span>
+          </a>
+
+          <a href="https://help.ifabu.vip/" target="_blank" rel="noopener noreferrer" class="external-site-card">
+            <div class="ext-site-left">
+              <span class="ext-icon watch-site" aria-hidden="true">📺</span>
+              <div class="ext-meta">
+                <div class="ext-name">
+                  <span>看剧网站</span>
+                  <span class="ext-badge">在线播放</span>
+                </div>
+                <div class="ext-url">https://help.ifabu.vip/</div>
+              </div>
+            </div>
+            <span class="ext-arrow" aria-hidden="true">访问 ↗</span>
+          </a>
+
+          <a href="https://movie.douban.com/" target="_blank" rel="noopener noreferrer" class="external-site-card">
+            <div class="ext-site-left">
+              <span class="ext-icon douban-site" aria-hidden="true">⭐</span>
+              <div class="ext-meta">
+                <div class="ext-name">
+                  <span>豆瓣电影</span>
+                  <span class="ext-badge">评分简介</span>
+                </div>
+                <div class="ext-url">https://movie.douban.com/</div>
+              </div>
+            </div>
+            <span class="ext-arrow" aria-hidden="true">访问 ↗</span>
+          </a>
+        </div>
+      </aside>
+    </section>
+
+    <!-- Category Filter & Sort Toolbar -->
+    <section class="filter-toolbar" aria-label="剧集筛选与排序">
+      <div class="category-tabs" role="tablist" aria-label="剧集分类筛选">
+        <button type="button" class="cat-tab active" data-cat="all">全部剧集 <span class="cat-count">50</span></button>
+        <button type="button" class="cat-tab" data-cat="western">欧美剧集 <span class="cat-count">25</span></button>
+        <button type="button" class="cat-tab" data-cat="asian">国产 · 日韩 <span class="cat-count">5</span></button>
+        <button type="button" class="cat-tab" data-cat="anime">动漫 / 动画 <span class="cat-count">20</span></button>
+      </div>
+
+      <div class="toolbar-right">
+        <span class="result-counter" id="resultCounter">显示 50 / 50 部</span>
+        <select id="sortSelect" class="sort-select" aria-label="排序方式">
+          <option value="default">默认片单顺序</option>
+          <option value="rating">豆瓣评分从高到低</option>
+          <option value="year">首播年份从新到旧</option>
+        </select>
+      </div>
+    </section>
+
+    <!-- Shows Card Grid -->
+    <section class="shows-grid" id="showsGrid" aria-live="polite"></section>
+  </main>
+
+  <!-- Show Detail Modal -->
+  <div class="modal-backdrop" id="detailModalBackdrop" aria-hidden="true">
+    <div class="modal-dialog" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <button type="button" class="modal-close" id="modalCloseBtn" aria-label="关闭详情">✕</button>
+      <img id="modalPoster" class="modal-poster" src="" alt="" />
+      <div class="modal-content">
+        <div class="modal-tags" id="modalTags"></div>
+        <h2 class="modal-title" id="modalTitle"></h2>
+        <div class="modal-subtitle" id="modalSubtitle"></div>
+        <div class="modal-synopsis-label">DOUBAN SYNOPSIS · 豆瓣剧情简介</div>
+        <p class="modal-synopsis" id="modalSynopsis"></p>
+        <div class="modal-cta-row">
+          <a id="modalQuarkLink" href="#" target="_blank" rel="noopener noreferrer" class="modal-btn-primary">
+            <span>☁️ 夸克网盘保存全集</span>
+            <span aria-hidden="true">↗</span>
+          </a>
+          <button type="button" id="modalCopyBtn" class="modal-btn-secondary">📋 复制分享链接</button>
+          <a id="modalDoubanLink" href="#" target="_blank" rel="noopener noreferrer" class="modal-btn-secondary">
+            <span>⭐ 去豆瓣查看</span>
+            <span aria-hidden="true">↗</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toastBox" role="status" aria-live="polite"></div>
+
+  <footer class="site-footer">
+    <span>LMX · 追剧档案馆 — 仅作个人追剧目录与公开分享整理展示</span>
+    <span>所有链接均为夸克网盘永久有效分享 · 简介与评分参考豆瓣电影</span>
+  </footer>
+
+  <script>
+    const SHOWS_DATA = [
+      // ==================== 1. 欧美剧集 (25) ====================
+      {
+        id: 'breaking-bad',
+        title: '绝命毒师',
+        orig: 'Breaking Bad',
+        category: 'western',
+        catLabel: '欧美剧集',
+        year: 2008,
+        rating: 9.7,
+        ratingNote: '豆瓣 9.2~9.7',
+        edition: '全5季+电影 · 1080P 中英特效',
+        poster: './posters/breaking-bad.jpg',
+        quarkUrl: 'https://pan.quark.cn/s/2a27fe419355',
+        doubanUrl: 'https://search.douban.com/movie/subject_search?search_text=%E7%BB%9D%E5%91%BD%E6%AF%92%E5%B8%88',
+        synopsis: '新墨西哥州的高中化学老师沃尔特·怀特在50岁生日之际突患肺癌晚期。为了给怀孕的妻子与残疾的儿子留下生活保障，他联合曾经的学生杰西·平克曼，利用高超化学技术提炼高纯度冰毒，一步步从老实人坠入毒枭深渊。'
+      },
+      {
+        id: 'better-call-saul',
+        title: '风骚律师',
+        orig: 'Better Call Saul',
+        category: 'western',
+        catLabel: '欧美剧集',
+        year: 2015,
+        rating: 9.7,
+        ratingNote: '豆瓣 9.4~9.7',
+        edition: 'S01-S06 全集 · 4K 内嵌字幕',
+        poster: './posters/better-call-saul.jpg',
+        quarkUrl: 'https://pan.quark.cn/s/ef56d6cfe3fb',
+        doubanUrl: 'https://search.douban.com/movie/subject_search?search_text=%E9%A3%8E%E9%AA%9A%E5%BE%8B%E5%B8%88',
+        synopsis: '《绝命毒师》前传剧集，采用精妙非线性叙事，讲述出身底层、满腹机智却屡遭现实碾压的小律师吉米·麦吉尔，在亲情背叛与道德挣扎中，如何一步步蜕变为八面玲珑的“风骚律师”索尔·古德曼。'
+      },
+      {
+        id: 'house-of-cards',
+        title: '纸牌屋',
+        orig: 'House of Cards',
+        category: 'western',
+        catLabel: '欧美剧集',
+        year: 2013,
+        rating: 9.3,
+        ratingNote: '豆瓣 9.3',
+        edition: '美版 全6季',
+        poster: './posters/house-of-cards.jpg',
+        quarkUrl: 'https://pan.quark.cn/s/62a75e5e41dd',
+        doubanUrl: 'https://search.douban.com/movie/subject_search?search_text=%E7%BA%B8%E7%89%8C%E5%B1%8B',
+        synopsis: '众议院多数党党鞭弗兰西斯·安德伍德辅佐新总统上台却惨遭背叛。恼怒的他誓言复仇，联手妻子克莱尔与女记者佐伊操控舆论、设局政敌，在华盛顿权力中心展开冷酷精密的权谋围剿。'
+      },
+      {
+        id: 'shameless',
+        title: '无耻之徒（美版）',
+        orig: 'Shameless (US)',
+        category: 'western',
+        catLabel: '欧美剧集',
+        year: 2011,
+        rating: 9.5,
+        ratingNote: '豆瓣 9.3~9.5',
+        edition: '全1-11季 · 1080P 蓝光 158G',
+        poster: './posters/shameless.jpg',
+        quarkUrl: 'https://pan.quark.cn/s/49386dea904b',
+        doubanUrl: 'https://search.douban.com/movie/subject_search?search_text=%E6%97%A0%E8%80%BB%E4%B9%8B%E5%BE%92',
+        synopsis: '在芝加哥南区最混乱的底层社区，酗酒不负责任的单亲父亲弗兰克甩下六个孩子不管，大姐菲奥娜扛起养家重担。加拉格一家闹腾、荒诞却在泥泞中彼此守护，演绎笑中带泪的底层生存史诗。'
+      },
+      {
+        id: 'peaky-blinders',
+        title: '浴血黑帮',
+        orig: 'Peaky Blinders',
+        category: 'western',
+        catLabel: '欧美剧集',
+        year: 2013,
+        rating: 9.2,
+        ratingNote: '豆瓣 9.1~9.3',
+        edition: '全6季合集 · HD1080P 中字',
+        poster: './posters/peaky-blinders.jpg',
+        quarkUrl: 'https://pan.quark.cn/s/5775fc4798ee',
+        doubanUrl: 'https://search.douban.com/movie/subject_search?search_text=%E6%B5%B4%E8%A1%80%E9%BB%91%E5%B8%AE',
+        synopsis: '一战后的英国伯明翰鱼龙混杂。汤米·谢尔比带领将剃刀刀片缝进鸭舌帽檐的传奇家族“剃刀党”，在帮派火并、革命暗流与政商博弈中野蛮生长，建立起庞大的地下帝国。'
+      },
+      {
+        id: 'vikings',
+        title: '维京传奇',
+        orig: 'Vikings',
+        category: 'western',
+        catLabel: '欧美剧集',
+        year: 2013,
+        rating: 8.6,
+        ratingNote: '豆瓣 8.3~8.7',
+        edition: '1-6季全集 · 中英双字',
+        poster: './posters/vikings.jpg',
+        quarkUrl: 'https://pan.quark.cn/s/9eb36050a8c1',
+        doubanUrl: 'https://search.douban.com/movie/subject_search?search_text=%E7%BB%B4%E4%BA%AC%E4%BC%A0%E5%A5%87',
+        synopsis: '聚焦北欧维京人鼎盛时期的史诗巨制。农夫拉格纳·洛德布罗克不满部落保守旧制，造船向西跨越未知北海劫掠英格兰与法兰克，从无名战士崛起为一代传奇维京之王。'
+      },
+      {
+        id: 'prison-break',
+        title: '越狱',
+        orig: 'Prison Break',
+        category: 'western',
+        catLabel: '欧美剧集',
+        year: 2005,
+        rating: 9.4,
+        ratingNote: '豆瓣 9.4',
+        edition: '5季全 · 1080P',
+        poster: './posters/prison-break.jpg',
+        quarkUrl: 'https://pan.quark.cn/s/66374d0448f9',
+        doubanUrl: 'https://search.douban.com/movie/subject_search?search_text=%E8%B6%8A%E7%8B%B1',
+        synopsis: '建筑结构工程师迈克得知哥哥林肯被政界黑手陷害判处死刑，于是将狐狸河监狱全套设计蓝图纹满全身，故意持枪抢劫入狱，与各路重刑犯展开环环相扣的越狱行动。'
+      },
+      {
+        id: 'true-detective',
+        title: '真探',
+        orig: 'True Detective',
+        category: 'western',
+        catLabel: '欧美剧集',
+        year: 2014,
+        rating: 9.2,
+        ratingNote: '豆瓣 9.2',
+        edition: '4季合集 · 1080P 英语中字',
+        poster: './posters/true-detective.jpg',
+        quarkUrl: 'https://pan.quark.cn/s/76a88dee69b4',
+        doubanUrl: 'https://search.douban.com/movie/subject_search?search_text=%E7%9C%9F%E6%8E%A2',
+        synopsis: '开朗圆滑的马蒂与孤僻敏锐的拉斯特是一对警探搭档，1995年的一桩诡异宗教仪式凶杀案将两人彻底撕裂；十七年后案件疑云再起，早已分道扬镳的二人被迫重聚直面深渊。'
+      },
+      {
+        id: 'banshee',
+        title: '黑吃黑',
+        orig: 'Banshee',
+        category: 'western',
+        catLabel: '欧美剧集',
+        year: 2013,
+        rating: 8.3,
+        ratingNote: '豆瓣 8.3',
+        edition: '1-4季合集 · 1080P 未删减',
+        poster: './posters/banshee.jpg',
+        quarkUrl: 'https://pan.quark.cn/s/2897ac3e2835',
+        doubanUrl: 'https://search.douban.com/movie/subject_search?search_text=%E9%BB%91%E5%90%83%E9%BB%91',
+        synopsis: '刚出狱的飞天大盗卢卡斯机缘巧合下冒充宾夕法尼亚女妖镇新任警长上任，一面戴着警徽大打出手秘密劫掠，一面寻找旧情人并躲避冷血黑帮十五年如一日的追杀。'
+      },
+      {
+        id: 'inside-no-9',
+        title: '9号秘事',
+        orig: 'Inside No. 9',
+        category: 'western',
+        catLabel: '欧美剧集',
+        year: 2014,
+        rating: 9.4,
+        ratingNote: '豆瓣 9.1~9.4',
+        edition: 'S01-S09 全集 · 4K/1080P',
+        poster: './posters/inside-no-9.jpg',
+        quarkUrl: 'https://pan.quark.cn/s/2601fad5aec6',
+        doubanUrl: 'https://search.douban.com/movie/subject_search?search_text=9%E5%8F%B7%E7%A7%98%E4%BA%8B',
+        synopsis: '《疯城记》鬼才主创打造的 BBC 神级暗黑单元喜剧。每集30分钟独立故事都与“9号”空间有关，在密闭场景中用极致的黑色幽默、惊悚悬疑与神级反转直击人性幽微。'
+      },
+      {
+        id: 'stranger-things',
+        title: '怪奇物语',
+        orig: 'Stranger Things',
+        category: 'western',
+        catLabel: '欧美剧集',
+        year: 2016,
+        rating: 9.2,
+        ratingNote: '豆瓣 9.1~9.2',
+        edition: 'S01-S05 全五季 · 含4K/最终章',
+        poster: './posters/stranger-things.jpg',
+        quarkUrl: 'https://pan.quark.cn/s/8722aa33437c',
+        doubanUrl: 'https://search.douban.com/movie/subject_search?search_text=%E6%80%AA%E5%A5%87%E7%89%A9%E8%AF%AD',
+        synopsis: '1983年印第安纳州霍金斯小镇男孩神秘失踪，朋友们在寻找他时意外遇见拥有超能力的神秘女孩小11，由此揭开政府秘密实验与“颠倒世界”怪物的惊天秘密，直至1987年终局决战。'
+      },
+      {
+        id: 'reacher',
+        title: '侠探杰克',
+        orig: 'Reacher',
+        category: 'western',
+        catLabel: '欧美剧集',
+        year: 2022,
+        rating: 8.1,
+        ratingNote: '豆瓣 8.1',
+        edition: '热映剧集文件夹 · 6项',
+        poster: './posters/reacher.jpg',
+        quarkUrl: 'https://pan.quark.cn/s/e1b2496d86ca',
+        doubanUrl: 'https://search.douban.com/movie/subject_search?search_text=%E4%BE%A0%E6%8E%A2%E6%9D%B0%E5%85%8B',
+        synopsis: '体格魁梧、推理极敏锐的前美国陆军宪兵杰克·里奇退役后浪迹全美。每次看似平静的落脚总被卷入小镇黑幕与庞大犯罪集团，他以硬核拳脚与军警直觉以暴制暴、查明真相。'
+      },
+      {
+        id: 'queens-gambit',
+        title: '后翼弃兵（女王的棋局）',
+        orig: "The Queen's Gambit",
+        category: 'western',
+        catLabel: '欧美剧集',
+        year: 2020,
+        rating: 9.0,
+        ratingNote: '豆瓣 9.0',
+        edition: '限定剧全集 · 1080P 中字',
+        poster: './posters/queens-gambit.jpg',
+        quarkUrl: 'https://pan.quark.cn/s/244ac06bb15a',
+        doubanUrl: 'https://search.douban.com/movie/subject_search?search_text=%E5%90%8E%E7%BF%BC%E5%BC%83%E5%85%B5',
+        synopsis: '20世纪50年代末，孤儿贝丝·哈蒙在孤儿院地下室展现出惊世国际象棋天赋，却同时深受药物与酒精成瘾困扰。她在男性主导的冷战棋坛一路封神，与内心的心魔和世界棋王巅峰对决。'
+      },
+      {
+        id: 'wednesday',
+        title: '星期三',
+        orig: 'Wednesday',
+        category: 'western',
+        catLabel: '欧美剧集',
+        year: 2022,
+        rating: 8.4,
+        ratingNote: '豆瓣 7.8 / S2 8.4',
+        edition: 'S01 + S02 · 双季合集',
+        poster: './posters/wednesday.jpg',
+        quarkUrl: 'https://pan.quark.cn/s/4ca818fac3e5',
+        doubanUrl: 'https://search.douban.com/movie/subject_search?search_text=%E6%98%9F%E6%9C%9F%E4%B8%89',
+        synopsis: '聪明孤僻、毒舌暗黑的星期三·亚当斯转入专门招收异类的奈弗莫尔学院。在努力掌控自己逐渐觉醒的通灵幻视能力时，她接连卷入校园连环凶案与古老家族谜团。'
+      },
+      {
+        id: 'knight-seven-kingdoms',
+        title: '七王国的骑士（权游前传）',
+        orig: 'A Knight of the Seven Kingdoms',
+        category: 'western',
+        catLabel: '欧美剧集',
+        year: 2026,
+        rating: 8.8,
+        ratingNote: '豆瓣 8.8',
+        edition: 'S01 第一季 · 1080P 中英双字',
+        poster: './posters/knight-seven-kingdoms.jpg',
+        quarkUrl: 'https://pan.quark.cn/s/4780eaeb9296',
+        doubanUrl: 'https://search.douban.com/movie/subject_search?search_text=%E4%B8%83%E7%8E%8B%E5%9B%BD%E7%9A%84%E9%AA%91%E5%A3%AB',
+        synopsis: '改编自乔治·R·R·马丁《邓克与伊戈的故事》。《权力的游戏》百年前，年轻天真的雇佣骑士“高个”邓肯与神秘光头小侍从伊戈游历维斯特洛，在坦格利安王朝余晖下写就骑士传奇。'
+      },
+      {
+        id: 'fallout',
+        title: '辐射',
+        orig: 'Fallout',
+        category: 'western',
+        catLabel: '欧美剧集',
+        year: 2024,
+        rating: 8.6,
+        ratingNote: '豆瓣 8.6 / S2 8.2',
+        edition: 'S01 + S02 · 4K 杜比视界',
+        poster: './posters/fallout.jpg',
+        quarkUrl: 'https://pan.quark.cn/s/caa2b29e1f75',
+        doubanUrl: 'https://search.douban.com/movie/subject_search?search_text=%E8%BE%90%E5%B0%84',
+        synopsis: '核末日发生两百年后，避难所居民露西为寻找父亲被迫重返地表，在充满黑色幽默、变异怪兽与钢铁兄弟会的莫哈韦废土及新维加斯中，直面残酷荒原的生存法则。'
+      },
+      {
+        id: 'last-of-us',
+        title: '最后生还者',
+        orig: 'The Last of Us',
+        category: 'western',
+        catLabel: '欧美剧集',
+        year: 2023,
+        rating: 9.0,
+        ratingNote: '豆瓣 9.0',
+        edition: 'HBO 剧集全集',
+        poster: './posters/last-of-us.jpg',
+        quarkUrl: 'https://pan.quark.cn/s/d1705aa790d7',
+        doubanUrl: 'https://search.douban.com/movie/subject_search?search_text=%E6%9C%80%E5%90%8E%E7%94%9F%E8%BF%98%E8%80%85',
+        synopsis: '虫草菌灾难摧毁现代文明二十年后，饱经沧桑的走私客乔尔受托护送天生对病毒免疫的14岁少女艾莉横穿末日美国。一路尸潮与人性暗涌之下，两人结下超越生死的父女羁绊。'
+      },
+      {
+        id: 'mandalorian',
+        title: '曼达洛人',
+        orig: 'The Mandalorian',
+        category: 'western',
+        catLabel: '欧美剧集',
+        year: 2019,
+        rating: 9.4,
+        ratingNote: '豆瓣 9.0~9.4',
+        edition: 'S01-S03 全三季合集',
+        poster: './posters/mandalorian.jpg',
+        quarkUrl: 'https://pan.quark.cn/s/ba63874eb4b4',
+        doubanUrl: 'https://search.douban.com/movie/subject_search?search_text=%E6%9B%BC%E8%BE%BE%E6%B4%9B%E4%BA%BA',
+        synopsis: '帝国陷落后的银河系偏远疆域，孤胆曼达洛赏金猎人丁·贾林在执行任务时意外救下拥有原力的“尤达宝宝”古古。这对银河“父子”踏上穿越星际、追寻曼达洛荣耀的冒险。'
+      },
+      {
+        id: 'andor',
+        title: '星球大战：安多',
+        orig: 'Andor',
+        category: 'western',
+        catLabel: '欧美剧集',
+        year: 2022,
+        rating: 9.0,
+        ratingNote: '豆瓣 9.0 / S2 8.9',
+        edition: 'S01 + 后续季全集',
+        poster: './posters/andor.jpg',
+        quarkUrl: 'https://pan.quark.cn/s/7cd219778b21',
+        doubanUrl: 'https://search.douban.com/movie/subject_search?search_text=%E5%AE%89%E5%A4%9A',
+        synopsis: '电影《侠盗一号》前传，公认写实度最高、格局最宏大的星战剧集。讲述底层小人物卡西安·安多在帝国铁幕高压下，如何从冷漠求生走向觉醒反抗，成为点燃银河革命星火的核心间谍。'
+      },
+      {
+        id: 'the-boys',
+        title: '黑袍纠察队',
+        orig: 'The Boys',
+        category: 'western',
+        catLabel: '欧美剧集',
+        year: 2019,
+        rating: 8.6,
+        ratingNote: '豆瓣 8.6',
+        edition: '含S03 + HP S05',
+        poster: './posters/the-boys.jpg',
+        quarkUrl: 'https://pan.quark.cn/s/8eb0c1b4849b',
+        doubanUrl: 'https://search.douban.com/movie/subject_search?search_text=%E9%BB%91%E8%A2%8D%E7%BA%A0%E5%AF%9F%E9%98%9F',
+        synopsis: '超能力者被沃特集团包装成资本摇钱树，私下却堕落残暴、视凡人为蝼蚁。痛失爱人的休伊被比利·布彻尔招募进“黑袍纠察队”，以凡人之躯硬刚腐败超级英雄。'
+      },
+      {
+        id: 'dexter',
+        title: '嗜血法医',
+        orig: 'Dexter',
+        category: 'western',
+        catLabel: '欧美剧集',
+        year: 2006,
+        rating: 8.7,
+        ratingNote: '豆瓣 8.7',
+        edition: 'S01 全12集 · 1080P',
+        poster: './posters/dexter.jpg',
+        quarkUrl: 'https://pan.quark.cn/s/abcc28a5a59b',
+        doubanUrl: 'https://search.douban.com/movie/subject_search?search_text=%E5%97%9C%E8%A1%80%E6%B3%95%E5%8C%BB',
+        synopsis: '迈阿密警局血迹分析法医德克斯特白天和善幽默，夜晚却是严守“哈利准则”的冷血连环杀手——只猎杀逃脱法律制裁的恶徒。然而“冰柜车杀手”的出现打破了他的完美双面人生。'
+      },
+      {
+        id: 'lanterns',
+        title: '绿灯军团',
+        orig: 'Lanterns',
+        category: 'western',
+        catLabel: '欧美剧集',
+        year: 2026,
+        rating: 7.9,
+        ratingNote: '豆瓣 7.9',
+        edition: 'S01 第一季全集',
+        poster: './posters/lanterns.jpg',
+        quarkUrl: 'https://pan.quark.cn/s/8192908f6d86',
+        doubanUrl: 'https://search.douban.com/movie/subject_search?search_text=%E7%BB%BF%E7%81%AF%E5%86%9B%E5%9B%A2+Lanterns',
+        synopsis: 'DCU 全新硬核探案科幻剧。传奇星际治安官哈尔·乔丹与新人绿灯侠约翰·斯图尔特被派往美国腹地内布拉斯加州调查一桩离奇谋杀案，却步步陷入以地球为核心的黑暗宇宙谜团。'
+      },
+      {
+        id: 'all-her-fault',
+        title: '都是她的错',
+        orig: 'All Her Fault',
+        category: 'western',
+        catLabel: '欧美剧集',
+        year: 2025,
+        rating: 9.1,
+        ratingNote: '豆瓣 9.1',
+        edition: 'S01 全8集',
+        poster: './posters/all-her-fault.jpg',
+        quarkUrl: 'https://pan.quark.cn/s/c64869d22358',
+        doubanUrl: 'https://search.douban.com/movie/subject_search?search_text=%E9%83%BD%E6%98%AF%E5%A5%B9%E7%9A%84%E9%94%99',
+        synopsis: '高分社会派悬疑神作。玛丽莎前去接放学参加玩伴聚会的年幼儿子，开门的陌生女人却坚称从未见过孩子。父母最恐惧的噩梦骤然降临，中产社群掩埋的秘密随之层层炸裂。'
+      },
+      {
+        id: 'welcome-to-derry',
+        title: '小丑回魂：欢迎来到德里镇',
+        orig: 'IT: Welcome to Derry',
+        category: 'western',
+        catLabel: '欧美剧集',
+        year: 2025,
+        rating: 8.2,
+        ratingNote: '热门前传剧集',
+        edition: 'S01 第一季全集',
+        poster: './posters/welcome-to-derry.jpg',
+        quarkUrl: 'https://pan.quark.cn/s/c96ef5a6a82e',
+        doubanUrl: 'https://search.douban.com/movie/subject_search?search_text=%E6%AC%A2%E8%BF%8E%E6%9D%A5%E5%88%B0%E5%BE%B7%E9%87%8C%E9%95%87',
+        synopsis: '斯蒂芬·金恐怖宇宙《小丑回魂》官方前传。故事倒回1962年的缅因州德里镇，随新搬入家庭的失踪惨案，逐步揭开每隔27年苏醒一次的恐怖小丑潘尼怀斯与小镇的邪恶过往。'
+      },
+      {
+        id: 'f1-drive-to-survive',
+        title: 'F1：极速求生（疾速争胜）',
+        orig: 'Formula 1: Drive to Survive',
+        category: 'western',
+        catLabel: '欧美剧集',
+        year: 2026,
+        rating: 9.4,
+        ratingNote: '豆瓣 S1 9.4 / S8 7.2',
+        edition: 'S08 第八季全集',
+        poster: './posters/f1-drive-to-survive.jpg',
+        quarkUrl: 'https://pan.quark.cn/s/7be3667272c4',
+        doubanUrl: 'https://search.douban.com/movie/subject_search?search_text=%E4%B8%80%E7%BA%A7%E6%96%B9%E7%A8%8B%E5%BC%8F+%E7%96%BE%E9%80%9F%E4%BA%89%E8%83%9C',
+        synopsis: 'Netflix 独家深度揭秘一级方程式赛车（F1）围场内外的真实纪录剧集。追踪车手、领队与车队在席位争夺、赛场翻盘与高压博弈下分秒必争的热血幕后。'
+      },
+
+      // ==================== 2. 国产剧 / 日韩剧 (5) ====================
+      {
+        id: 'zhifou',
+        title: '知否知否应是绿肥红瘦',
+        orig: 'The Story of Ming Lan',
+        category: 'asian',
+        catLabel: '国产 · 日韩',
+        year: 2018,
+        rating: 8.0,
+        ratingNote: '豆瓣 8.0',
+        edition: '全78集 · 1080P 国语中字',
+        poster: './posters/zhifou.jpg',
+        quarkUrl: 'https://pan.quark.cn/s/b8a279c85f65',
+        doubanUrl: 'https://search.douban.com/movie/subject_search?search_text=%E7%9F%A5%E5%90%A6%E7%9F%A5%E5%90%A6%E5%BA%94%E6%98%AF%E7%BB%BF%E8%82%A5%E7%BA%A2%E7%98%A6',
+        synopsis: '北宋官宦家庭庶女盛明兰自幼生母惨死、处境艰难，在祖母盛老太太庇护下藏拙自保、自立自强。她于明枪暗箭中破局成长，并与宁远侯府公子顾廷烨携手追寻家宅安宁与人间公正。'
+      },
+      {
+        id: 'silent-honor',
+        title: '沉默的荣耀',
+        orig: 'Silent Honor',
+        category: 'asian',
+        catLabel: '国产 · 日韩',
+        year: 2025,
+        rating: 8.0,
+        ratingNote: '豆瓣 8.0',
+        edition: '全39集 · 4K 高码率',
+        poster: './posters/silent-honor.jpg',
+        quarkUrl: 'https://pan.quark.cn/s/3c923f32a2ec',
+        doubanUrl: 'https://search.douban.com/movie/subject_search?search_text=%E6%B2%89%E9%BB%98%E7%9A%84%E8%8D%A3%E8%80%80',
+        synopsis: '取材自真实历史隐蔽战线英雄事迹。1949年吴石将军毅然赴台出任国防部次长，与交通员朱枫密切配合送出金门、舟山兵力部署等关键情报，直至叛徒出卖英勇就义。'
+      },
+      {
+        id: 'jin',
+        title: '仁医',
+        orig: 'JIN -仁-',
+        category: 'asian',
+        catLabel: '国产 · 日韩',
+        year: 2009,
+        rating: 9.4,
+        ratingNote: '豆瓣 S1 9.2 / S2 9.4',
+        edition: '全2季合集 · 日剧经典',
+        poster: './posters/jin.jpg',
+        quarkUrl: 'https://pan.quark.cn/s/42d08ede72a7',
+        doubanUrl: 'https://search.douban.com/movie/subject_search?search_text=%E4%BB%81%E5%8C%BB',
+        synopsis: '东京大学脑外科医生南方仁因一场意外穿越回百余年前的幕末江户时代。在医学极度匮乏的乱世里，他凭借现代医术与自制盘尼西林救死扶伤，并不可避免地卷入时代洪流与宿命羁绊。'
+      },
+      {
+        id: 'my-love-from-the-star',
+        title: '来自星星的你',
+        orig: 'My Love from the Star',
+        category: 'asian',
+        catLabel: '国产 · 日韩',
+        year: 2013,
+        rating: 8.5,
+        ratingNote: '豆瓣 8.5',
+        edition: '全21集完结版',
+        poster: './posters/my-love-from-the-star.jpg',
+        quarkUrl: 'https://pan.quark.cn/s/6fd90629b813',
+        doubanUrl: 'https://search.douban.com/movie/subject_search?search_text=%E6%9D%A5%E8%87%AA%E6%98%9F%E6%98%9F%E7%9A%84%E4%BD%A0',
+        synopsis: '在地球生活了四百年的外星大学教授都敏俊即将乘坐彗星返回故乡，却在最后三个月与嚣张又脆弱的国民顶级女明星千颂伊成为邻居，两人在跨世纪宿命中坠入浪漫爱河。'
+      },
+      {
+        id: 'not-affair-2026',
+        title: '现在不是出轨的问题',
+        orig: 'The Affair Was Just the Beginning',
+        category: 'asian',
+        catLabel: '国产 · 日韩',
+        year: 2026,
+        rating: 8.7,
+        ratingNote: '豆瓣 8.7',
+        edition: 'S01 全8集 · 韩剧高分黑马',
+        poster: './posters/not-affair-2026.jpg',
+        quarkUrl: 'https://pan.quark.cn/s/fc0301c55b77',
+        doubanUrl: 'https://search.douban.com/movie/subject_search?search_text=%E7%8E%B0%E5%9C%A8%E4%B8%8D%E6%98%AF%E5%87%BA%E8%BD%A8%E7%9A%84%E9%97%AE%E9%A2%98',
+        synopsis: '金惠秀、赵汝贞主演高能黑色幽默犯罪惊悚剧。靠“贩卖恩爱幸福形象”吸金的网红夫妇，与陷入离婚泥淖的医师邻居，因一桩“连出轨都只是小事”的惊天秘密引发彻底失控的连锁危机。'
+      },
+
+      // ==================== 3. 动漫 / 动画剧集 (20) ====================
+      {
+        id: 'rick-and-morty',
+        title: '瑞克和莫蒂',
+        orig: 'Rick and Morty',
+        category: 'anime',
+        catLabel: '动漫 / 动画',
+        year: 2013,
+        rating: 9.8,
+        ratingNote: '豆瓣 9.3~9.8',
+        edition: '1-9季+日漫版 · 4K+1080P',
+        poster: './posters/rick-and-morty.jpg',
+        quarkUrl: 'https://pan.quark.cn/s/b1f201a3a141',
+        doubanUrl: 'https://search.douban.com/movie/subject_search?search_text=%E7%91%9E%E5%85%8B%E5%92%8C%E8%8E%AB%E8%92%82',
+        synopsis: '失踪多年的天才疯子科学家瑞克回到女儿家车库造起实验室，拿着能穿梭无限平行宇宙的传送门枪，常年拉着怯懦外孙莫蒂开启脑洞大开、毒舌讽刺又发人深省的多元宇宙大冒险。'
+      },
+      {
+        id: 'adventure-time',
+        title: '探险活宝',
+        orig: 'Adventure Time',
+        category: 'anime',
+        catLabel: '动漫 / 动画',
+        year: 2010,
+        rating: 9.3,
+        ratingNote: '豆瓣 9.3',
+        edition: '1-10季+系列全 · 英语中字',
+        poster: './posters/adventure-time.jpg',
+        quarkUrl: 'https://pan.quark.cn/s/3102e9377088',
+        doubanUrl: 'https://search.douban.com/movie/subject_search?search_text=%E6%8E%A2%E9%99%A9%E6%B4%BB%E5%AE%9D',
+        synopsis: '在核战浩劫后重生的魔法大陆“哇塞秘境”，最后一名人类少年阿宝（Finn）与拥有伸缩魔力的老狗杰克结伴冒险，在无厘头童话画风下埋藏令人动容的世界观与治愈哲思。'
+      },
+      {
+        id: 'south-park',
+        title: '南方公园',
+        orig: 'South Park',
+        category: 'anime',
+        catLabel: '动漫 / 动画',
+        year: 1997,
+        rating: 9.5,
+        ratingNote: '口碑 9.5 经典',
+        edition: '1-22季合集',
+        poster: './posters/south-park.jpg',
+        quarkUrl: 'https://pan.quark.cn/s/f4150da620c9',
+        doubanUrl: 'https://search.douban.com/movie/subject_search?search_text=South+Park',
+        synopsis: '科罗拉多州偏远小镇上的四名小男孩——斯坦、凯尔、卡特曼与肯尼，以百无禁忌的毒舌幽默、极致荒诞的黑色隐喻和极速追更时事的犀利视角，辛辣解构当代社会万象。'
+      },
+      {
+        id: 'invincible',
+        title: '无敌少侠',
+        orig: 'Invincible',
+        category: 'anime',
+        catLabel: '动漫 / 动画',
+        year: 2021,
+        rating: 9.0,
+        ratingNote: '豆瓣 9.0',
+        edition: '4季全 · 1080P 英语中字',
+        poster: './posters/invincible.jpg',
+        quarkUrl: 'https://pan.quark.cn/s/45a74f649676',
+        doubanUrl: 'https://search.douban.com/movie/subject_search?search_text=%E6%97%A0%E6%95%8C%E5%B0%91%E4%BE%A0',
+        synopsis: '普通少年马克·格雷森十七岁时终于觉醒遗传自地球最强英雄“全能侠”父亲的超能力。然而随着血腥震撼的秘密揭晓，他必须在守护人类与对抗至亲的残酷真相中挣扎成长。'
+      },
+      {
+        id: 'paradise-pd',
+        title: '天堂镇警局',
+        orig: 'Paradise PD',
+        category: 'anime',
+        catLabel: '动漫 / 动画',
+        year: 2018,
+        rating: 8.6,
+        ratingNote: '豆瓣 7.9~8.6',
+        edition: '1-4季全集',
+        poster: './posters/paradise-pd.jpg',
+        quarkUrl: 'https://pan.quark.cn/s/a904ac31fb73',
+        doubanUrl: 'https://search.douban.com/movie/subject_search?search_text=%E5%A4%A9%E5%A0%82%E9%95%87%E8%AD%A6%E5%B1%80',
+        synopsis: '《脆莓公园》主创操刀的 Netflix 成人重口喜剧动画。聚焦天堂镇警局一群不靠谱、满嘴废话又毫无底线的失职警察，在一连串失控毒品案与荒诞闹剧中笑料百出。'
+      },
+      {
+        id: 'brickleberry',
+        title: '脆莓公园',
+        orig: 'Brickleberry',
+        category: 'anime',
+        catLabel: '动漫 / 动画',
+        year: 2012,
+        rating: 9.3,
+        ratingNote: '豆瓣 8.7~9.3',
+        edition: '经典完结全集',
+        poster: './posters/brickleberry.jpg',
+        quarkUrl: 'https://pan.quark.cn/s/39bf98285e02',
+        doubanUrl: 'https://search.douban.com/movie/subject_search?search_text=%E8%84%86%E8%8E%93%E5%85%AC%E5%9B%AD',
+        synopsis: '在濒临倒闭的脆莓国家森林公园里，暴躁园长伍迪、毒舌宠物熊莫利、极品林警史蒂文与新来的女强人埃塞利天天互相拆台闯祸，以毫无下限的爆笑日常上演无厘头群像。'
+      },
+      {
+        id: 'solar-opposites',
+        title: '外星也难民',
+        orig: 'Solar Opposites',
+        category: 'anime',
+        catLabel: '动漫 / 动画',
+        year: 2020,
+        rating: 9.3,
+        ratingNote: '豆瓣 9.1~9.3',
+        edition: '1-6季全集',
+        poster: './posters/solar-opposites.jpg',
+        quarkUrl: 'https://pan.quark.cn/s/e2f6adc461a3',
+        doubanUrl: 'https://search.douban.com/movie/subject_search?search_text=%E5%A4%96%E6%98%9F%E4%B9%9F%E9%9A%BE%E6%B0%91',
+        synopsis: '《瑞克和莫蒂》团队打造。四名来自更高阶星球的外星人因母星毁灭迫降美国郊区，对人类文明吵翻了天；而更让人欲罢不能的，还有他们房间墙内那座由微缩人类构成的“玻璃墙帝国”。'
+      },
+      {
+        id: 'hilda',
+        title: '希尔达',
+        orig: 'Hilda',
+        category: 'anime',
+        catLabel: '动漫 / 动画',
+        year: 2018,
+        rating: 9.6,
+        ratingNote: '豆瓣 9.6',
+        edition: '全三季完结',
+        poster: './posters/hilda.jpg',
+        quarkUrl: 'https://pan.quark.cn/s/682ff5fdaef3',
+        doubanUrl: 'https://search.douban.com/movie/subject_search?search_text=%E5%B8%8C%E5%B0%94%E8%BE%BE+Hilda',
+        synopsis: '蓝发少女希尔达与小鹿狐“枝枝”从精灵山怪出没的荒野搬进高墙环绕的特罗尔堡，在这个充满北欧童话灵气的温暖世界里，她结交新伙伴并探索人类与奇幻生灵共存的奥秘。'
+      },
+      {
+        id: 'primal',
+        title: '史前战纪（野蛮纪源）',
+        orig: 'Primal',
+        category: 'anime',
+        catLabel: '动漫 / 动画',
+        year: 2019,
+        rating: 9.2,
+        ratingNote: '豆瓣 9.2 / S3 8.4',
+        edition: '1-3季全集 · 含第三季',
+        poster: './posters/primal.jpg',
+        quarkUrl: 'https://pan.quark.cn/s/0a9ba220fa2b',
+        doubanUrl: 'https://search.douban.com/movie/subject_search?search_text=%E5%8F%B2%E5%89%8D%E6%88%98%E7%BA%AA',
+        synopsis: '全剧几乎零台词却极具视觉震撼！一位失去家人的尼安德特人“矛”与同样痛失幼崽的雌性霸王龙“牙”在残酷史前世界中结盟求生，用纯正动作美学演绎跨越物种的铁血羁绊。'
+      },
+      {
+        id: 'castlevania',
+        title: '恶魔城',
+        orig: 'Castlevania',
+        category: 'anime',
+        catLabel: '动漫 / 动画',
+        year: 2017,
+        rating: 9.0,
+        ratingNote: '豆瓣 S4 9.0',
+        edition: '1-4季全集',
+        poster: './posters/castlevania.jpg',
+        quarkUrl: 'https://pan.quark.cn/s/664128aca774',
+        doubanUrl: 'https://search.douban.com/movie/subject_search?search_text=%E6%81%B6%E9%AD%94%E5%9F%8E',
+        synopsis: '吸血鬼之王德古拉因人类妻子被教会处刑而誓言血洗东欧。落魄驱魔家族末裔特雷弗·贝尔蒙特联手女魔法师赛法与德古拉半吸血鬼之子阿鲁卡多，在哥特暗夜中展开华丽惨烈的讨伐之战。'
+      },
+      {
+        id: 'blue-eye-samurai',
+        title: '蓝眼武士',
+        orig: 'Blue Eye Samurai',
+        category: 'anime',
+        catLabel: '动漫 / 动画',
+        year: 2023,
+        rating: 8.7,
+        ratingNote: '豆瓣 8.7',
+        edition: '全集收藏',
+        poster: './posters/blue-eye-samurai.jpg',
+        quarkUrl: 'https://pan.quark.cn/s/a1a4bf3642c5',
+        doubanUrl: 'https://search.douban.com/movie/subject_search?search_text=%E8%93%9D%E7%9C%BC%E6%AD%A6%E5%A3%AB',
+        synopsis: '日本江户锁国时代，混血蓝眼少女“阿水”自幼隐瞒性别饱受歧视，随盲眼铸刀老人习得绝世剑术，踏上寻找并手刃当年留在日本的四名白人恶魔生父的血色复仇之路。'
+      },
+      {
+        id: 'xmen-97',
+        title: 'X战警97',
+        orig: "X-Men '97",
+        category: 'anime',
+        catLabel: '动漫 / 动画',
+        year: 2024,
+        rating: 8.7,
+        ratingNote: '豆瓣 8.7 / S2 7.1',
+        edition: 'S01 (2024) + S02 (2026) · 1080P',
+        poster: './posters/xmen-97.jpg',
+        quarkUrl: 'https://pan.quark.cn/s/b85005198564',
+        doubanUrl: 'https://search.douban.com/movie/subject_search?search_text=X%E6%88%98%E8%AD%A697',
+        synopsis: '完美承接90年代经典动画情怀与顶级作画水准！X教授离开后，万磁王接过领导权带领X战警在人类偏见与宿敌袭击中艰难维系和平，并在时间线崩裂中直面天启降临。'
+      },
+      {
+        id: 'steel-ball-run',
+        title: 'JOJO的奇妙冒险：飙马野郎',
+        orig: 'STEEL BALL RUN (2026)',
+        category: 'anime',
+        catLabel: '动漫 / 动画',
+        year: 2026,
+        rating: 9.0,
+        ratingNote: '豆瓣 9.0',
+        edition: '2026 动画版',
+        poster: './posters/steel-ball-run.jpg',
+        quarkUrl: 'https://pan.quark.cn/s/c2be632e4ad1',
+        doubanUrl: 'https://search.douban.com/movie/subject_search?search_text=%E9%A3%99%E9%A9%AC%E9%87%8E%E9%83%8E',
+        synopsis: '1890年美国举办横跨北美大陆6000公里的世纪赛马大赛“SBR”，冠军奖金高达五千万美元。下身瘫痪的天才骑手乔尼与神秘铁球使者杰洛并肩策马，卷入总统与圣人遗体的惊天角逐。'
+      },
+      {
+        id: 'fate-strange-fake',
+        title: '命运/奇异赝品',
+        orig: 'Fate/strange Fake',
+        category: 'anime',
+        catLabel: '动漫 / 动画',
+        year: 2024,
+        rating: 8.4,
+        ratingNote: '豆瓣 8.4',
+        edition: 'S01 第一季系列',
+        poster: './posters/fate-strange-fake.jpg',
+        quarkUrl: 'https://pan.quark.cn/s/96efcec8e7a0',
+        doubanUrl: 'https://search.douban.com/movie/subject_search?search_text=Fate+strange+Fake',
+        synopsis: '日本第五次圣杯战争结束数年后，美国西部城市雪原市出现了以“伪圣杯战争”为蓝本的异常仪式。缺失的Saber职阶、无法被选中的英灵、暗中博弈的各国魔术师齐聚战场。'
+      },
+      {
+        id: 'chainsmoker-cat',
+        title: '烟瘾猫（尼古喵喵）',
+        orig: 'Chainsmoker Cat / ヤニねこ',
+        category: 'anime',
+        catLabel: '动漫 / 动画',
+        year: 2026,
+        rating: 8.3,
+        ratingNote: '豆瓣 8.3',
+        edition: 'S01 (2026) · 1080P',
+        poster: './posters/chainsmoker-cat.jpg',
+        quarkUrl: 'https://pan.quark.cn/s/cf37fd0d96ac',
+        doubanUrl: 'https://search.douban.com/movie/subject_search?search_text=%E5%B0%BC%E5%8F%A4%E5%96%B5%E5%96%B5',
+        synopsis: '人类与兽人共存的世界里，超级废柴兽人“尼古喵喵”把打零工赚来的微薄薪水全拿去买烟，和贴心的管家婆妹妹猫及一众怪咖猫友们，用高水准作画演绎荒诞又莫名温柔的吞云吐雾日常。'
+      },
+      {
+        id: 'spy-x-family',
+        title: '间谍过家家',
+        orig: 'SPY×FAMILY',
+        category: 'anime',
+        catLabel: '动漫 / 动画',
+        year: 2025,
+        rating: 8.8,
+        ratingNote: '豆瓣 S1 8.9 / S3 8.8',
+        edition: 'S03 第三季 · 1080P 日语中字',
+        poster: './posters/spy-x-family.jpg',
+        quarkUrl: 'https://pan.quark.cn/s/9cffd6f1eab1',
+        doubanUrl: 'https://search.douban.com/movie/subject_search?search_text=%E9%97%B4%E8%B0%8D%E8%BF%87%E5%AE%B6%E5%AE%B6+%E7%AC%AC%E4%B8%89%E5%AD%A3',
+        synopsis: '间谍爸爸“黄昏”、杀手妈妈约尔、读心术超能力女儿阿尼亚与预知未来大狗邦德组成的“伪装家庭”再迎高潮！第三季揭晓黄昏的过去记忆，并与红色马戏团劫持危机正面交锋。'
+      },
+      {
+        id: 'kaguya-sama',
+        title: '辉夜大小姐想让我告白',
+        orig: 'Kaguya-sama: Love Is War (2025)',
+        category: 'anime',
+        catLabel: '动漫 / 动画',
+        year: 2025,
+        rating: 9.5,
+        ratingNote: '豆瓣 9.1~9.5',
+        edition: '2025 特别篇《通往大人的阶梯》',
+        poster: './posters/kaguya-sama.jpg',
+        quarkUrl: 'https://pan.quark.cn/s/c69defc97416',
+        doubanUrl: 'https://search.douban.com/movie/subject_search?search_text=%E8%BE%89%E5%A4%9C%E5%A4%A7%E5%B0%8F%E5%A7%90%E6%83%B3%E8%AE%A9%E6%88%91%E5%91%8A%E7%99%BD',
+        synopsis: '秀知院学园学生会长白银御行与副会长四宫辉夜明明两情相悦，却执拗地认为“先告白的人就是输家”，展开高智商却又纯爱爆笑的恋爱头脑战，延续至《通往大人的阶梯》。'
+      },
+      {
+        id: 'tokyo-ghoul',
+        title: '东京喰种（东京食尸鬼）',
+        orig: 'Tokyo Ghoul',
+        category: 'anime',
+        catLabel: '动漫 / 动画',
+        year: 2014,
+        rating: 8.6,
+        ratingNote: '历史豆瓣 8.6',
+        edition: '1-4季+OVA全集 · 4K 收藏版',
+        poster: './posters/tokyo-ghoul.jpg',
+        quarkUrl: 'https://pan.quark.cn/s/24402e030f12',
+        doubanUrl: 'https://search.douban.com/movie/subject_search?search_text=%E4%B8%9C%E4%BA%AC%E9%A3%9F%E5%B0%B8%E9%AC%BC',
+        synopsis: '平凡大学生金木研遭遇潜伏在东京街头、只以人肉为食的怪物“喰种”袭击，手术中被移植喰种器官后化身为半人半喰种。在“安定区”咖啡厅的收留与残酷狩猎中，他学会在夹缝中求生。'
+      },
+      {
+        id: 'death-note',
+        title: '死亡笔记',
+        orig: 'Death Note (2006)',
+        category: 'anime',
+        catLabel: '动漫 / 动画',
+        year: 2006,
+        rating: 9.1,
+        ratingNote: '历史豆瓣 9.1',
+        edition: '2006 动漫全37集 · 4K 收藏版',
+        poster: './posters/death-note.jpg',
+        quarkUrl: 'https://pan.quark.cn/s/03662d0590ca',
+        doubanUrl: 'https://search.douban.com/movie/subject_search?search_text=Death+Note+2006',
+        synopsis: '天才高中生夜神月捡到死神琉克遗落人间的“死亡笔记”，只要写下名字便能取人性命。他决心化身“基拉”制裁罪犯重塑新世界，却引来神秘天才侦探 L 的步步紧逼，上演高智商巅峰心理对决。'
+      },
+      {
+        id: 'stranger-things-1985',
+        title: '怪奇物语：1985故事集',
+        orig: "Stranger Things: Tales From '85",
+        category: 'anime',
+        catLabel: '动漫 / 动画',
+        year: 2026,
+        rating: 7.6,
+        ratingNote: '豆瓣 7.6',
+        edition: '2026 官方衍生动画',
+        poster: './posters/stranger-things-1985.jpg',
+        quarkUrl: 'https://pan.quark.cn/s/52097fb7814f',
+        doubanUrl: 'https://search.douban.com/movie/subject_search?search_text=%E6%80%AA%E5%A5%87%E7%89%A9%E8%AF%AD+1985%E6%95%85%E4%BA%8B%E9%9B%86',
+        synopsis: '时间线定格在《怪奇物语》第二季与第三季之间的1985年冬天，以复古美漫动画风格带观众重返银装素裹的霍金斯小镇，见证主角团联手直面全新怪物与超自然奇案。'
+      }
+    ];
+
+    let activeCat = 'all';
+    let searchQuery = '';
+    let sortMode = 'default';
+    let currentModalShow = null;
+
+    const showsGrid = document.getElementById('showsGrid');
+    const resultCounter = document.getElementById('resultCounter');
+    const searchInput = document.getElementById('searchInput');
+    const sortSelect = document.getElementById('sortSelect');
+    const toastBox = document.getElementById('toastBox');
+
+    const modalBackdrop = document.getElementById('detailModalBackdrop');
+    const modalPoster = document.getElementById('modalPoster');
+    const modalTags = document.getElementById('modalTags');
+    const modalTitle = document.getElementById('modalTitle');
+    const modalSubtitle = document.getElementById('modalSubtitle');
+    const modalSynopsis = document.getElementById('modalSynopsis');
+    const modalQuarkLink = document.getElementById('modalQuarkLink');
+    const modalDoubanLink = document.getElementById('modalDoubanLink');
+    const modalCopyBtn = document.getElementById('modalCopyBtn');
+
+    function showToast(msg) {
+      toastBox.textContent = msg;
+      toastBox.classList.add('show');
+      clearTimeout(window.__toastTimer);
+      window.__toastTimer = setTimeout(() => toastBox.classList.remove('show'), 2200);
+    }
+
+    function copyShareUrl(url, title) {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(url).then(() => {
+          showToast(`已复制《${title}》夸克网盘分享链接`);
+        }).catch(() => {
+          showToast('复制失败，请手动打开链接');
+        });
+      } else {
+        showToast('请点击直接打开夸克网盘链接');
+      }
+    }
+
+    function openDetailModal(show) {
+      currentModalShow = show;
+      modalPoster.src = show.poster;
+      modalPoster.alt = show.title;
+      modalTags.innerHTML = `
+        <span class="cat-pill cat-${show.category}">${show.catLabel}</span>
+        <span class="douban-badge">★ ${show.ratingNote}</span>
+        <span class="edition-tag">${show.year} · ${show.edition}</span>
+      `;
+      modalTitle.textContent = show.title;
+      modalSubtitle.textContent = show.orig;
+      modalSynopsis.textContent = show.synopsis;
+      modalQuarkLink.href = show.quarkUrl;
+      modalDoubanLink.href = show.doubanUrl;
+      modalBackdrop.classList.add('open');
+      modalBackdrop.setAttribute('aria-hidden', 'false');
+    }
+
+    function closeDetailModal() {
+      modalBackdrop.classList.remove('open');
+      modalBackdrop.setAttribute('aria-hidden', 'true');
+    }
+
+    function getFilteredShows() {
+      const q = searchQuery.trim().toLowerCase();
+      let list = SHOWS_DATA.filter((s) => {
+        if (activeCat !== 'all' && s.category !== activeCat) return false;
+        if (!q) return true;
+        return (
+          s.title.toLowerCase().includes(q) ||
+          s.orig.toLowerCase().includes(q) ||
+          s.synopsis.toLowerCase().includes(q) ||
+          s.edition.toLowerCase().includes(q) ||
+          s.catLabel.toLowerCase().includes(q)
+        );
+      });
+
+      if (sortMode === 'rating') {
+        list = [...list].sort((a, b) => b.rating - a.rating || b.year - a.year);
+      } else if (sortMode === 'year') {
+        list = [...list].sort((a, b) => b.year - a.year || b.rating - a.rating);
+      }
+      return list;
+    }
+
+    function renderShows() {
+      const list = getFilteredShows();
+      resultCounter.textContent = `显示 ${list.length} / ${SHOWS_DATA.length} 部`;
+
+      if (!list.length) {
+        showsGrid.innerHTML = `
+          <div class="empty-box">
+            <h3>没有找到匹配的剧集</h3>
+            <p style="margin-top:6px;">试试更换关键词，或者切换到上方「全部剧集」分类查看。</p>
+          </div>
+        `;
+        return;
+      }
+
+      showsGrid.innerHTML = '';
+      const frag = document.createDocumentFragment();
+
+      list.forEach((show) => {
+        const card = document.createElement('article');
+        card.className = 'show-card';
+        card.innerHTML = `
+          <div class="poster-wrap" title="点击查看《${show.title}》豆瓣完整简介">
+            <img class="poster-img" src="${show.poster}" alt="${show.title} 海报" loading="lazy" />
+            <div class="poster-gradient"></div>
+            <div class="poster-top-badges">
+              <span class="cat-pill cat-${show.category}">${show.catLabel}</span>
+              <span class="douban-badge">★ ${show.rating.toFixed(1)}</span>
+            </div>
+            <div class="poster-bottom-meta">
+              <span class="edition-tag">${show.year} · ${show.edition}</span>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="card-title-wrap">
+              <h2 class="show-title">${show.title}</h2>
+              <div class="show-orig">${show.orig}</div>
+            </div>
+            <p class="show-summary">${show.synopsis}</p>
+            <div class="card-actions">
+              <a href="${show.quarkUrl}" target="_blank" rel="noopener noreferrer" class="btn-quark">
+                <span>☁️ 夸克直存</span>
+                <span aria-hidden="true">↗</span>
+              </a>
+              <button type="button" class="btn-icon-action js-copy" title="复制夸克网盘分享链接" aria-label="复制${show.title}分享链接">📋</button>
+              <button type="button" class="btn-icon-action js-detail" title="查看豆瓣完整简介" aria-label="查看${show.title}完整简介">📖</button>
+            </div>
+          </div>
+        `;
+
+        card.querySelector('.poster-wrap').addEventListener('click', () => openDetailModal(show));
+        card.querySelector('.card-title-wrap').addEventListener('click', () => openDetailModal(show));
+        card.querySelector('.show-summary').addEventListener('click', () => openDetailModal(show));
+        card.querySelector('.js-detail').addEventListener('click', () => openDetailModal(show));
+        card.querySelector('.js-copy').addEventListener('click', () => copyShareUrl(show.quarkUrl, show.title));
+
+        frag.appendChild(card);
+      });
+
+      showsGrid.appendChild(frag);
+    }
+
+    document.querySelectorAll('.cat-tab').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.cat-tab').forEach((b) => b.classList.remove('active'));
+        btn.classList.add('active');
+        activeCat = btn.dataset.cat;
+        renderShows();
+      });
+    });
+
+    searchInput.addEventListener('input', (e) => {
+      searchQuery = e.target.value;
+      renderShows();
+    });
+
+    sortSelect.addEventListener('change', (e) => {
+      sortMode = e.target.value;
+      renderShows();
+    });
+
+    document.getElementById('modalCloseBtn').addEventListener('click', closeDetailModal);
+    modalBackdrop.addEventListener('click', (e) => {
+      if (e.target === modalBackdrop) closeDetailModal();
+    });
+    modalCopyBtn.addEventListener('click', () => {
+      if (currentModalShow) copyShareUrl(currentModalShow.quarkUrl, currentModalShow.title);
+    });
+
+    window.addEventListener('keydown', (e) => {
+      if (e.key === '/' && document.activeElement !== searchInput) {
+        e.preventDefault();
+        searchInput.focus();
+      } else if (e.key === 'Escape') {
+        closeDetailModal();
+      }
+    });
+
+    renderShows();
+  </script>
+</body>
+</html>
